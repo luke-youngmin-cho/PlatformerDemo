@@ -147,7 +147,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 195145494}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.076, y: -0.3, z: 0}
+  m_LocalPosition: {x: -0.076, y: -0.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1820907484}
@@ -555,24 +555,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4665f6e8af92c4d45a1094bc964f1f68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 3
-  dashMultiplier: 1.5
+  controlEnabled: 1
+  maxSpeed: 2
+  dashMultiplier: 2
+  jumpForce: 150
   newPlayerState: 0
-  oldPlayerstate: 0
-  jumpTakeOffSpeed: 10
-  dashState: 0
+  oldPlayerState: 0
   jumpState: 0
+  fallState: 0
+  dashState: 0
   attackState: 0
   dashAttackState: 0
+  groundDetectPoint: {fileID: 195145495}
+  groundMinDistance: 0.01
   attackSensor: {fileID: 1773464481}
   dashAttackSensor: {fileID: 802992846}
-  animationTimeOffset: 4
-  collider2d: {fileID: 1820907481}
-  controlEnabled: 1
-  gravityModifier: 0.5
-  jumpModifier: 0.5
-  groundMinDistance: 0.3
-  groundDetectPoint: {fileID: 195145495}
+  animationTimeOffset: 3.5
+  directionInit: 1
 --- !u!1 &1849124544
 GameObject:
   m_ObjectHideFlags: 0

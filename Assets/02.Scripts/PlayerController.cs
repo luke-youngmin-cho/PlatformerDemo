@@ -1,69 +1,82 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 /// <summary>
-/// This is the main class used to implement control of the player.
-/// It is a superset of the AnimationController class, but is inlined to allow for any kind of customisation.
+/// this class is for 2D player basic movement & animation
 /// </summary>
 public class PlayerController : MonoBehaviour
 {
-    /*public AudioClip jumpAudio;
-    public AudioClip respawnAudio;
-    public AudioClip ouchAudio;*/
+    public bool controlEnabled = true;
 
-    /// <summary>
-    /// Max horizontal speed of the player.
-    /// </summary>
-    public float maxSpeed = 7;
-    public float dashMultiplier = 1.5f;
+    // parameters
+    public float maxSpeed = 2;
+    public float dashMultiplier = 2f;
+    public float jumpForce = 150; // mass 1 standard
+
+    // audio
+    // todo -> add some sounds
+
+    // states
     public PlayerState newPlayerState = PlayerState.Idle;
-    public PlayerState oldPlayerstate = PlayerState.Idle;
-    /// <summary>
-    /// Initial jump velocity at the start of a jump.
-    /// </summary>
-    public float jumpTakeOffSpeed = 7;
-
-    public DashState dashState = DashState.Idle;
+    public PlayerState oldPlayerState = PlayerState.Idle;
     public JumpState jumpState = JumpState.Idle;
+    public FallState fallState = FallState.Idle;
+    public DashState dashState = DashState.Idle;
     public AttackState attackState = AttackState.Idle;
     public DashAttackState dashAttackState = DashAttackState.Idle;
 
+    // detections
+    bool isGrounded;
+    public Transform groundDetectPoint;
+    public float groundMinDistance;
     public GameObject attackSensor;
     public GameObject dashAttackSensor;
+
+    // animation
+    internal Animator animator;
+    string currentAnimationName;
     private float attackTime;
     private float dashAttackTime;
     private float dashTime;
     private float animationTimer;
-    public float animationTimeOffset;
-    /*internal new*/
-    public Collider2D collider2d;
-    /*internal new*/
-    //public AudioSource audioSource;
-    public bool controlEnabled = true;
+    public float animationTimeOffset = 3.5f;
 
-    Vector2 move;
-    internal Animator animator;
-
+    // kinematics
     Rigidbody2D rb;
+    Vector2 move;
     Vector2 targetVelocity;
-    public float gravityModifier;
-    public float jumpModifier;
-    bool isGrounded;
-    int direction; // +1 : right -1 : left
-    public float groundMinDistance;
-    public Transform groundDetectPoint;
-    string currentAnimationName;
+    
+    // direction
+    int _direction; // +1 : right -1 : left
+    int direction
+    {
+        set
+        {
+            if (value < 0)
+            {
+                _direction = -1;
+                transform.eulerAngles = new Vector3(0f, 180f, 0f);
+            }
+            else if(value > 0)
+            {
+                _direction = 1;
+                transform.eulerAngles = Vector3.zero;
+            }
+        }
+        get { return _direction; }
+    }
+    public int directionInit;
+    
     void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        //audioSource = GetComponent<AudioSource>();
-        collider2d = GetComponent<Collider2D>();
         animator = GetComponentInChildren<Animator>();
+        rb = GetComponent<Rigidbody2D>();
+        
         // animations time
         attackTime = GetAnimationTime("Attack");
         dashAttackTime = GetAnimationTime("DashAttack");
         dashTime = GetAnimationTime("Dash");
+        direction = directionInit;
     }
     
     void Update()
@@ -72,10 +85,18 @@ public class PlayerController : MonoBehaviour
         {
             DetectGround();
 
+            float h = Input.GetAxis("Horizontal");
+
+            //direction
+            if (IsChangeDirectionPossible())
+            {
+                if (h < 0) direction = -1;
+                else if (h > 0) direction = 1;
+            }
+
             // horizontal movement
             if (IsHorizontalMovePossible())
             {
-                float h = Input.GetAxis("Horizontal");
                 if (isGrounded &&
                     jumpState == JumpState.Idle)
                 {
@@ -93,12 +114,11 @@ public class PlayerController : MonoBehaviour
                 else if (isGrounded == false &&
                          jumpState != JumpState.Idle)
                 {
-                    if ((-0.1f > h) | (0.1f < h))
-                    {
-                        move.x = h;
-                    }
+                     if ((-0.1f > h) | (0.1f < h))
+                     {
+                         move.x = h;
+                     }
                 }
-
             }
             // dash
             if (IsDashPossible() && Input.GetKeyDown(KeyCode.LeftShift))
@@ -107,13 +127,20 @@ public class PlayerController : MonoBehaviour
             if (IsJumpPossible() && Input.GetKeyDown(KeyCode.LeftAlt))
                 ChangePlayerState(PlayerState.Jump);
 
+            // attack
             if (IsAttackPossible() && Input.GetKeyDown(KeyCode.LeftControl))
             {
                 if (newPlayerState == PlayerState.Dash)
                     ChangePlayerState(PlayerState.DashAttack);
                 else
                     ChangePlayerState(PlayerState.Attack);
-            }   
+            }
+
+            // fall
+            if (IsFallPossible())
+            {
+                ChangePlayerState(PlayerState.Fall);
+            }
         }
         else
         {
@@ -124,7 +151,7 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         FixedUpdateMovement();
-        Debug.Log(newPlayerState);
+        //Debug.Log(newPlayerState);
     }
     void DetectGround()
     {    
@@ -137,13 +164,14 @@ public class PlayerController : MonoBehaviour
             if (hitGO.layer == LayerMask.NameToLayer("Ground"))
             {
                 isGrounded = true;
-                Debug.Log("Grounded");
+                //Debug.Log("Grounded");
+                fallState = FallState.Idle;
             }
         }
         else
         {
             isGrounded = false;
-            Debug.Log("not Grounded");
+            //Debug.Log("not Grounded");
         }
     }
     void UpdateDashState()
@@ -155,11 +183,11 @@ public class PlayerController : MonoBehaviour
                 dashState = DashState.Dashing;
                 break;
             case DashState.Dashing:
-                if(animationTimer < (dashTime * animationTimeOffset / 1.5f))
+                if(animationTimer < (dashTime * animationTimeOffset * 0.5f))
                 {
                     move.x = direction * dashMultiplier;
                 }
-                else if(animationTimer < (dashTime * animationTimeOffset / 1.2f))
+                else if(animationTimer < (dashTime * animationTimeOffset * 0.8f))
                 {
                     move.x = direction;
                 }
@@ -190,23 +218,30 @@ public class PlayerController : MonoBehaviour
                 jumpState = JumpState.Jumping;
                 break;
             case JumpState.Jumping:
-                if (!isGrounded)
-                {   
-                    jumpState = JumpState.InFlight;
-                }
+                rb.AddForce(new Vector2(0f,jumpForce));
+                jumpState = JumpState.InFlight;
                 break;
             case JumpState.InFlight:
-                if (rb.velocity.y < 0)
+                if ((animationTimer > 0.1f) &&
+                    isGrounded)
                 {
-                    ChangeAnimationState("Fall");
+                    ChangePlayerState(PlayerState.Idle);
                 }
-                if (isGrounded)
-                {
-                    jumpState = JumpState.Landed;
-                }
+                animationTimer += Time.fixedDeltaTime;
                 break;
-            case JumpState.Landed:
-                ChangePlayerState(PlayerState.Idle);
+        }
+    }
+    void UpdateFallState()
+    {
+        switch (fallState)
+        {
+            case FallState.PrepareToFall:
+                ChangeAnimationState("Fall");
+                fallState = FallState.Falling;
+                break;
+            case FallState.Falling:
+                if (isGrounded)
+                    ChangePlayerState(PlayerState.Idle);
                 break;
         }
     }
@@ -284,7 +319,6 @@ public class PlayerController : MonoBehaviour
             default:
                 break;
         }
-        Debug.Log($"{dashAttackState} -{animationTimer} - {move.x} ");
     }
     void UpdatePlayerState()
     {
@@ -300,6 +334,9 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Jump:
                 UpdateJumpState();
                 break;
+            case PlayerState.Fall:
+                UpdateFallState();
+                break;
             case PlayerState.Attack:
                 UpdateAttackState();
                 break;
@@ -312,9 +349,9 @@ public class PlayerController : MonoBehaviour
     }
     void ChangePlayerState(PlayerState newState)
     {
-        if (oldPlayerstate == newState) return;
-        ResetAllMotion();
+        if (oldPlayerState == newState) return;
         newPlayerState = newState;
+        ResetAllMotion();
         switch (newPlayerState)
         {
             case PlayerState.Idle:
@@ -329,6 +366,9 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Jump:
                 Jump();
                 break;
+            case PlayerState.Fall:
+                Fall();
+                break;
             case PlayerState.Attack:
                 Attack();
                 break;
@@ -339,11 +379,17 @@ public class PlayerController : MonoBehaviour
                 break;
         }
         animationTimer = 0;
-        oldPlayerstate = newPlayerState;
+        oldPlayerState = newPlayerState;
     }
     void ResetAllMotion()
     {
-        move = Vector2.zero;
+        if(newPlayerState != PlayerState.Jump && 
+           newPlayerState != PlayerState.Fall &&
+           oldPlayerState != PlayerState.Jump &&
+           oldPlayerState != PlayerState.Fall)
+        {
+            move = Vector2.zero;
+        }
         dashState = DashState.Idle;
         jumpState = JumpState.Idle;
         attackState = AttackState.Idle;
@@ -356,27 +402,6 @@ public class PlayerController : MonoBehaviour
     }
     void ComputeVelocity()
     {
-        if ((jumpState == JumpState.Jumping) && isGrounded)
-        {
-            move.y = jumpTakeOffSpeed * jumpModifier;
-        }
-        else
-        {
-            move.y = 0;
-        }
-
-        // direction
-        if (move.x > 0.01f)
-        {
-            transform.eulerAngles = Vector3.zero;
-            direction = 1;
-        }   
-        else if (move.x < -0.01f)
-        {
-            transform.eulerAngles = new Vector3(0f, 180f, 0f);
-            direction = -1;
-        }
-
         Vector2 velocity = new Vector2(move.x * maxSpeed, move.y);
         targetVelocity = velocity;
     }
@@ -396,6 +421,10 @@ public class PlayerController : MonoBehaviour
     {
         jumpState = JumpState.PrepareToJump;
     }
+    void Fall()
+    {
+        fallState = FallState.PrepareToFall;
+    }
     void Attack()
     {
         attackState = AttackState.PrepareToAttack;
@@ -404,12 +433,25 @@ public class PlayerController : MonoBehaviour
     {
         dashAttackState = DashAttackState.PrepareToAttack;
     }
+    bool IsChangeDirectionPossible()
+    {
+        bool isOK = false;
+        if ((attackState == AttackState.Idle) &&
+           (dashAttackState == DashAttackState.Idle) &&
+           (dashState == DashState.Idle))
+        {
+            isOK = true;
+        }
+        return isOK;
+    }
     bool IsHorizontalMovePossible()
     {
         bool isOK = false;
         if((attackState == AttackState.Idle) &&
            (dashAttackState == DashAttackState.Idle) &&
-           (dashState == DashState.Idle))
+           (dashState == DashState.Idle) &&
+           (jumpState == JumpState.Idle) &&
+           (fallState == FallState.Idle))
         {
             isOK = true;
         }
@@ -431,6 +473,19 @@ public class PlayerController : MonoBehaviour
             dashAttackState == DashAttackState.Idle &&
             attackState == AttackState.Idle)
             isOK = true;
+        return isOK;
+    }
+    bool IsFallPossible()
+    {
+        bool isOK = false;
+        if(isGrounded == false && 
+          (newPlayerState == PlayerState.Jump ||
+           newPlayerState == PlayerState.Idle ||
+           newPlayerState == PlayerState.Run) &&
+           rb.velocity.y < 0)
+        {
+            isOK = true;
+        }
         return isOK;
     }
     bool IsAttackPossible()
@@ -458,6 +513,7 @@ public class PlayerController : MonoBehaviour
         Run,
         Dash,
         Jump,
+        Fall,
         Attack,
         DashAttack,
     }
@@ -474,7 +530,12 @@ public class PlayerController : MonoBehaviour
         PrepareToJump,
         Jumping,
         InFlight,
-        Landed
+    }
+    public enum FallState
+    {
+        Idle,
+        PrepareToFall,
+        Falling,
     }
     public enum AttackState
     {
