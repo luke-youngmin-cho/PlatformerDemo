@@ -24,20 +24,26 @@ public class PlayerController : MonoBehaviour
     public DashState dashState = DashState.Idle;
     public AttackState attackState = AttackState.Idle;
     public DashAttackState dashAttackState = DashAttackState.Idle;
-
+    public CrouchState crouchState = CrouchState.Idle;
+    public EdgeGrabState edgeGrabState = EdgeGrabState.Idle;
     // detections
-    bool isGrounded;
-    public Transform groundDetectPoint;
-    public float groundMinDistance;
+    //bool isGrounded;
+    //public Transform groundDetectPoint;
+    //public float groundMinDistance;
     public GameObject attackSensor;
     public GameObject dashAttackSensor;
-
+    public float fallingToCrouchDistance = 1.5f;
+    private float fallPositionMark;
+    private PlayerGroundDetector groundDetector;
+    private PlayerEdgeDetector edgeDetector;
     // animation
     internal Animator animator;
     string currentAnimationName;
     private float attackTime;
     private float dashAttackTime;
     private float dashTime;
+    private float crouchTime;
+    private float edgeGrabTime;
     private float animationTimer;
     public float animationTimeOffset = 3.5f;
 
@@ -45,10 +51,10 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D rb;
     Vector2 move;
     Vector2 targetVelocity;
-    
+    float gravityScaleInit;
     // direction
     int _direction; // +1 : right -1 : left
-    int direction
+    public int direction
     {
         set
         {
@@ -71,19 +77,23 @@ public class PlayerController : MonoBehaviour
     {
         animator = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        
+        gravityScaleInit = rb.gravityScale;
         // animations time
         attackTime = GetAnimationTime("Attack");
         dashAttackTime = GetAnimationTime("DashAttack");
         dashTime = GetAnimationTime("Dash");
+        crouchTime = GetAnimationTime("Crouch");
+        edgeGrabTime = GetAnimationTime("EdgeGrab");
         direction = directionInit;
+        groundDetector = GetComponent<PlayerGroundDetector>();
+        edgeDetector = GetComponent<PlayerEdgeDetector>();
     }
     
     void Update()
     {
         if (controlEnabled)
         {
-            DetectGround();
+            //DetectGround();
 
             float h = Input.GetAxis("Horizontal");
 
@@ -94,10 +104,16 @@ public class PlayerController : MonoBehaviour
                 else if (h > 0) direction = 1;
             }
 
+            if (Input.GetKey(KeyCode.UpArrow))
+            {
+                if (IsEdgeGrabPossible())
+                    ChangePlayerState(PlayerState.EdgeGrab);
+            }
+
             // horizontal movement
             if (IsHorizontalMovePossible())
             {
-                if (isGrounded &&
+                if (groundDetector.isGrounded &&
                     jumpState == JumpState.Idle)
                 {
                     if ((-0.1f > h) | (0.1f < h))
@@ -111,7 +127,7 @@ public class PlayerController : MonoBehaviour
                         ChangePlayerState(PlayerState.Idle);
                     }
                 }
-                else if (isGrounded == false &&
+                else if (groundDetector.isGrounded == false &&
                          jumpState != JumpState.Idle)
                 {
                      if ((-0.1f > h) | (0.1f < h))
@@ -153,7 +169,7 @@ public class PlayerController : MonoBehaviour
         FixedUpdateMovement();
         //Debug.Log(newPlayerState);
     }
-    void DetectGround()
+    /*void DetectGround()
     {    
         Vector2 origin = groundDetectPoint.transform.position;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, groundMinDistance);
@@ -164,14 +180,44 @@ public class PlayerController : MonoBehaviour
             if (hitGO.layer == LayerMask.NameToLayer("Ground"))
             {
                 isGrounded = true;
-                //Debug.Log("Grounded");
-                fallState = FallState.Idle;
             }
         }
         else
         {
             isGrounded = false;
-            //Debug.Log("not Grounded");
+        }
+    }*/
+    void UpdatePlayerState()
+    {
+        switch (newPlayerState)
+        {
+            case PlayerState.Idle:
+                break;
+            case PlayerState.Run:
+                break;
+            case PlayerState.Dash:
+                UpdateDashState();
+                break;
+            case PlayerState.Jump:
+                UpdateJumpState();
+                break;
+            case PlayerState.Fall:
+                UpdateFallState();
+                break;
+            case PlayerState.Crouch:
+                UpdateCrouchState();
+                break;
+            case PlayerState.Attack:
+                UpdateAttackState();
+                break;
+            case PlayerState.DashAttack:
+                UpdateDashAttackState();
+                break;
+            case PlayerState.EdgeGrab:
+                UpdateEdgeGrabState();
+                break;
+            default:
+                break;
         }
     }
     void UpdateDashState()
@@ -200,7 +246,7 @@ public class PlayerController : MonoBehaviour
                     move.x = 0;
                     dashState = DashState.Stop;
                 }
-                animationTimer += Time.fixedDeltaTime;
+                animationTimer += Time.deltaTime;
                 break;
             case DashState.Stop:
                 ChangePlayerState(PlayerState.Idle);
@@ -218,16 +264,17 @@ public class PlayerController : MonoBehaviour
                 jumpState = JumpState.Jumping;
                 break;
             case JumpState.Jumping:
+                rb.velocity = new Vector2(rb.velocity.x, 0f);
                 rb.AddForce(new Vector2(0f,jumpForce));
                 jumpState = JumpState.InFlight;
                 break;
             case JumpState.InFlight:
                 if ((animationTimer > 0.1f) &&
-                    isGrounded)
+                    groundDetector.isGrounded)
                 {
                     ChangePlayerState(PlayerState.Idle);
                 }
-                animationTimer += Time.fixedDeltaTime;
+                animationTimer += Time.deltaTime;
                 break;
         }
     }
@@ -237,11 +284,42 @@ public class PlayerController : MonoBehaviour
         {
             case FallState.PrepareToFall:
                 ChangeAnimationState("Fall");
+                fallPositionMark = rb.position.y;
                 fallState = FallState.Falling;
                 break;
             case FallState.Falling:
-                if (isGrounded)
-                    ChangePlayerState(PlayerState.Idle);
+                
+                if (groundDetector.isGrounded)
+                {
+                    if (fallPositionMark - rb.position.y > fallingToCrouchDistance)
+                    {
+                        ChangePlayerState(PlayerState.Crouch);
+                    }
+                    else
+                    {
+                        ChangePlayerState(PlayerState.Idle);
+                    }
+                }
+                break;
+        }
+    }
+    void UpdateCrouchState()
+    {
+        switch (crouchState)
+        {
+            case CrouchState.PrepareToCrouch:
+                ChangeAnimationState("Crouch");
+                crouchState = CrouchState.Crouching;
+                break;
+            case CrouchState.Crouching:
+                if(animationTimer > (crouchTime * animationTimeOffset))
+                {
+                    crouchState = CrouchState.Crouched;
+                }
+                animationTimer += Time.deltaTime;
+                break;
+            case CrouchState.Crouched:
+                ChangePlayerState(PlayerState.Idle);
                 break;
         }
     }
@@ -259,14 +337,14 @@ public class PlayerController : MonoBehaviour
                     attackSensor.SetActive(true);
                     attackState = AttackState.Attacking;
                 }
-                animationTimer += Time.fixedDeltaTime;
+                animationTimer += Time.deltaTime;
                 break;
             case AttackState.Attacking:
                 if(animationTimer > (attackTime * animationTimeOffset))
                 {
                     attackState = AttackState.Attacked;
                 }
-                animationTimer += Time.fixedDeltaTime;
+                animationTimer += Time.deltaTime;
                 break;
             case AttackState.Attacked:
                 attackSensor.SetActive(false);
@@ -298,7 +376,7 @@ public class PlayerController : MonoBehaviour
                     dashAttackSensor.SetActive(true);
                     dashAttackState = DashAttackState.Attacking;
                 }
-                animationTimer += Time.fixedDeltaTime;
+                animationTimer += Time.deltaTime;
                 break;
             case DashAttackState.Attacking:
                 if (animationTimer < (dashAttackTime * animationTimeOffset))
@@ -310,7 +388,7 @@ public class PlayerController : MonoBehaviour
                     move.x = 0;
                     dashAttackState = DashAttackState.Attacked;
                 }
-                animationTimer += Time.fixedDeltaTime;
+                animationTimer += Time.deltaTime;
                 break;
             case DashAttackState.Attacked:
                 dashAttackSensor.SetActive(false);
@@ -320,28 +398,42 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-    void UpdatePlayerState()
+    void UpdateEdgeGrabState()
     {
-        switch (newPlayerState)
+        switch (edgeGrabState)
         {
-            case PlayerState.Idle:
+            case EdgeGrabState.Idle:
                 break;
-            case PlayerState.Run:
+            case EdgeGrabState.PrepareToGrab:
+                ChangeAnimationState("EdgeGrab");
+                move = Vector2.zero;
+                rb.velocity = move;
+                rb.gravityScale = 0;
+                rb.position = new Vector2(rb.position.x, edgeDetector.targetPlayerPosY);
+                edgeGrabState = EdgeGrabState.Grabbing;
                 break;
-            case PlayerState.Dash:
-                UpdateDashState();
+            case EdgeGrabState.Grabbing:
+                if (animationTimer > (edgeGrabTime*animationTimeOffset))
+                {
+                    ChangeAnimationState("EdgeGrabIdle");
+                    edgeGrabState = EdgeGrabState.Grabbed;
+                }
+                animationTimer += Time.deltaTime;
                 break;
-            case PlayerState.Jump:
-                UpdateJumpState();
-                break;
-            case PlayerState.Fall:
-                UpdateFallState();
-                break;
-            case PlayerState.Attack:
-                UpdateAttackState();
-                break;
-            case PlayerState.DashAttack:
-                UpdateDashAttackState();
+            case EdgeGrabState.Grabbed:
+                if (Input.GetKeyDown(KeyCode.LeftAlt))
+                {
+                    rb.gravityScale = gravityScaleInit;
+                    ChangePlayerState(PlayerState.Jump);
+                }
+                else if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    // todo -> wall slide
+                }
+                else if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    // todo -> climb up the edge
+                }
                 break;
             default:
                 break;
@@ -369,11 +461,17 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Fall:
                 Fall();
                 break;
+            case PlayerState.Crouch:
+                Crouch();
+                break;
             case PlayerState.Attack:
                 Attack();
                 break;
             case PlayerState.DashAttack:
                 DashAttack();
+                break;
+            case PlayerState.EdgeGrab:
+                EdgeGrab();
                 break;
             default:
                 break;
@@ -390,10 +488,14 @@ public class PlayerController : MonoBehaviour
         {
             move = Vector2.zero;
         }
+        
         dashState = DashState.Idle;
         jumpState = JumpState.Idle;
         attackState = AttackState.Idle;
         dashAttackState = DashAttackState.Idle;
+        fallState = FallState.Idle;
+        crouchState = CrouchState.Idle;
+        edgeGrabState = EdgeGrabState.Idle;
     }
     void FixedUpdateMovement()
     {
@@ -415,8 +517,7 @@ public class PlayerController : MonoBehaviour
     void Dash()
     {
         dashState = DashState.PrepareToDash;
-    }
-    
+    }    
     void Jump()
     {
         jumpState = JumpState.PrepareToJump;
@@ -424,6 +525,14 @@ public class PlayerController : MonoBehaviour
     void Fall()
     {
         fallState = FallState.PrepareToFall;
+    }
+    void Crouch()
+    {
+        crouchState = CrouchState.PrepareToCrouch;
+    }
+    void EdgeGrab()
+    {
+        edgeGrabState = EdgeGrabState.PrepareToGrab;
     }
     void Attack()
     {
@@ -436,9 +545,10 @@ public class PlayerController : MonoBehaviour
     bool IsChangeDirectionPossible()
     {
         bool isOK = false;
-        if ((attackState == AttackState.Idle) &&
-           (dashAttackState == DashAttackState.Idle) &&
-           (dashState == DashState.Idle))
+        if ((oldPlayerState != PlayerState.Attack) &&
+            (oldPlayerState != PlayerState.DashAttack) &&
+            (oldPlayerState != PlayerState.Dash) &&
+            (oldPlayerState != PlayerState.EdgeGrab))
         {
             isOK = true;
         }
@@ -447,11 +557,13 @@ public class PlayerController : MonoBehaviour
     bool IsHorizontalMovePossible()
     {
         bool isOK = false;
-        if((attackState == AttackState.Idle) &&
-           (dashAttackState == DashAttackState.Idle) &&
-           (dashState == DashState.Idle) &&
-           (jumpState == JumpState.Idle) &&
-           (fallState == FallState.Idle))
+        if((oldPlayerState != PlayerState.Attack) &&
+           (oldPlayerState != PlayerState.DashAttack) &&
+           (oldPlayerState != PlayerState.Dash) &&
+           (oldPlayerState != PlayerState.Jump) &&
+           (oldPlayerState != PlayerState.Fall) &&
+           (oldPlayerState != PlayerState.Crouch) &&
+           (oldPlayerState != PlayerState.EdgeGrab))
         {
             isOK = true;
         }
@@ -460,29 +572,34 @@ public class PlayerController : MonoBehaviour
     bool IsDashPossible()
     {
         bool isOK = false;
-        if (attackState == AttackState.Idle &&
-            dashAttackState == DashAttackState.Idle)
+        if (oldPlayerState != PlayerState.Attack &&
+            oldPlayerState != PlayerState.DashAttack &&
+            oldPlayerState != PlayerState.EdgeGrab)
             isOK = true;
         return isOK;
     }
     bool IsJumpPossible()
     {
         bool isOK = false;
-        if (isGrounded &&
-            jumpState == JumpState.Idle &&
-            dashAttackState == DashAttackState.Idle &&
-            attackState == AttackState.Idle)
+        if (groundDetector.isGrounded &&
+            oldPlayerState != PlayerState.Jump &&
+            oldPlayerState != PlayerState.DashAttack &&
+            oldPlayerState != PlayerState.Attack &&
+            oldPlayerState != PlayerState.EdgeGrab)
+        {
             isOK = true;
+        }   
         return isOK;
     }
     bool IsFallPossible()
     {
         bool isOK = false;
-        if(isGrounded == false && 
-          (newPlayerState == PlayerState.Jump ||
-           newPlayerState == PlayerState.Idle ||
-           newPlayerState == PlayerState.Run) &&
-           rb.velocity.y < 0)
+        if(groundDetector.isGrounded == false && 
+          (oldPlayerState == PlayerState.Jump ||
+           oldPlayerState == PlayerState.Idle ||
+           oldPlayerState == PlayerState.Run  &&
+           oldPlayerState != PlayerState.EdgeGrab) &&
+           rb.velocity.y < 0 )
         {
             isOK = true;
         }
@@ -490,7 +607,19 @@ public class PlayerController : MonoBehaviour
     }
     bool IsAttackPossible()
     {
-        bool isOK = true;
+        bool isOK = false;
+        if (oldPlayerState != PlayerState.EdgeGrab)
+            isOK = true;
+        return isOK;
+    }
+    bool IsEdgeGrabPossible()
+    {
+        bool isOK = false;
+        if (edgeDetector.isDetected &&
+            oldPlayerState != PlayerState.Attack &&
+            oldPlayerState != PlayerState.DashAttack &&
+            oldPlayerState != PlayerState.Crouch)
+            isOK = true;
         return isOK;
     }
     
@@ -514,8 +643,10 @@ public class PlayerController : MonoBehaviour
         Dash,
         Jump,
         Fall,
+        Crouch,
         Attack,
         DashAttack,
+        EdgeGrab,
     }
     public enum DashState
     {
@@ -552,5 +683,19 @@ public class PlayerController : MonoBehaviour
         AttackCasting,
         Attacking,
         Attacked
+    }
+    public enum CrouchState
+    {
+        Idle,
+        PrepareToCrouch,
+        Crouching,
+        Crouched
+    }
+    public enum EdgeGrabState
+    {
+        Idle,
+        PrepareToGrab,
+        Grabbing,
+        Grabbed
     }
 }
