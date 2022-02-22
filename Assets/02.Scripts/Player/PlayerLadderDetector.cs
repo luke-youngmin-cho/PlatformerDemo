@@ -28,7 +28,6 @@ public class PlayerLadderDetector : MonoBehaviour
     }
     void Update()
     {
-        Debug.Log(ladderPosX);
         // at ground or above
         Collider2D ladderCol = Physics2D.OverlapCircle(new Vector2(rb.position.x, rb.position.y + colliderOffsetY + (playerSizeY * playerLadderMoveYOffset)), 0.01f, layer);
         if (ladderCol != null)
@@ -63,8 +62,6 @@ public class PlayerLadderDetector : MonoBehaviour
         }
         else
             isAtFeet = false;
-            
-        
     }
     public Vector2 GetLadderStartPosWhenIsAtFeet()
     {

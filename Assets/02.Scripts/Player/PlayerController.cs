@@ -9,15 +9,16 @@ public class PlayerController : MonoBehaviour
     public bool controlEnabled = true;
 
     // parameters
-    public float maxSpeed = 2;
+    public float maxSpeed = 1;
     public float dashMultiplier = 2f;
     public float jumpForce = 150; // mass 1 standard
+    public float downJumpForce = 50;
+    public float downJumpIgnoreTime = 0.3f;
     private Vector2 playerSize;
     public Vector2 colliderOffsetForCrouching;
     public Vector2 colliderSizeForCrouching;
     private Vector2 colliderOffsetOriginal;
     private Vector2 colliderSizeOriginal;
-    
     // audio
     // todo -> add some sounds
 
@@ -29,13 +30,16 @@ public class PlayerController : MonoBehaviour
     public DashState dashState = DashState.Idle;
     public AttackState attackState = AttackState.Idle;
     public DashAttackState dashAttackState = DashAttackState.Idle;
+    public CrouchFromFallState crouchFromFallState = CrouchFromFallState.Idle;
     public CrouchState crouchState = CrouchState.Idle;
+    public StandUpState standUpState = StandUpState.Idle;
     public EdgeGrabState edgeGrabState = EdgeGrabState.Idle;
     public EdgeClimbState edgeClimbState = EdgeClimbState.Idle;
     public WallSlideState wallSlideState = WallSlideState.Idle;
     public LadderState ladderState = LadderState.Idle;
     public HurtState hurtState = HurtState.Idle;
     public DieState dieState = DieState.Idle;
+    public DownJumpState downJumpState = DownJumpState.Idle; 
     
     private Coroutine controlDisableCoroutine = null;
     public float disableTimeWhenHurt = 0.5f;
@@ -55,7 +59,9 @@ public class PlayerController : MonoBehaviour
     private float attackTime;
     private float dashAttackTime;
     private float dashTime;
+    private float crouchFromFallTime;
     private float crouchTime;
+    private float standUpTime;
     private float edgeGrabTime;
     private float edgeClimbTime;
     private float hurtTime;
@@ -103,7 +109,9 @@ public class PlayerController : MonoBehaviour
         attackTime = GetAnimationTime("Attack");
         dashAttackTime = GetAnimationTime("DashAttack");
         dashTime = GetAnimationTime("Dash");
-        crouchTime = GetAnimationTime("Crouch");
+        crouchFromFallTime = GetAnimationTime("CrouchFromFall");
+        crouchTime = GetAnimationTime("CrouchTime");
+        standUpTime = GetAnimationTime("standUpTime");
         edgeGrabTime = GetAnimationTime("EdgeGrab");
         edgeClimbTime = GetAnimationTime("EdgeClimb");
         hurtTime = GetAnimationTime("Hurt");
@@ -177,10 +185,10 @@ public class PlayerController : MonoBehaviour
             // fall
             if (IsFallPossible())
                 ChangePlayerState(PlayerState.Fall);            
-            // Ladder
+            // Ladder up
             if (IsLadderUpPossible() && Input.GetKey(KeyCode.UpArrow))
                 ChangePlayerState(PlayerState.Ladder);
-
+            // Ladder down
             if (IsLadderDownPossible() && Input.GetKey(KeyCode.DownArrow))
             {
                 ChangePlayerState(PlayerState.Ladder);
@@ -245,8 +253,14 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Fall:
                 Fall();
                 break;
+            case PlayerState.CrouchFromFall:
+                CrouchFromFall();
+                break;
             case PlayerState.Crouch:
                 Crouch();
+                break;
+            case PlayerState.StandUp:
+                StandUp();
                 break;
             case PlayerState.Attack:
                 Attack();
@@ -272,6 +286,9 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Die:
                 Die();
                 break;
+            case PlayerState.DownJump:
+                DownJump();
+                break;
             default:
                 break;
         }
@@ -295,8 +312,14 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Fall:
                 UpdateFallState();
                 break;
+            case PlayerState.CrouchFromFall:
+                UpdateCrouchFromFallState();
+                break;
             case PlayerState.Crouch:
                 UpdateCrouchState();
+                break;
+            case PlayerState.StandUp:
+                UpdateStandUpState();
                 break;
             case PlayerState.Attack:
                 UpdateAttackState();
@@ -322,7 +345,9 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Die:
                 UpdateDieState();
                 break;
-            
+            case PlayerState.DownJump:
+                UpdateDownJumpState();
+                break;
             default:
                 break;
         }
@@ -403,13 +428,34 @@ public class PlayerController : MonoBehaviour
                 {
                     if (fallPositionMark - rb.position.y > fallingToCrouchDistance)
                     {
-                        ChangePlayerState(PlayerState.Crouch);
+                        ChangePlayerState(PlayerState.CrouchFromFall);
                     }
                     else
                     {
                         ChangePlayerState(PlayerState.Idle);
                     }
                 }
+                break;
+        }
+    }
+    void UpdateCrouchFromFallState()
+    {
+        switch (crouchFromFallState)
+        {
+            case CrouchFromFallState.PrepareToCrouch:
+                col.offset = colliderOffsetForCrouching;
+                col.size = colliderSizeForCrouching;
+                ChangeAnimationState("Crouch");
+                crouchFromFallState = CrouchFromFallState.Crouching;
+                break;
+            case CrouchFromFallState.Crouching:
+                if(animationTimer > (crouchFromFallTime * animator.speed))
+                {
+                    ChangePlayerState(PlayerState.Idle);
+                    col.offset = colliderOffsetOriginal;
+                    col.size = colliderSizeOriginal;
+                }
+                animationTimer += Time.deltaTime;
                 break;
         }
     }
@@ -421,26 +467,48 @@ public class PlayerController : MonoBehaviour
                 col.offset = colliderOffsetForCrouching;
                 col.size = colliderSizeForCrouching;
                 ChangeAnimationState("Crouch");
-                if(Input.GetKey(KeyCode.DownArrow))
-                    crouchState = CrouchState.Crouched;
-                else
-                    crouchState = CrouchState.Crouching;
+                groundDetector.doDownJumpCheck = true;
+                crouchState = CrouchState.Crouching;
                 break;
             case CrouchState.Crouching:
-                if(animationTimer > (crouchTime * animator.speed))
+                if (animationTimer > (crouchTime * animator.speed))
                 {
                     crouchState = CrouchState.Crouched;
                 }
                 animationTimer += Time.deltaTime;
                 break;
             case CrouchState.Crouched:
-                if (Input.GetKey(KeyCode.DownArrow) == false)
+                break;
+        }
+        if (IsDownJumpPossible() && Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            col.offset = colliderOffsetOriginal;
+            col.size = colliderSizeOriginal;
+            ChangePlayerState(PlayerState.DownJump);
+            groundDetector.doDownJumpCheck = false;
+        }
+        if (Input.GetKey(KeyCode.DownArrow) == false)
+        {
+            ChangePlayerState(PlayerState.StandUp);
+            groundDetector.doDownJumpCheck = false;
+        }
+    }
+    void UpdateStandUpState()
+    {
+        switch (standUpState)
+        {
+            case StandUpState.PrepareToStandUp:
+                col.offset = colliderOffsetOriginal;
+                col.size = colliderSizeOriginal;
+                ChangeAnimationState("StandUp");
+                standUpState = StandUpState.StandingUp;
+                break;
+            case StandUpState.StandingUp:
+                if (animationTimer > (standUpTime * animator.speed))
                 {
                     ChangePlayerState(PlayerState.Idle);
-                    col.offset = colliderOffsetOriginal;
-                    col.size = colliderSizeOriginal;
                 }
-                    
+                animationTimer += Time.deltaTime;
                 break;
         }
     }
@@ -554,6 +622,8 @@ public class PlayerController : MonoBehaviour
         {
             case EdgeClimbState.PrepareToClimb:
                 ChangeAnimationState("EdgeClimb");
+                move = Vector2.zero;
+                rb.velocity = move;
                 rb.bodyType = RigidbodyType2D.Kinematic;
                 edgeClimbState = EdgeClimbState.Climbing;
                 break;
@@ -567,7 +637,7 @@ public class PlayerController : MonoBehaviour
                     float deltaPos = Time.deltaTime / edgeClimbTime;
                     if (rb.position.y < edgeDetector.targetPlayerPos.y + col.size.y)
                         rb.position += new Vector2(0f, deltaPos);
-                    else if (Mathf.Abs(rb.position.x - edgeDetector.targetPlayerPos.x) / 2 < col.size.x )
+                    else if (Mathf.Abs(rb.position.x - edgeDetector.targetPlayerPos.x) < col.size.x )
                         rb.position += new Vector2(deltaPos * direction, 0f);
                 }
                 animationTimer += Time.deltaTime;
@@ -587,7 +657,7 @@ public class PlayerController : MonoBehaviour
             case WallSlideState.WallSliding:
                 if(groundDetector.isGrounded)
                 {
-                    ChangePlayerState(PlayerState.Crouch);
+                    ChangePlayerState(PlayerState.CrouchFromFall);
                 }
                 else if(wallSlideDetector.isDetected == false)
                 {
@@ -612,14 +682,17 @@ public class PlayerController : MonoBehaviour
                 rb.velocity = Vector2.zero;
 
                 // ground
-                if(groundDetector.isGrounded)
-                    rb.position = ladderDetector.GetLadderstartPosOnGround();
+                if (groundDetector.isGrounded)
+                {
+                    // at feet
+                    if (ladderDetector.isAtFeet)
+                        rb.position = ladderDetector.GetLadderStartPosWhenIsAtFeet();
+                    else
+                        rb.position = ladderDetector.GetLadderstartPosOnGround();
+                }
                 // above head
-                else if(ladderDetector.isAtFeet == false)
-                    rb.position = ladderDetector.GetLadderStartPosWhenIsAboveHead();
-                // at feet
                 else
-                    rb.position = ladderDetector.GetLadderStartPosWhenIsAtFeet();
+                    rb.position = ladderDetector.GetLadderStartPosWhenIsAboveHead();
 
                 ladderState = LadderState.OnLadder;
                 break;
@@ -692,6 +765,37 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
+    void UpdateDownJumpState()
+    {
+        switch (downJumpState)
+        {
+            case DownJumpState.PrepareToDownJump:
+                ChangeAnimationState("Jump");
+                downJumpState = DownJumpState.DownJumping;
+                break;
+            case DownJumpState.DownJumping:
+                rb.velocity = new Vector2(rb.velocity.x, 0f);
+                rb.AddForce(new Vector2(0f, downJumpForce));
+                StartCoroutine(E_IgnoreLayerCollisionForSeconds(downJumpIgnoreTime));
+                downJumpState = DownJumpState.InFlight;
+                break;
+            case DownJumpState.InFlight:
+                if(animationTimer > 0.5f) 
+                {
+                    ChangePlayerState(PlayerState.Idle);
+                }
+                animationTimer += Time.deltaTime;
+                break;
+            default:
+                break;
+        }
+    }
+    IEnumerator E_IgnoreLayerCollisionForSeconds(float time)
+    {
+        Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), true);
+        yield return new WaitForSeconds(time);
+        Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), false);
+    }
     #endregion
 
     void ChangeAnimationState(string newAnimationName)
@@ -716,7 +820,9 @@ public class PlayerController : MonoBehaviour
         attackState = AttackState.Idle;
         dashAttackState = DashAttackState.Idle;
         fallState = FallState.Idle;
+        crouchFromFallState = CrouchFromFallState.Idle;
         crouchState = CrouchState.Idle;
+        standUpState = StandUpState.Idle;
         edgeGrabState = EdgeGrabState.Idle;
         edgeClimbState = EdgeClimbState.Idle;
         wallSlideState = WallSlideState.Idle;
@@ -754,9 +860,17 @@ public class PlayerController : MonoBehaviour
     {
         fallState = FallState.PrepareToFall;
     }
+    void CrouchFromFall()
+    {
+        crouchFromFallState = CrouchFromFallState.PrepareToCrouch;
+    }
     void Crouch()
     {
         crouchState = CrouchState.PrepareToCrouch;
+    }
+    void StandUp()
+    {
+        standUpState = StandUpState.PrepareToStandUp;
     }
     void EdgeGrab()
     {
@@ -790,7 +904,10 @@ public class PlayerController : MonoBehaviour
     {
         dieState = DieState.PrepareToDie;
     }
-    
+    void DownJump()
+    {
+        downJumpState = DownJumpState.PrepareToDownJump;
+    }
     #endregion
 
     #region methods to check specific action is possible
@@ -873,7 +990,7 @@ public class PlayerController : MonoBehaviour
         if (edgeDetector.isDetected &&
             oldPlayerState != PlayerState.Attack &&
             oldPlayerState != PlayerState.DashAttack &&
-            oldPlayerState != PlayerState.Crouch)
+            oldPlayerState != PlayerState.CrouchFromFall)
             isOK = true;
         return isOK;
     }
@@ -920,7 +1037,14 @@ public class PlayerController : MonoBehaviour
             isOK = true;
         return isOK;
     }
-    
+    bool IsDownJumpPossible()
+    {
+        bool isOK = false;
+        if (oldPlayerState == PlayerState.Crouch &&
+           groundDetector.downJumpAvailable)
+            isOK = true;
+        return isOK;
+    }
     #endregion
     float GetAnimationTime(string name)
     {
@@ -977,7 +1101,9 @@ public class PlayerController : MonoBehaviour
         Dash,
         Jump,
         Fall,
+        CrouchFromFall,
         Crouch,
+        StandUp,
         Attack,
         DashAttack,
         EdgeGrab,
@@ -986,6 +1112,7 @@ public class PlayerController : MonoBehaviour
         Ladder,
         Hurt,
         Die,
+        DownJump,
     }
     public enum DashState
     {
@@ -1007,6 +1134,25 @@ public class PlayerController : MonoBehaviour
         PrepareToFall,
         Falling,
     }
+    public enum CrouchFromFallState
+    {
+        Idle,
+        PrepareToCrouch,
+        Crouching
+    }
+    public enum CrouchState
+    {
+        Idle,
+        PrepareToCrouch,
+        Crouching,
+        Crouched
+    }
+    public enum StandUpState
+    {
+        Idle,
+        PrepareToStandUp,
+        StandingUp,
+    }
     public enum AttackState
     {
         Idle,
@@ -1022,14 +1168,7 @@ public class PlayerController : MonoBehaviour
         AttackCasting,
         Attacking,
         Attacked
-    }
-    public enum CrouchState
-    {
-        Idle,
-        PrepareToCrouch,
-        Crouching,
-        Crouched
-    }
+    }    
     public enum EdgeGrabState
     {
         Idle,
@@ -1069,6 +1208,12 @@ public class PlayerController : MonoBehaviour
         Dying,
         Dead,
     }
-    
+    public enum DownJumpState
+    {
+        Idle,
+        PrepareToDownJump,
+        DownJumping,
+        InFlight,
+    }
     #endregion
 }
