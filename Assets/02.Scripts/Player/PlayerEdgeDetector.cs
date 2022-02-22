@@ -9,22 +9,20 @@ public class PlayerEdgeDetector : MonoBehaviour
     bool detectingFallingEdge;
     bool detectingRisingEdge;
     [HideInInspector] public bool isDetected;
-    [HideInInspector] public float targetPlayerPosY;
+    [HideInInspector] public Vector2 targetPlayerPos;
 
-    Transform tr;
     Rigidbody2D rb;
     PlayerController controller;
     public LayerMask layer;
     private void Awake()
     {
-        tr = GetComponent<Transform>();
         rb = GetComponent<Rigidbody2D>();
         controller = GetComponent<PlayerController>();
     }
     private void Update()
     {
-        top = Physics2D.OverlapCircle(new Vector2(tr.position.x + topX * controller.direction, tr.position.y + topY), 0.01f, layer);
-        bottom = Physics2D.OverlapCircle(new Vector2(tr.position.x + bottomX * controller.direction, tr.position.y + bottomY),0.01f, layer);
+        top = Physics2D.OverlapCircle(new Vector2(rb.position.x + topX * controller.direction, rb.position.y + topY), 0.01f, layer);
+        bottom = Physics2D.OverlapCircle(new Vector2(rb.position.x + bottomX * controller.direction, rb.position.y + bottomY),0.01f, layer);
 
         // when falling edge is detected
         if (detectingFallingEdge && top)
@@ -35,7 +33,8 @@ public class PlayerEdgeDetector : MonoBehaviour
         else if (detectingRisingEdge && (top == false))
         {
             isDetected = true;
-            targetPlayerPosY = rb.position.y;
+            targetPlayerPos = new Vector2(rb.position.x + (topX * controller.direction/2), //compensation 
+                                          rb.position.y);
         }
         else
             isDetected = false;
@@ -44,7 +43,8 @@ public class PlayerEdgeDetector : MonoBehaviour
         if (bottom && (top == false) && rb.velocity.y < 0)
         {
             detectingFallingEdge = true;
-            targetPlayerPosY = rb.position.y;
+            targetPlayerPos = new Vector2(rb.position.x + (topX * controller.direction / 2), //compensation
+                                          rb.position.y);
         }   
         else
             detectingFallingEdge = false;
@@ -67,12 +67,12 @@ public class PlayerEdgeDetector : MonoBehaviour
     }
     private void OnDrawGizmosSelected()
     {
-        if (controller == null) return;
+        if (rb == null) return;
         // top
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(new Vector3(transform.position.x + topX * controller.direction, transform.position.y+topY, 0f), 0.01f);
+        Gizmos.DrawSphere(new Vector3(rb.position.x + topX * controller.direction, rb.position.y+topY, 0f), 0.01f);
         // bottom
         Gizmos.color = Color.green;
-        Gizmos.DrawSphere(new Vector3(transform.position.x + bottomX * controller.direction, transform.position.y+ bottomY, 0f), 0.01f);
+        Gizmos.DrawSphere(new Vector3(rb.position.x + bottomX * controller.direction, rb.position.y+ bottomY, 0f), 0.01f);
     }
 }

@@ -6,8 +6,8 @@ public class PlayerGroundDetector : MonoBehaviour
 {
     Rigidbody2D rb;
     CapsuleCollider2D col;
-    Vector2 size;
     Vector2 center;
+    [HideInInspector] public Vector2 size;
     [SerializeField] LayerMask layerMask;
     [HideInInspector] public bool isGrounded;
     private void Awake()
