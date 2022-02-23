@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     public Vector2 colliderSizeForCrouching;
     private Vector2 colliderOffsetOriginal;
     private Vector2 colliderSizeOriginal;
+    private Player player;
     // audio
     // todo -> add some sounds
 
@@ -45,14 +46,14 @@ public class PlayerController : MonoBehaviour
     public float disableTimeWhenHurt = 0.5f;
 
     // detections
-    public GameObject attackSensor;
-    public GameObject dashAttackSensor;
     public float fallingToCrouchDistance = 1.5f;
     private float fallPositionMark;
     private PlayerGroundDetector groundDetector;
     private PlayerEdgeDetector edgeDetector;
     private PlayerLadderDetector ladderDetector;
     private WallSlideDetector wallSlideDetector;
+    private TargetCaster targetCaster;
+    [SerializeField] LayerMask enemyLayer;
     // animation
     internal Animator animator;
     string currentAnimationName;
@@ -98,6 +99,7 @@ public class PlayerController : MonoBehaviour
     
     void Awake()
     {
+        player = GetComponent<Player>();
         animator = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<CapsuleCollider2D>();
@@ -121,6 +123,7 @@ public class PlayerController : MonoBehaviour
         edgeDetector = GetComponent<PlayerEdgeDetector>();
         ladderDetector = GetComponent<PlayerLadderDetector>();
         wallSlideDetector = GetComponent<WallSlideDetector>();
+        targetCaster = GetComponent<TargetCaster>();
     }
     
     void Update()
@@ -523,7 +526,13 @@ public class PlayerController : MonoBehaviour
             case AttackState.AttackCasting:
                 if(animationTimer > (attackTime * animator.speed) / 2)
                 {
-                    attackSensor.SetActive(true);
+                    targetCaster.BoxCast(new Vector2((col.offset.x + 0.15f) * direction, col.offset.y), 
+                                         new Vector2(0.5f, 0.5f),
+                                         new Vector2(direction,0), 0f, enemyLayer);
+                    foreach (GameObject target in targetCaster.targets)
+                    {
+                       target.GetComponent<Enemy>().Hurt(player.CalcDamage());
+                    }
                     attackState = AttackState.Attacking;
                 }
                 animationTimer += Time.deltaTime;
@@ -536,7 +545,6 @@ public class PlayerController : MonoBehaviour
                 animationTimer += Time.deltaTime;
                 break;
             case AttackState.Attacked:
-                attackSensor.SetActive(false);
                 ChangePlayerState(PlayerState.Idle);
                 break;
             default:
@@ -562,7 +570,13 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
-                    dashAttackSensor.SetActive(true);
+                    targetCaster.BoxCastAll(new Vector2((col.offset.x + 0.15f) * direction, col.offset.y),
+                                            new Vector2(0.5f, 0.5f),
+                                            new Vector2(direction,0),0.3f, enemyLayer);
+                    foreach (GameObject target in targetCaster.targets)
+                    {
+                        target.GetComponent<Enemy>().Hurt(player.CalcDamage());
+                    }
                     dashAttackState = DashAttackState.Attacking;
                 }
                 animationTimer += Time.deltaTime;
@@ -580,7 +594,6 @@ public class PlayerController : MonoBehaviour
                 animationTimer += Time.deltaTime;
                 break;
             case DashAttackState.Attacked:
-                dashAttackSensor.SetActive(false);
                 ChangePlayerState(PlayerState.Idle);
                 break;
             default:

@@ -75,6 +75,17 @@ public class Player : MonoBehaviour
         }
         hp = tmpHP;
     }
+    public int CalcDamage()
+    {
+        int damage = (stats.attack * 100 + stats.STR * 20) / 2;
+        int randomValue = Random.Range(0, 100);
+        if (randomValue < stats.criticalRate)
+        {
+            damage *= stats.criticalDamage;
+            damage /= 100;
+        }
+        return damage;
+    }
     IEnumerator E_SetInvincible(float time)
     {
         invincible = true;

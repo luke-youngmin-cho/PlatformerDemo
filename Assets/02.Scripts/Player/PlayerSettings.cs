@@ -17,9 +17,9 @@ public class PlayerSettings : MonoBehaviour
                 INT = 10,
                 RES = 10,
 
-                hp = 100,
+                hp = 10000,
                 mp = 100,
-                attack = 10,
+                attack = 1,
                 criticalRate = 0,
                 criticalDamage = 150,
                 defence = 0,
