@@ -15,18 +15,18 @@ TagManager:
   - 
   - Player
   - PlayerSensor
-  - Ground
-  - Ladder
+  - 
+  - 
   - 
   - 
   - 
   - Enemy
+  - EnemyCollider
+  - EnemyProjectile
   - 
   - 
-  - 
-  - 
-  - 
-  - 
+  - Ground
+  - Ladder
   - 
   - 
   - 

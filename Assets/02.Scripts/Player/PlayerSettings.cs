@@ -10,6 +10,9 @@ public class PlayerSettings : MonoBehaviour
         {
             return new st_Stats
             {
+                Level = 1,
+                EXP = 0,
+
                 STR = 10,
                 DEX = 10,
                 CON = 10,
@@ -17,23 +20,26 @@ public class PlayerSettings : MonoBehaviour
                 INT = 10,
                 RES = 10,
 
-                hp = 10000,
+                hp = 100000,
                 mp = 100,
                 attack = 1,
-                criticalRate = 0,
+                criticalRate = 50,
                 criticalDamage = 150,
                 defence = 0,
                 magicDefence = 0,
                 defencePen = 0,
                 magicDefencePen = 0,
-                moveSpeed = 1,
-                jumpForce = 1,
+                moveSpeed = 1f,
+                jumpForce = 3f,
             };
         }
     }
 }
 public struct st_Stats
 {
+    public int Level;
+    public int EXP;
+
     public int STR;
     public int DEX;
     public int CON;
@@ -50,8 +56,8 @@ public struct st_Stats
     public int magicDefence;
     public int defencePen;
     public int magicDefencePen;
-    public int moveSpeed;
-    public int jumpForce;
+    public float moveSpeed;
+    public float jumpForce;
 }
 struct st_Ability
 {

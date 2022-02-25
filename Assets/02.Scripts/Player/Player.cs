@@ -5,15 +5,23 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public st_Stats stats;
-
+    public bool isDead;
     private int _hp;
     public int hp
     {
         set
         {
             int tmpValue = value;
-            if (tmpValue < 0)
+            if (tmpValue > 0)
+            {
+                isDead = false;
+            }
+            else
+            {
                 tmpValue = 0;
+                isDead = true;
+            }
+                
             _hp = tmpValue;
             hpSlider.value = (float)_hp / stats.hp;
             hpText.text = _hp.ToString();
@@ -32,7 +40,7 @@ public class Player : MonoBehaviour
             if (tmpValue < 0)
                 tmpValue = 0;
             _mp = tmpValue;
-            mpSlider.value = (float)_mp / stats.hp;
+            mpSlider.value = (float)_mp / stats.mp;
             mpText.text = _mp.ToString();
         }
         get { return _mp; }
@@ -40,21 +48,25 @@ public class Player : MonoBehaviour
     public Slider mpSlider;
     public Text mpText;
 
-    bool invincible;
+    [HideInInspector]public bool invincible;
     float invincibleTime = 1f;
     Coroutine invincibleCoroutine = null;
 
+    // components
     private PlayerController controller;
-
+    private Transform tr;
+    private CapsuleCollider2D col;
     private void Awake()
     {
         stats = PlayerSettings.basicStats;
         controller = GetComponent<PlayerController>();
+        tr = GetComponent<Transform>();
+        col = GetComponent<CapsuleCollider2D>();
         hp = stats.hp;
         mp = stats.mp;
     }
     
-    public void Hurt(int damage)
+    public void Hurt(int damage, bool isCriticalHit)
     {
         if (invincible) return;
 
@@ -74,6 +86,10 @@ public class Player : MonoBehaviour
             controller.TryDie();
         }
         hp = tmpHP;
+
+        // damage Pop up 
+        if(isDead == false)
+            DamagePopUp.Create(tr.position + new Vector3(0f, col.size.y / 2, 0f), damage, gameObject.layer, isCriticalHit);
     }
     public int CalcDamage()
     {
@@ -81,6 +97,19 @@ public class Player : MonoBehaviour
         int randomValue = Random.Range(0, 100);
         if (randomValue < stats.criticalRate)
         {
+            damage *= stats.criticalDamage;
+            damage /= 100;
+        }
+        return damage;
+    }
+    public int CalcDamage(out bool isCriticalHit)
+    {
+        isCriticalHit = false;
+        int damage = (stats.attack * 100 + stats.STR * 20) / 2;
+        int randomValue = Random.Range(0, 100);
+        if (randomValue < stats.criticalRate)
+        {
+            isCriticalHit = true;
             damage *= stats.criticalDamage;
             damage /= 100;
         }

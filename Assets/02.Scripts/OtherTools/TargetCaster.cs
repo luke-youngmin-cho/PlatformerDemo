@@ -2,71 +2,112 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class TargetCaster : MonoBehaviour
 {
     Rigidbody2D rb;
-    public List<GameObject> targets;
-
+    public Dictionary<string, List<GameObject>> targetsDictionary = new Dictionary<string, List<GameObject>>();
+    //public List<GameObject> targets = new List<GameObject>();
+    public LayerMask targetLayer;
+    
     // for gizmos
     private Vector3 rangeCenterForGizmos;
     private Vector3 rangeSizeForGizmos;
+    private string currentCategory;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
-    public void BoxCast(Vector2 center, Vector2 size, Vector2 direction, float distance, int layer)
+    
+    /*private void LateUpdate()
     {
-        targets.Clear();
-        RaycastHit2D hit = Physics2D.BoxCast(rb.position + center, size, 0f, direction, distance, layer);
+        // garabage collecting
+        *//*foreach (string category in targetsDictionary.Keys)
+        {
+            if (targetsDictionary[category].Count == 0)
+                targetsDictionary.Remove(category);
+        }*//*
+    }*/
+    public void BoxCast(string category, Vector2 center, Vector2 size, Vector2 direction, float distance)
+    {
+        if(targetsDictionary.ContainsKey(category) == false)
+        {
+            List<GameObject> targets = new List<GameObject>();
+            targetsDictionary.Add(category, targets);
+        }
+
+        targetsDictionary[category].Clear();
+        
+        RaycastHit2D hit = Physics2D.BoxCast(rb.position + center, size, 0f, direction, distance, targetLayer);
         if(hit.collider != null)
         {
-            targets.Add(hit.collider.gameObject);
-            Debug.Log(hit.collider.gameObject.name);
+            targetsDictionary[category].Add(hit.collider.gameObject);
         }
 
         // gizmos
         rangeCenterForGizmos = new Vector3(rb.position.x + center.x + (distance *direction.x / 2), (rb.position.y + center.y), 0f);
         rangeSizeForGizmos = new Vector3(size.x + distance, size.y, 0);
-        Debug.Log(rangeSizeForGizmos);
+        currentCategory = category;
     }
-    public void BoxCastAll(Vector2 center, Vector2 size, Vector2 direction, float distance, int layer)
+    public void BoxCastAll(string category, Vector2 center, Vector2 size, Vector2 direction, float distance)
     {
-        targets.Clear();
-        RaycastHit2D[] hits = Physics2D.BoxCastAll(rb.position + center, size, 0f, direction,distance,layer);
+        if (targetsDictionary.ContainsKey(category) == false)
+        {
+            List<GameObject> targets = new List<GameObject>();
+            targetsDictionary.Add(category, targets);
+        }
+
+        targetsDictionary[category].Clear();
+
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(rb.position + center, size, 0f, direction,distance, targetLayer);
         foreach (RaycastHit2D hit in hits)
         {
-            targets.Add(hit.collider.gameObject);
-            Debug.Log(hit.collider.gameObject.name);
+            targetsDictionary[category].Add(hit.collider.gameObject);
         }
 
         // gizmos
         rangeCenterForGizmos = new Vector3(rb.position.x + center.x + (distance * direction.x / 2), (rb.position.y + center.y), 0f); rangeCenterForGizmos = new Vector3(rb.position.x + ((center.x + distance * direction.x) / 2), (rb.position.y + center.y), 0f);
         rangeSizeForGizmos = new Vector3(size.x + distance, size.y, 0);
+        currentCategory = category;
 
     }
-    public void CircleCastAll(Vector2 center, float radius, Vector2 direction, float distance, int layer)
+    public void CircleCastAll(Vector2 center, float radius, Vector2 direction, float distance)
     {
-        targets.Clear();
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(center, radius, direction,distance, layer);
+        /*targets.Clear();
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(center, radius, direction,distance, targetLayer);
         foreach (RaycastHit2D hit in hits)
         {
             targets.Add(hit.collider.gameObject);
-        }
+        }*/
     }
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(rangeCenterForGizmos, rangeSizeForGizmos);
         Gizmos.color = Color.cyan;
-        foreach (GameObject target in targets)
+        if (targetsDictionary.ContainsKey(currentCategory))
         {
-            BoxCollider2D targetBoxCol;
-            bool boxColExist = target.TryGetComponent<BoxCollider2D>(out targetBoxCol);
-            if (boxColExist)
+            foreach (GameObject target in targetsDictionary[currentCategory])
             {
-                Gizmos.DrawWireCube(targetBoxCol.transform.position + new Vector3(targetBoxCol.offset.x, targetBoxCol.offset.y, 0f),
-                                new Vector3(targetBoxCol.size.x, targetBoxCol.size.y, 0));
+                if (target != null)
+                {
+                    BoxCollider2D targetBoxCol = target.GetComponent<BoxCollider2D>();
+                    if (targetBoxCol != null)
+                    {
+                        Gizmos.DrawWireCube(targetBoxCol.transform.position + new Vector3(targetBoxCol.offset.x, targetBoxCol.offset.y, 0f),
+                                        new Vector3(targetBoxCol.size.x, targetBoxCol.size.y, 0));
+                    }
+                }
             }
         }
+        
+    }
+    [System.Serializable]
+    public struct st_BoxCastElements
+    {
+        public Vector2 center;
+        public Vector2 size;
+        public Vector2 direction;
+        public float distance;
     }
 }

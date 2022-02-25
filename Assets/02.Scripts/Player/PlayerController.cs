@@ -8,54 +8,67 @@ public class PlayerController : MonoBehaviour
 {
     public bool controlEnabled = true;
 
-    // parameters
-    public float maxSpeed = 1;
+    [Header("Parameters")]
     public float dashMultiplier = 2f;
-    public float jumpForce = 150; // mass 1 standard
     public float downJumpForce = 50;
     public float downJumpIgnoreTime = 0.3f;
+    public Vector2 knockBackForce;
     private Vector2 playerSize;
     public Vector2 colliderOffsetForCrouching;
     public Vector2 colliderSizeForCrouching;
     private Vector2 colliderOffsetOriginal;
     private Vector2 colliderSizeOriginal;
-    private Player player;
+    public Vector2 attackBoxCastCenter =  new Vector2(0.15f,0f);
+    public Vector2 attackBoxCastSize = new Vector2(0.5f,0.5f);
+    public float attackBoxCastLength = 0;
+    public Vector2 dashAttackBoxCastCenter = new Vector2(0.15f, 0f);
+    public Vector2 dashAttackBoxCastSize = new Vector2(0.5f, 0.5f);
+    public float dashAttackBoxCastLength = 3;
+
     // audio
     // todo -> add some sounds
 
-    // states
+    [Header("States")]
     public PlayerState newPlayerState = PlayerState.Idle;
     public PlayerState oldPlayerState = PlayerState.Idle;
-    public JumpState jumpState = JumpState.Idle;
-    public FallState fallState = FallState.Idle;
-    public DashState dashState = DashState.Idle;
-    public AttackState attackState = AttackState.Idle;
-    public DashAttackState dashAttackState = DashAttackState.Idle;
-    public CrouchFromFallState crouchFromFallState = CrouchFromFallState.Idle;
-    public CrouchState crouchState = CrouchState.Idle;
-    public StandUpState standUpState = StandUpState.Idle;
-    public EdgeGrabState edgeGrabState = EdgeGrabState.Idle;
-    public EdgeClimbState edgeClimbState = EdgeClimbState.Idle;
-    public WallSlideState wallSlideState = WallSlideState.Idle;
-    public LadderState ladderState = LadderState.Idle;
-    public HurtState hurtState = HurtState.Idle;
-    public DieState dieState = DieState.Idle;
-    public DownJumpState downJumpState = DownJumpState.Idle; 
+    private JumpState jumpState = JumpState.Idle;
+    private FallState fallState = FallState.Idle;
+    private DashState dashState = DashState.Idle;
+    private AttackState attackState = AttackState.Idle;
+    private DashAttackState dashAttackState = DashAttackState.Idle;
+    private CrouchFromFallState crouchFromFallState = CrouchFromFallState.Idle;
+    private CrouchState crouchState = CrouchState.Idle;
+    private StandUpState standUpState = StandUpState.Idle;
+    private EdgeGrabState edgeGrabState = EdgeGrabState.Idle;
+    private EdgeClimbState edgeClimbState = EdgeClimbState.Idle;
+    private WallSlideState wallSlideState = WallSlideState.Idle;
+    private LadderState ladderState = LadderState.Idle;
+    private HurtState hurtState = HurtState.Idle;
+    private DieState dieState = DieState.Idle;
+    private DownJumpState downJumpState = DownJumpState.Idle;
+    public bool isAttacking
+    {
+        get
+        {
+            bool isIt = (oldPlayerState == PlayerState.Attack) ||
+                        (oldPlayerState == PlayerState.DashAttack);
+            return isIt;
+        }
+    }
     
     private Coroutine controlDisableCoroutine = null;
     public float disableTimeWhenHurt = 0.5f;
 
-    // detections
-    public float fallingToCrouchDistance = 1.5f;
-    private float fallPositionMark;
-    private PlayerGroundDetector groundDetector;
+    //[Header("Detections")]
+    private GroundDetector groundDetector;
     private PlayerEdgeDetector edgeDetector;
     private PlayerLadderDetector ladderDetector;
     private WallSlideDetector wallSlideDetector;
     private TargetCaster targetCaster;
-    [SerializeField] LayerMask enemyLayer;
-    // animation
-    internal Animator animator;
+
+    [Header("Animations")]
+    public float fallingToCrouchDistance = 1.5f;
+    private float fallPositionMark;
     string currentAnimationName;
     private float attackTime;
     private float dashAttackTime;
@@ -69,13 +82,20 @@ public class PlayerController : MonoBehaviour
     private float dieTime;
     private float animationTimer;
 
-    // kinematics
+    // components
+    private Player player;
+    internal Animator animator;
     Rigidbody2D rb;
     CapsuleCollider2D col;
+    //state machines
+    List<PlayerStateMachine_Skill> stateMachines = new List<PlayerStateMachine_Skill>();
+    PlayerStateMachine_Skill_DoubleAttack stateMachine_Skill_DoubleAttack;
+
+    // kinematics
     Vector2 move;
     Vector2 targetVelocity;
     float gravityScaleInit;
-    public Vector2 knockBackForce;
+    
     // direction
     int _direction; // +1 : right -1 : left
     public int direction
@@ -119,11 +139,14 @@ public class PlayerController : MonoBehaviour
         hurtTime = GetAnimationTime("Hurt");
         dieTime = GetAnimationTime("Die");
         direction = directionInit;
-        groundDetector = GetComponent<PlayerGroundDetector>();
+        groundDetector = GetComponent<GroundDetector>();
         edgeDetector = GetComponent<PlayerEdgeDetector>();
         ladderDetector = GetComponent<PlayerLadderDetector>();
         wallSlideDetector = GetComponent<WallSlideDetector>();
         targetCaster = GetComponent<TargetCaster>();
+        // state machines
+        stateMachine_Skill_DoubleAttack = GetComponent<PlayerStateMachine_Skill_DoubleAttack>();
+        stateMachines.Add(stateMachine_Skill_DoubleAttack);
     }
     
     void Update()
@@ -169,21 +192,26 @@ public class PlayerController : MonoBehaviour
             if (IsCrouchPossible() && Input.GetKey(KeyCode.DownArrow))
                 ChangePlayerState(PlayerState.Crouch);
             // dash
-            if (IsDashPossible() && Input.GetKeyDown(KeyCode.LeftShift))
+            if (IsDashPossible() && Input.GetKey(KeyCode.LeftShift))
                 ChangePlayerState(PlayerState.Dash);
             // jump
-            if (IsJumpPossible() && Input.GetKeyDown(KeyCode.LeftAlt))
+            if (IsJumpPossible() && Input.GetKey(KeyCode.LeftAlt))
             {
                 ChangePlayerState(PlayerState.Jump);
                 move.x = h;
             }
             // attack
-            if (IsAttackPossible() && Input.GetKeyDown(KeyCode.LeftControl))
+            if (IsAttackPossible() && Input.GetKey(KeyCode.A))
             {
                 if (newPlayerState == PlayerState.Dash)
                     ChangePlayerState(PlayerState.DashAttack);
                 else
                     ChangePlayerState(PlayerState.Attack);
+            }
+            // Skill - DoubleAttack
+            if (stateMachine_Skill_DoubleAttack.IsSkillPossible() && Input.GetKey(KeyCode.LeftControl))
+            {
+                ChangePlayerState(PlayerState.Skill_DoubleAttack);
             }
             // fall
             if (IsFallPossible())
@@ -292,6 +320,9 @@ public class PlayerController : MonoBehaviour
             case PlayerState.DownJump:
                 DownJump();
                 break;
+            case PlayerState.Skill_DoubleAttack:
+                stateMachine_Skill_DoubleAttack.ActiveSkill();
+                break;
             default:
                 break;
         }
@@ -351,6 +382,11 @@ public class PlayerController : MonoBehaviour
             case PlayerState.DownJump:
                 UpdateDownJumpState();
                 break;
+            case PlayerState.Skill_DoubleAttack:
+                stateMachine_Skill_DoubleAttack.UpdateSkillState();
+                if (stateMachine_Skill_DoubleAttack.skillState == PlayerStateMachine_Skill.SkillState.Finished)
+                    ChangePlayerState(PlayerState.Idle);
+                break;
             default:
                 break;
         }
@@ -399,20 +435,17 @@ public class PlayerController : MonoBehaviour
         {
             case JumpState.PrepareToJump:
                 ChangeAnimationState("Jump");
+                rb.velocity = new Vector2(rb.velocity.x, 0f);
+                rb.AddForce(new Vector2(0f, player.stats.jumpForce), ForceMode2D.Impulse);
                 jumpState = JumpState.Jumping;
                 break;
             case JumpState.Jumping:
-                rb.velocity = new Vector2(rb.velocity.x, 0f);
-                rb.AddForce(new Vector2(0f,jumpForce));
-                jumpState = JumpState.InFlight;
+                if(groundDetector.isGrounded == false)
+                    jumpState = JumpState.InFlight;
                 break;
             case JumpState.InFlight:
-                if ((animationTimer > 0.1f) &&
-                    groundDetector.isGrounded)
-                {
-                    ChangePlayerState(PlayerState.Idle);
-                }
-                animationTimer += Time.deltaTime;
+                if(rb.velocity.y <= 0)
+                    ChangePlayerState(PlayerState.Fall);
                 break;
         }
     }
@@ -483,7 +516,7 @@ public class PlayerController : MonoBehaviour
             case CrouchState.Crouched:
                 break;
         }
-        if (IsDownJumpPossible() && Input.GetKeyDown(KeyCode.LeftAlt))
+        if (IsDownJumpPossible() && Input.GetKey(KeyCode.LeftAlt))
         {
             col.offset = colliderOffsetOriginal;
             col.size = colliderSizeOriginal;
@@ -521,17 +554,25 @@ public class PlayerController : MonoBehaviour
         {   
             case AttackState.PrepareToAttack:
                 ChangeAnimationState("Attack");
+                targetCaster.BoxCast("Attack",new Vector2((col.offset.x + attackBoxCastCenter.x) * direction, col.offset.y + attackBoxCastCenter.y),
+                                        attackBoxCastSize, new Vector2(direction, 0), attackBoxCastLength);
                 attackState = AttackState.AttackCasting;
                 break;
             case AttackState.AttackCasting:
-                if(animationTimer > (attackTime * animator.speed) / 2)
+                if (animationTimer > (attackTime * animator.speed) / 2)
                 {
-                    targetCaster.BoxCast(new Vector2((col.offset.x + 0.15f) * direction, col.offset.y), 
-                                         new Vector2(0.5f, 0.5f),
-                                         new Vector2(direction,0), 0f, enemyLayer);
-                    foreach (GameObject target in targetCaster.targets)
+                    foreach (GameObject target in targetCaster.targetsDictionary["Attack"])
                     {
-                       target.GetComponent<Enemy>().Hurt(player.CalcDamage());
+                        bool isCriticalHit;
+                        int damage = player.CalcDamage(out isCriticalHit);
+                        Enemy enemy = target.GetComponent<Enemy>();
+                        EnemyController enemyController = target.GetComponent<EnemyController>();
+                        if(enemy.isDead == false)
+                        {
+                            enemy.Hurt(damage, isCriticalHit);
+                            enemyController.direction = -_direction;
+                            enemyController.KnockBack(_direction);
+                        }   
                     }
                     attackState = AttackState.Attacking;
                 }
@@ -557,6 +598,8 @@ public class PlayerController : MonoBehaviour
         {
             case DashAttackState.PrepareToAttack:
                 ChangeAnimationState("DashAttack");
+                targetCaster.BoxCastAll("Attack",new Vector2((col.offset.x + dashAttackBoxCastCenter.x) * direction, col.offset.y + dashAttackBoxCastCenter.y),
+                                        dashAttackBoxCastSize, new Vector2(direction, 0), dashAttackBoxCastLength);
                 dashAttackState = DashAttackState.AttackCasting;
                 break;
             case DashAttackState.AttackCasting:
@@ -570,12 +613,18 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
-                    targetCaster.BoxCastAll(new Vector2((col.offset.x + 0.15f) * direction, col.offset.y),
-                                            new Vector2(0.5f, 0.5f),
-                                            new Vector2(direction,0),0.3f, enemyLayer);
-                    foreach (GameObject target in targetCaster.targets)
+                    foreach (GameObject target in targetCaster.targetsDictionary["Attack"])
                     {
-                        target.GetComponent<Enemy>().Hurt(player.CalcDamage());
+                        bool isCriticalHit;
+                        int damage = player.CalcDamage(out isCriticalHit);
+                        Enemy enemy = target.GetComponent<Enemy>();
+                        EnemyController enemyController = target.GetComponent<EnemyController>();
+                        if (enemy.isDead == false)
+                        {
+                            enemy.Hurt(damage, isCriticalHit);
+                            enemyController.direction = -_direction;
+                            enemyController.KnockBack(_direction, 0.3f);
+                        }
                     }
                     dashAttackState = DashAttackState.Attacking;
                 }
@@ -811,7 +860,7 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    void ChangeAnimationState(string newAnimationName)
+    public void ChangeAnimationState(string newAnimationName)
     {
         if (currentAnimationName == newAnimationName) return;
 
@@ -842,6 +891,7 @@ public class PlayerController : MonoBehaviour
         ladderState = LadderState.Idle;
         hurtState = HurtState.Idle;
         dieState = DieState.Idle;
+        stateMachine_Skill_DoubleAttack.ResetState();
 
         if(rb.bodyType == RigidbodyType2D.Kinematic)
             rb.bodyType = RigidbodyType2D.Dynamic;
@@ -851,7 +901,7 @@ public class PlayerController : MonoBehaviour
     }    
     void ComputeVelocity()
     {
-        Vector2 velocity = new Vector2(move.x * maxSpeed, move.y);
+        Vector2 velocity = new Vector2(move.x * player.stats.moveSpeed, move.y);
         targetVelocity = velocity;
     }
     void FixedUpdateMovement()
@@ -927,11 +977,13 @@ public class PlayerController : MonoBehaviour
     bool IsChangeDirectionPossible()
     {
         bool isOK = false;
-        if ((oldPlayerState != PlayerState.Attack) &&
-            (oldPlayerState != PlayerState.DashAttack) &&
-            (oldPlayerState != PlayerState.Dash) &&
-            (oldPlayerState != PlayerState.EdgeGrab) &&
-            (oldPlayerState != PlayerState.Ladder))
+        if (oldPlayerState == PlayerState.Idle ||
+            oldPlayerState == PlayerState.Run ||
+            oldPlayerState == PlayerState.Jump ||
+            oldPlayerState == PlayerState.Fall ||
+            oldPlayerState == PlayerState.Crouch ||
+            oldPlayerState == PlayerState.CrouchFromFall ||
+            oldPlayerState == PlayerState.StandUp)
         {
             isOK = true;
         }
@@ -993,7 +1045,8 @@ public class PlayerController : MonoBehaviour
     bool IsAttackPossible()
     {
         bool isOK = false;
-        if (oldPlayerState != PlayerState.EdgeGrab)
+        if (isAttacking == false &&
+            oldPlayerState != PlayerState.EdgeGrab)
             isOK = true;
         return isOK;
     }
@@ -1046,7 +1099,8 @@ public class PlayerController : MonoBehaviour
     {
         bool isOK = false;
         if (oldPlayerState != PlayerState.Attack &&
-           oldPlayerState != PlayerState.DashAttack)
+            oldPlayerState != PlayerState.DashAttack &&
+            IsActiveSkill() == false)
             isOK = true;
         return isOK;
     }
@@ -1058,10 +1112,26 @@ public class PlayerController : MonoBehaviour
             isOK = true;
         return isOK;
     }
+    bool IsActiveSkill()
+    {
+        bool isActive = false;
+        foreach (PlayerStateMachine_Skill machine in stateMachines)
+        {
+            if (machine.isBusy)
+            {
+                isActive = true;
+                break;
+            }   
+        }
+        return isActive;
+    }
     #endregion
-    float GetAnimationTime(string name)
+    public float GetAnimationTime(string name)
     {
         float time = 0;
+        if (animator == null) 
+            animator = GetComponentInChildren<Animator>();
+
         RuntimeAnimatorController ac = animator.runtimeAnimatorController;
         for (int i = 0; i < ac.animationClips.Length; i++)
         {
@@ -1089,15 +1159,40 @@ public class PlayerController : MonoBehaviour
         {
             controlDisableCoroutine = StartCoroutine(E_DisableController(disableTimeWhenHurt));
             ChangePlayerState(PlayerState.Hurt);
-            KnockBack();
         }   
     }
     public void KnockBack()
     {
+        if (player.invincible) return;
+        move = Vector2.zero;
         rb.velocity = Vector2.zero;
         rb.AddForce(new Vector2(knockBackForce.x * (-direction), knockBackForce.y), ForceMode2D.Impulse);
     }
+    public void KnockBack(int knockBackDirection)
+    {
+        if (player.invincible) return;
+        move = Vector2.zero;
+        rb.velocity = Vector2.zero;
+        rb.AddForce(new Vector2(knockBackForce.x * knockBackDirection, knockBackForce.y), ForceMode2D.Impulse);
+    }
+    public void KnockBack(int knockBackDirection, float time)
+    {
+        if (player.invincible) return;
+        move = Vector2.zero;
+        rb.velocity = Vector2.zero;
+        StartCoroutine(E_KnockBack(knockBackDirection,time));
+    }
+    IEnumerator E_KnockBack(int knockBackDirection, float time)
+    {
+        float elapsedTime = 0f;
 
+        while (elapsedTime < time)
+        {
+            rb.AddForce(new Vector2(knockBackForce.x * knockBackDirection, knockBackForce.y), ForceMode2D.Force);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+    }
     IEnumerator E_DisableController(float time)
     {
         controlEnabled = false;
@@ -1126,6 +1221,8 @@ public class PlayerController : MonoBehaviour
         Hurt,
         Die,
         DownJump,
+        // Skills
+        Skill_DoubleAttack,
     }
     public enum DashState
     {

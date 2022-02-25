@@ -24,7 +24,7 @@ public class PlayerLadderDetector : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerSizeY = GetComponent<CapsuleCollider2D>().size.y;
         colliderOffsetY = GetComponent<CapsuleCollider2D>().offset.y;
-        groundDetectorSizeY = GetComponent<PlayerGroundDetector>().size.y;
+        groundDetectorSizeY = GetComponent<GroundDetector>().size.y;
     }
     void Update()
     {
