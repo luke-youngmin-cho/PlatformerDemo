@@ -8223,14 +8223,33 @@ GameObject:
   - component: {fileID: 1820907484}
   - component: {fileID: 1820907482}
   - component: {fileID: 1820907481}
-  - component: {fileID: 1820907486}
-  - component: {fileID: 1820907488}
-  - component: {fileID: 1820907483}
-  - component: {fileID: 1820907485}
-  - component: {fileID: 1820907487}
-  - component: {fileID: 1820907489}
-  - component: {fileID: 1820907490}
+  - component: {fileID: 1820907508}
+  - component: {fileID: 1820907506}
+  - component: {fileID: 1820907505}
+  - component: {fileID: 1820907507}
+  - component: {fileID: 1820907504}
+  - component: {fileID: 1820907503}
+  - component: {fileID: 1820907502}
+  - component: {fileID: 1820907501}
+  - component: {fileID: 1820907500}
+  - component: {fileID: 1820907499}
+  - component: {fileID: 1820907498}
+  - component: {fileID: 1820907497}
+  - component: {fileID: 1820907496}
+  - component: {fileID: 1820907495}
+  - component: {fileID: 1820907494}
+  - component: {fileID: 1820907493}
+  - component: {fileID: 1820907492}
   - component: {fileID: 1820907491}
+  - component: {fileID: 1820907490}
+  - component: {fileID: 1820907489}
+  - component: {fileID: 1820907488}
+  - component: {fileID: 1820907510}
+  - component: {fileID: 1820907487}
+  - component: {fileID: 1820907486}
+  - component: {fileID: 1820907485}
+  - component: {fileID: 1820907483}
+  - component: {fileID: 1820907509}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -8284,18 +8303,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1820907480}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bef43381ee02e3c4b9f0d1a22969886c, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b4e7d0762b25d24fa07246e119fc1f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topX: 0.09
-  topY: 0.2
-  bottomX: 0.09
-  bottomY: 0.15
   isDetected: 0
-  targetPlayerPos: {x: 0, y: 0}
   layer:
     serializedVersion: 2
     m_Bits: 1048576
+  top: {x: 0.08, y: 0.15}
+  bottom: {x: 0.08, y: 0.1}
 --- !u!4 &1820907484
 Transform:
   m_ObjectHideFlags: 0
@@ -8320,56 +8336,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1820907480}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 942993b60dc479d45beb36e34de7c21f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  size: {x: 0, y: 0}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 1048576
-  isGrounded: 0
-  doDownJumpCheck: 0
-  downJumpAvailable: 0
-  downJumpCheckHeight: 2
---- !u!114 &1820907486
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1820907480}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4665f6e8af92c4d45a1094bc964f1f68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controlEnabled: 1
-  dashMultiplier: 2
-  downJumpForce: 50
-  downJumpIgnoreTime: 0.3
-  knockBackForce: {x: 1, y: 1}
-  colliderOffsetForCrouching: {x: 0, y: -0.1325}
-  colliderSizeForCrouching: {x: 0.13, y: 0.165}
-  attackBoxCastCenter: {x: 0.15, y: 0}
-  attackBoxCastSize: {x: 0.5, y: 0.5}
-  attackBoxCastLength: 0
-  dashAttackBoxCastCenter: {x: 0.15, y: 0}
-  dashAttackBoxCastSize: {x: 0.5, y: 0.5}
-  dashAttackBoxCastLength: 1
-  newPlayerState: 0
-  oldPlayerState: 0
-  disableTimeWhenHurt: 0.5
-  fallingToCrouchDistance: 1.5
-  directionInit: 1
---- !u!114 &1820907487
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1820907480}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f67c71cf38ba9e147bfdbdab0348722b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -8380,7 +8346,441 @@ MonoBehaviour:
   layer:
     serializedVersion: 2
     m_Bits: 2097152
+--- !u!114 &1820907486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bef43381ee02e3c4b9f0d1a22969886c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topX: 0.08
+  topY: 0.15
+  bottomX: 0.08
+  bottomY: 0.1
+  isDetected: 0
+  targetPlayerPos: {x: 0, y: 0}
+  layer:
+    serializedVersion: 2
+    m_Bits: 1048576
+--- !u!114 &1820907487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942993b60dc479d45beb36e34de7c21f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: {x: 0, y: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 1048576
+  passingGroundColCenterY: 0
+  isDetected: 0
+  doDownJumpCheck: 0
+  downJumpAvailable: 0
+  downJumpCheckHeight: 1
+  isIgnoringGround: 0
 --- !u!114 &1820907488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26e326dfbc6241540a3fe917681c6867, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 97
+  state: 0
+  playerStateType: 8
+  nextPlayerState: 0
+  animationName: Attack
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+  attackBoxCastCenter: {x: 0.2, y: 0.1}
+  attackBoxCastSize: {x: 0.6, y: 0.6}
+  attackBoxCastLength: 0
+--- !u!114 &1820907489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 858189def54286941a6814064d3f92b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 6
+  nextPlayerState: 0
+  animationName: Crouch
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+  colliderOffsetForCrouching: {x: 0, y: -0.15}
+  colliderSizeForCrouching: {x: 0.13, y: 0.13}
+--- !u!114 &1820907490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6856887d43f833e47af618a9f778efe9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 5
+  nextPlayerState: 0
+  animationName: CrouchFromFall
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+  colliderOffsetForCrouching: {x: 0, y: -0.15}
+  colliderSizeForCrouching: {x: 0.13, y: 0.13}
+--- !u!114 &1820907491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 916398875ef55f8449672c39930fb9db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 304
+  state: 0
+  playerStateType: 2
+  nextPlayerState: 0
+  animationName: Dash
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+  dashSpeedMultiplier: 1.5
+--- !u!114 &1820907492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fef0910a35e5fb4ab716033707b9fd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 16
+  nextPlayerState: 0
+  animationName: Die
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+--- !u!114 &1820907493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 721463c0e3c14cc48bb72fc0b28cd09e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 17
+  nextPlayerState: 0
+  animationName: DownJump
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+  downJumpForce: 1
+  downJumpIgnoreTime: 0.2
+--- !u!114 &1820907494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3acc02736593e7a4abbc3528aaa8f307, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 306
+  state: 0
+  playerStateType: 18
+  nextPlayerState: 0
+  animationName: DoubleAttack
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+  attackBoxCastCenter: {x: 0.2, y: 0.1}
+  attackBoxCastSize: {x: 0.6, y: 0.6}
+  attackBoxCastLength: 0
+--- !u!114 &1820907495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75bfcdaa1fd612b44b07440233565095, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 11
+  nextPlayerState: 0
+  animationName: EdgeClimb
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+--- !u!114 &1820907496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b4ddf30ea53a9647b3e371c9bd53497, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 10
+  nextPlayerState: 0
+  animationName: EdgeGrab
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+--- !u!114 &1820907497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd9c57a841b4c9740bc71bc541764a6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 4
+  nextPlayerState: 0
+  animationName: Fall
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+  fallingToCrouchDistance: 1.5
+--- !u!114 &1820907498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1813623edeb74c45b20f408ba56b2d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 15
+  nextPlayerState: 0
+  animationName: Hurt
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+--- !u!114 &1820907499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47229fd3f7a460941a9e37937f4a99f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 3
+  nextPlayerState: 0
+  animationName: Jump
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+--- !u!114 &1820907500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38656de2121936549a462e5c54e07c5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 14
+  nextPlayerState: 0
+  animationName: LadderAtFeet
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+--- !u!114 &1820907501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32f1f544a2e981b4883c427fffd0a847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 13
+  nextPlayerState: 0
+  animationName: LadderGoUp
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+--- !u!114 &1820907502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2f6ad2f150cf61488c7bffd2c82b4cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 1
+  nextPlayerState: 0
+  animationName: Run
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+--- !u!114 &1820907503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d3653288d5df5642a59503721d96c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 7
+  nextPlayerState: 0
+  animationName: StandUp
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+--- !u!114 &1820907504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e021bee4fb1e6114d9d3cd099a6e33e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
+  state: 0
+  playerStateType: 12
+  nextPlayerState: 0
+  animationName: WallSlide
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+--- !u!114 &1820907505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd1a2febf46cffa42a8a67702eba084e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controlEnabled: 1
+  moveInputOffset: 0.15
+  knockBackForce: {x: 1, y: 1}
+  newPlayerState: 0
+  oldPlayerState: 0
+  disableTimeWhenHurt: 0.5
+  move: {x: 0, y: 0}
+  directionInit: 1
+--- !u!114 &1820907506
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8398,7 +8798,7 @@ MonoBehaviour:
   mpSlider: {fileID: 173684350}
   mpText: {fileID: 1526783519}
   invincible: 0
---- !u!114 &1820907489
+--- !u!114 &1820907507
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8407,11 +8807,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 1820907480}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b4e7d0762b25d24fa07246e119fc1f7, type: 3}
+  m_Script: {fileID: 11500000, guid: 831737efdc74d2d4abf740312ce958c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isDetected: 0
---- !u!114 &1820907490
+  keyCode: 0
+  state: 0
+  playerStateType: 0
+  nextPlayerState: 0
+  animationName: Idle
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+--- !u!114 &1820907508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820907480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d45ef11a5d304fa4fba645d63a60d1b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animationElapsedTime: 0
+--- !u!114 &1820907509
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8426,7 +8847,7 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 32768
---- !u!114 &1820907491
+--- !u!114 &1820907510
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8435,15 +8856,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 1820907480}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3acc02736593e7a4abbc3528aaa8f307, type: 3}
+  m_Script: {fileID: 11500000, guid: c6bf5156c76925746bd800066b1fd829, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillState: 0
-  skillTime: 0
-  elapsedSkillTime: 0
-  attackBoxCastCenter: {x: 0.5, y: 0}
-  attackBoxCastSize: {x: 0.6, y: 0.7}
+  keyCode: 100
+  state: 0
+  playerStateType: 9
+  nextPlayerState: 0
+  animationName: DashAttack
+  animationTime: 0
+  elapsedTime: 0
+  manager: {fileID: 0}
+  animationManager: {fileID: 0}
+  attackBoxCastCenter: {x: 0.6, y: 0.1}
+  attackBoxCastSize: {x: 1, y: 0.6}
   attackBoxCastLength: 0
+  dashSpeedMultiplier_Casting: 0.5
+  dashSpeedMultiplier_Brandish: 2
 --- !u!1 &1823101059
 GameObject:
   m_ObjectHideFlags: 0

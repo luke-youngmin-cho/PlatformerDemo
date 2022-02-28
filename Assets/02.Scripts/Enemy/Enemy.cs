@@ -173,7 +173,7 @@ public class Enemy : MonoBehaviour
             {
                 bool isCritical;
                 int damage = CalcDamage(out isCritical);
-                go.GetComponent<PlayerController>().KnockBack();
+                go.GetComponent<PlayerStateMachineManager>().KnockBack();
                 player.Hurt(damage, isCritical);
             }
         }

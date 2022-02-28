@@ -95,7 +95,7 @@ public class EnemyController : MonoBehaviour
 
                 if (IsHorizontalMovePossible())
                 {
-                    if (groundDetector.isGrounded)
+                    if (groundDetector.isDetected)
                     {
                         if (Mathf.Abs(move.x) > 0.1f)
                             ChangeEnemyState(EnemyState.Move);
@@ -363,7 +363,7 @@ public class EnemyController : MonoBehaviour
             {
                 bool isCriticalHit;
                 int damage = enemy.CalcDamage(out isCriticalHit);
-                PlayerController playerController = target.GetComponent<PlayerController>();
+                PlayerStateMachineManager playerController = target.GetComponent<PlayerStateMachineManager>();
                 playerController.KnockBack();
                 player.Hurt(damage, isCriticalHit);
             }

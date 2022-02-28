@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-[RequireComponent(typeof(PlayerController))]
+[RequireComponent(typeof(PlayerStateMachineManager))]
 public class PlayerEdgeDetector : MonoBehaviour
 {
     bool top, bottom;
@@ -12,12 +12,12 @@ public class PlayerEdgeDetector : MonoBehaviour
     [HideInInspector] public Vector2 targetPlayerPos;
 
     Rigidbody2D rb;
-    PlayerController controller;
+    PlayerStateMachineManager controller;
     public LayerMask layer;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        controller = GetComponent<PlayerController>();
+        controller = GetComponent<PlayerStateMachineManager>();
     }
     private void Update()
     {

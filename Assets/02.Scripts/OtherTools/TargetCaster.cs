@@ -85,6 +85,8 @@ public class TargetCaster : MonoBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(rangeCenterForGizmos, rangeSizeForGizmos);
         Gizmos.color = Color.cyan;
+
+        
         if (targetsDictionary.ContainsKey(currentCategory))
         {
             foreach (GameObject target in targetsDictionary[currentCategory])

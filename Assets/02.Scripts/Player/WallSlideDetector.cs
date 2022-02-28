@@ -5,24 +5,27 @@ using UnityEngine;
 public class WallSlideDetector : MonoBehaviour
 {
     public bool isDetected;
-    float detectionOffset;
+    public LayerMask layer;
+    public Vector2 top,bottom;
     Rigidbody2D rb;
-    PlayerController controller;
+    PlayerStateMachineManager controller;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        controller = GetComponent<PlayerController>();
-        detectionOffset = GetComponent<CapsuleCollider2D>().size.y / 4;
+        controller = GetComponent<PlayerStateMachineManager>();
     }
     void Update()
     {
-        isDetected = Physics2D.OverlapCircle(rb.position + new Vector2(detectionOffset * controller.direction, 0),0.01f);
+        bool topDetected = Physics2D.OverlapCircle(rb.position + new Vector2(controller.direction * top.x, top.y),0.01f,layer);
+        bool bottomDetected = Physics2D.OverlapCircle(rb.position + new Vector2(controller.direction * bottom.x, bottom.y), 0.01f, layer);
+        isDetected = topDetected && bottomDetected;
     }
     private void OnDrawGizmosSelected()
     {
         if (rb == null) return;
 
         Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(new Vector3(detectionOffset * controller.direction + rb.position.x, rb.position.y, 0), 0.01f);
+        Gizmos.DrawSphere(new Vector3(controller.direction * top.x + rb.position.x, rb.position.y + top.y, 0), 0.01f);
+        Gizmos.DrawSphere(new Vector3(controller.direction * bottom.x + rb.position.x, rb.position.y - bottom.y, 0), 0.01f);
     }
 }

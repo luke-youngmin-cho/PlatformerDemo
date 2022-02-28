@@ -53,13 +53,13 @@ public class Player : MonoBehaviour
     Coroutine invincibleCoroutine = null;
 
     // components
-    private PlayerController controller;
+    private PlayerStateMachineManager controller;
     private Transform tr;
     private CapsuleCollider2D col;
     private void Awake()
     {
         stats = PlayerSettings.basicStats;
-        controller = GetComponent<PlayerController>();
+        controller = GetComponent<PlayerStateMachineManager>();
         tr = GetComponent<Transform>();
         col = GetComponent<CapsuleCollider2D>();
         hp = stats.hp;

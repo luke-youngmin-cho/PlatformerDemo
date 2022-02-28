@@ -41,7 +41,7 @@ public class EnemyProjectile : MonoBehaviour
                 Player player = go.GetComponent<Player>();
                 if(player.isDead ==false)
                 {
-                    go.GetComponent<PlayerController>().KnockBack(_direction);
+                    go.GetComponent<PlayerStateMachineManager>().KnockBack(_direction);
                     player.Hurt(_damage, _isCritical);
                 }
                 

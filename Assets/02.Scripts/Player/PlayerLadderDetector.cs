@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class PlayerLadderDetector : MonoBehaviour
 {
-    public bool isGoUpPossible;
-    public bool isGoDownPossible;
-    public bool isAtFeet;
+    [HideInInspector] public bool isGoUpPossible;
+    [HideInInspector] public bool isGoDownPossible;
+    [HideInInspector] public bool isAtFeet;
+    [HideInInspector] public Vector2 ladderTopPos;
     float ladderPosX;
-    public Vector2 ladderTopPos;
 
     Rigidbody2D rb;
     float playerSizeY;
@@ -16,8 +16,9 @@ public class PlayerLadderDetector : MonoBehaviour
     public LayerMask layer;
 
     float playerLadderMoveYOffset = 0.25f;
-    float playerLadderStartYOffset = 0.33f;
-
+    float playerLadderAtFeetStartYOffset = 0.33f;
+    float playerLadderStartYOffset = 0.03f;
+    
     float groundDetectorSizeY;
     private void Awake()
     {
@@ -65,7 +66,7 @@ public class PlayerLadderDetector : MonoBehaviour
     }
     public Vector2 GetLadderStartPosWhenIsAtFeet()
     {
-        Vector2 startPos = ladderTopPos - new Vector2(0f, playerSizeY * playerLadderStartYOffset);
+        Vector2 startPos = ladderTopPos - new Vector2(0f, playerSizeY * playerLadderAtFeetStartYOffset);
         return startPos;
     }
     public Vector2 GetLadderStartPosWhenIsAboveHead()
@@ -75,7 +76,7 @@ public class PlayerLadderDetector : MonoBehaviour
     }
     public Vector2 GetLadderstartPosOnGround()
     {
-        Vector2 startPos = new Vector2(ladderPosX, rb.position.y + groundDetectorSizeY * 2 );
+        Vector2 startPos = new Vector2(ladderPosX, rb.position.y + playerLadderStartYOffset);
         return startPos;
     }
     private void OnDrawGizmosSelected()
