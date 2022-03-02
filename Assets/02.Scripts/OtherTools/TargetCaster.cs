@@ -86,23 +86,24 @@ public class TargetCaster : MonoBehaviour
         Gizmos.DrawWireCube(rangeCenterForGizmos, rangeSizeForGizmos);
         Gizmos.color = Color.cyan;
 
-        
-        if (targetsDictionary.ContainsKey(currentCategory))
+        if(targetsDictionary.Count > 0)
         {
-            foreach (GameObject target in targetsDictionary[currentCategory])
+            if (targetsDictionary.ContainsKey(currentCategory))
             {
-                if (target != null)
+                foreach (GameObject target in targetsDictionary[currentCategory])
                 {
-                    BoxCollider2D targetBoxCol = target.GetComponent<BoxCollider2D>();
-                    if (targetBoxCol != null)
+                    if (target != null)
                     {
-                        Gizmos.DrawWireCube(targetBoxCol.transform.position + new Vector3(targetBoxCol.offset.x, targetBoxCol.offset.y, 0f),
-                                        new Vector3(targetBoxCol.size.x, targetBoxCol.size.y, 0));
+                        BoxCollider2D targetBoxCol = target.GetComponent<BoxCollider2D>();
+                        if (targetBoxCol != null)
+                        {
+                            Gizmos.DrawWireCube(targetBoxCol.transform.position + new Vector3(targetBoxCol.offset.x, targetBoxCol.offset.y, 0f),
+                                            new Vector3(targetBoxCol.size.x, targetBoxCol.size.y, 0));
+                        }
                     }
                 }
             }
         }
-        
     }
     [System.Serializable]
     public struct st_BoxCastElements

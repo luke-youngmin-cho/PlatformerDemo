@@ -31,7 +31,7 @@ public class PlayerStateMachine_Jump : PlayerStateMachine
                 break;
             case State.Prepare:
                 animationManager.ChangeAnimationState(animationName);
-                rb.velocity = new Vector2(rb.velocity.x, 0f);
+                rb.velocity = new Vector2(rb.velocity.x, 0.1f);
                 rb.AddForce(new Vector2(0f, player.stats.jumpForce), ForceMode2D.Impulse);
                 state = State.Casting;
                 break;

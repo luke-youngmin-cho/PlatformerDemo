@@ -52,6 +52,8 @@ public class PlayerStateMachineManager : MonoBehaviour
     int _direction; // +1 : right -1 : left
 
     //int debugcount; for debugging
+    // input
+    KeyCode keyInput;
     public int direction
     {
         set
@@ -98,7 +100,8 @@ public class PlayerStateMachineManager : MonoBehaviour
             if (machines[i].keyCode != KeyCode.None)
             {
                 machineDictionaryOfKeyCode.Add(machines[i].keyCode, machines[i]);
-                activeSkillList.Add(machines[i].playerStateType);
+                if(machines[i].isActiveSkill)
+                    activeSkillList.Add(machines[i].playerStateType);
             }   
         }
     }
@@ -123,7 +126,7 @@ public class PlayerStateMachineManager : MonoBehaviour
                     else
                         move.x = h;
                 }
-                
+
                 // Basic short keys
                 //-----------------------------------------------------------------------
                 // left arrow
@@ -154,6 +157,7 @@ public class PlayerStateMachineManager : MonoBehaviour
                 // up arrow
                 if (Input.GetKey(KeyCode.UpArrow))
                 {
+                    Debug.Log(machineDictionaryOfPlayerState[PlayerState.LadderGoUp].IsExecuteOK());
                     if (machineDictionaryOfPlayerState[PlayerState.LadderGoUp].IsExecuteOK())
                         ChangePlayerState(PlayerState.LadderGoUp);
 
@@ -168,7 +172,7 @@ public class PlayerStateMachineManager : MonoBehaviour
                         Debug.Log("Do Jump! execute ok");
                         ChangePlayerState(PlayerState.Jump);
                     }
-                        
+
                 }
                 if (machineDictionaryOfPlayerState[PlayerState.Fall].IsExecuteOK())
                     ChangePlayerState(PlayerState.Fall);
@@ -177,6 +181,20 @@ public class PlayerStateMachineManager : MonoBehaviour
             {
                 if (groundDetector.isDetected)
                     move.x = 0;
+            }
+
+            // user - defined key input 
+            //-----------------------------------------------
+            PlayerStateMachine playerStateMachine;
+            bool isOK = machineDictionaryOfKeyCode.TryGetValue(keyInput, out playerStateMachine);
+            Debug.Log($"{isOK}, { keyInput}");
+            keyInput = KeyCode.None; // reset current key event input. 
+            if (isOK &&
+                playerStateMachine.isReady &&
+                playerStateMachine.IsExecuteOK())
+            {
+                Debug.Log($"{ playerStateMachine.isReady}, { playerStateMachine.IsExecuteOK()}");
+                ChangePlayerState(playerStateMachine.playerStateType);
             }
         }
         else
@@ -193,12 +211,11 @@ public class PlayerStateMachineManager : MonoBehaviour
     #region player states
     void ChangePlayerState(PlayerState stateToChange)
     {
-        if (oldPlayerState == stateToChange) return;
+        if (newPlayerState == stateToChange) return;
         newPlayerState = stateToChange;
         ResetMove();
         machineDictionaryOfPlayerState[oldPlayerState].ResetMachine();
         machineDictionaryOfPlayerState[newPlayerState].Execute();
-        //Debug.Log($"{debugcount++}, {newPlayerState}, {oldPlayerState}");
     }
     void UpdatePlayerState()
     {
@@ -318,39 +335,14 @@ public class PlayerStateMachineManager : MonoBehaviour
         controlEnabled = true;
         controlDisableCoroutine = null;
     }
-    // Need to think about way to implement this on update() .
-    // Because OnGUI is called much more than Update(). 
-    // Reason why implement this function in OnGUI() is 
-    // code is simpler to get user input KeyCode.
+    
+    // User key input for keycode skills. 
     private void OnGUI()
     {
         Event e = Event.current;
-        if (e.isKey && waitUntilStateMachineIsStartedCoroutine == null)
-        {
-            KeyCode input = e.keyCode;
-            if (input != KeyCode.None)
-            {   
-                waitUntilStateMachineIsStartedCoroutine 
-                    = StartCoroutine(E_WaitUntilStateMachineIsStarted(input));
-            }
-        }
+        if(e.isKey && e.keyCode != KeyCode.None)
+            keyInput = e.keyCode;
     }
-    Coroutine waitUntilStateMachineIsStartedCoroutine;
-    IEnumerator E_WaitUntilStateMachineIsStarted(KeyCode input)
-    {
-        PlayerStateMachine playerStateMachine;
-        bool isOK = machineDictionaryOfKeyCode.TryGetValue(input, out playerStateMachine);
-        //Debug.Log($"{input},{playerStateMachine.isBusy},{playerStateMachine.IsExecuteOK()}");
-        if (isOK &&
-            playerStateMachine.isReady &&
-            playerStateMachine.IsExecuteOK())
-        {
-            ChangePlayerState(playerStateMachine.playerStateType);
-            yield return new WaitUntil(() => playerStateMachine.isStarted == true);
-        }
-        waitUntilStateMachineIsStartedCoroutine = null;
-    }
-
 }
 public enum PlayerState
 {

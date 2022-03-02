@@ -1235,7 +1235,7 @@ PlatformEffector2D:
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
-  m_SurfaceArc: 180
+  m_SurfaceArc: 179
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
@@ -3900,7 +3900,7 @@ PlatformEffector2D:
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
-  m_SurfaceArc: 180
+  m_SurfaceArc: 179
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
@@ -4381,7 +4381,7 @@ PlatformEffector2D:
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
-  m_SurfaceArc: 180
+  m_SurfaceArc: 179
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
@@ -4588,7 +4588,7 @@ PlatformEffector2D:
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
-  m_SurfaceArc: 180
+  m_SurfaceArc: 179
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
@@ -5308,7 +5308,7 @@ PlatformEffector2D:
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
-  m_SurfaceArc: 180
+  m_SurfaceArc: 179
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
@@ -6472,7 +6472,7 @@ PlatformEffector2D:
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
-  m_SurfaceArc: 180
+  m_SurfaceArc: 179
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
@@ -7687,7 +7687,7 @@ PlatformEffector2D:
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
-  m_SurfaceArc: 180
+  m_SurfaceArc: 179
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
@@ -8018,7 +8018,7 @@ PlatformEffector2D:
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
-  m_SurfaceArc: 180
+  m_SurfaceArc: 179
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
@@ -8401,6 +8401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26e326dfbc6241540a3fe917681c6867, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 97
   state: 0
   playerStateType: 8
@@ -8411,7 +8412,7 @@ MonoBehaviour:
   manager: {fileID: 0}
   animationManager: {fileID: 0}
   attackBoxCastCenter: {x: 0.2, y: 0.1}
-  attackBoxCastSize: {x: 0.6, y: 0.6}
+  attackBoxCastSize: {x: 0.6, y: 0.8}
   attackBoxCastLength: 0
 --- !u!114 &1820907489
 MonoBehaviour:
@@ -8425,6 +8426,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 858189def54286941a6814064d3f92b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 6
@@ -8448,6 +8450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6856887d43f833e47af618a9f778efe9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 5
@@ -8471,6 +8474,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 916398875ef55f8449672c39930fb9db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 0
   keyCode: 304
   state: 0
   playerStateType: 2
@@ -8480,7 +8484,7 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
-  dashSpeedMultiplier: 1.5
+  dashSpeedMultiplier: 2
 --- !u!114 &1820907492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8493,6 +8497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fef0910a35e5fb4ab716033707b9fd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 16
@@ -8514,6 +8519,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 721463c0e3c14cc48bb72fc0b28cd09e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 17
@@ -8537,6 +8543,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3acc02736593e7a4abbc3528aaa8f307, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 306
   state: 0
   playerStateType: 18
@@ -8547,7 +8554,7 @@ MonoBehaviour:
   manager: {fileID: 0}
   animationManager: {fileID: 0}
   attackBoxCastCenter: {x: 0.2, y: 0.1}
-  attackBoxCastSize: {x: 0.6, y: 0.6}
+  attackBoxCastSize: {x: 0.6, y: 0.8}
   attackBoxCastLength: 0
 --- !u!114 &1820907495
 MonoBehaviour:
@@ -8561,6 +8568,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75bfcdaa1fd612b44b07440233565095, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 11
@@ -8582,6 +8590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b4ddf30ea53a9647b3e371c9bd53497, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 10
@@ -8603,6 +8612,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd9c57a841b4c9740bc71bc541764a6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 4
@@ -8625,6 +8635,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1813623edeb74c45b20f408ba56b2d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 15
@@ -8646,6 +8657,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47229fd3f7a460941a9e37937f4a99f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 3
@@ -8667,6 +8679,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38656de2121936549a462e5c54e07c5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 14
@@ -8688,6 +8701,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32f1f544a2e981b4883c427fffd0a847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 13
@@ -8709,6 +8723,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2f6ad2f150cf61488c7bffd2c82b4cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 1
@@ -8730,6 +8745,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d3653288d5df5642a59503721d96c2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 7
@@ -8751,6 +8767,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e021bee4fb1e6114d9d3cd099a6e33e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 12
@@ -8810,6 +8827,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 831737efdc74d2d4abf740312ce958c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 0
   state: 0
   playerStateType: 0
@@ -8859,6 +8877,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6bf5156c76925746bd800066b1fd829, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActiveSkill: 1
   keyCode: 100
   state: 0
   playerStateType: 9
@@ -8869,7 +8888,7 @@ MonoBehaviour:
   manager: {fileID: 0}
   animationManager: {fileID: 0}
   attackBoxCastCenter: {x: 0.6, y: 0.1}
-  attackBoxCastSize: {x: 1, y: 0.6}
+  attackBoxCastSize: {x: 1, y: 0.8}
   attackBoxCastLength: 0
   dashSpeedMultiplier_Casting: 0.5
   dashSpeedMultiplier_Brandish: 2

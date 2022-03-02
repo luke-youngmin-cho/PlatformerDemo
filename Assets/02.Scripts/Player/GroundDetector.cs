@@ -10,6 +10,7 @@ public class GroundDetector : MonoBehaviour
     [HideInInspector] public Vector2 size;
     [SerializeField] LayerMask groundLayer;
     private Collider2D currentGroundCol;
+    private Collider2D lastGroundCol;
     private Collider2D passingGroundCol;
 
     public float passingGroundColCenterY;
@@ -19,7 +20,7 @@ public class GroundDetector : MonoBehaviour
     public float downJumpCheckHeight;
 
     public bool isIgnoringGround;
-    
+    public Coroutine passingGroundCoroutine;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -34,8 +35,12 @@ public class GroundDetector : MonoBehaviour
         currentGroundCol = Physics2D.OverlapBox(center, size, 0, groundLayer);
         if (currentGroundCol == null)
             isDetected = false;
-        else if (currentGroundCol != passingGroundCol)
-            isDetected = true;
+        else
+        {
+            lastGroundCol = currentGroundCol;
+            if (currentGroundCol != passingGroundCol)
+                isDetected = true;
+        }
 
         if (doDownJumpCheck)
         {
@@ -51,24 +56,35 @@ public class GroundDetector : MonoBehaviour
     }
     public void IgnoreCurrentGroundUntilPassedIt()
     {
-        passingGroundCol = currentGroundCol;
-        StartCoroutine(E_IgnoreCurrentGroundUntilPassedIt(currentGroundCol));
+        passingGroundCol = lastGroundCol;
+        if (passingGroundCol != null)
+        {
+            isIgnoringGround = true;
+            StartCoroutine(E_IgnorePassingGroundUntilPassedIt(passingGroundCol));
+        }
     }
-    IEnumerator E_IgnoreCurrentGroundUntilPassedIt(Collider2D passingGround)
+    public void StopIgnoreGrounds()
     {
-        passingGroundCol = passingGround;
+        StopAllCoroutines();
+    }
+    IEnumerator E_IgnorePassingGroundUntilPassedIt(Collider2D groundCol)
+    {
         Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), true);
-        isIgnoringGround = true;
         yield return new WaitUntil(() =>
         {
             bool isPassed = false;
-            passingGroundColCenterY = passingGround.transform.position.y + col.offset.y;
-            if (passingGround == null ||
-              (rb.position.y + col.offset.y + col.size.y / 2 < passingGroundColCenterY - size.y) ||
-              (rb.position.y + col.offset.y - col.size.y / 2 < passingGroundColCenterY + size.y))
+            
+            if (groundCol != null)
             {
-                isPassed = true;
+                passingGroundColCenterY = groundCol.transform.position.y + col.offset.y;
+                if ((rb.position.y + col.offset.y + col.size.y / 2 < passingGroundColCenterY - size.y) ||
+                   (rb.position.y + col.offset.y - col.size.y / 2 < passingGroundColCenterY + size.y))
+                {
+                    isPassed = true;
+                }
             }
+            else
+                isPassed = true;
             return isPassed;
         });
         Debug.Log("Ignoring ground finished");
@@ -87,6 +103,8 @@ public class GroundDetector : MonoBehaviour
         Gizmos.DrawCube(new Vector3(center.x, center.y, 0), new Vector3(size.x, size.y, 0f));
 
         Gizmos.color = Color.black;
+        rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<CapsuleCollider2D>();
         Gizmos.DrawLine(new Vector3(rb.position.x + col.offset.x - size.x / 2, rb.position.y + col.offset.y + col.size.y / 2, 0f),
                         new Vector3(rb.position.x + col.offset.x + size.x / 2, rb.position.y + col.offset.y + col.size.y / 2, 0f));
         Gizmos.DrawLine(new Vector3(rb.position.x + col.offset.x - size.x / 2, rb.position.y + col.offset.y - col.size.y / 2, 0f),

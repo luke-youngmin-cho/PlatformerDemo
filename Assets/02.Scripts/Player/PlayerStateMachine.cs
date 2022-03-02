@@ -5,7 +5,8 @@ using UnityEngine;
 public class PlayerStateMachine : MonoBehaviour
 {
     public bool isReady { get { return state == State.Idle; } }
-    public bool isStarted {  get { return state > State.Prepare; } }
+    public bool isStarted {  get { return state >= State.Prepare; } }
+    public bool isActiveSkill = true;
     public KeyCode keyCode;
     public State state;
     public PlayerState playerStateType;

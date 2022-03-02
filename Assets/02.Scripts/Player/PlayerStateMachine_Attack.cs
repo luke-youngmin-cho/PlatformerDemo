@@ -7,7 +7,7 @@ public class PlayerStateMachine_Attack : PlayerStateMachine
     TargetCaster targetCaster;
     Player player;
     CapsuleCollider2D col;
-
+    
     public Vector2 attackBoxCastCenter = new Vector2(0.2f, 0.1f);
     public Vector2 attackBoxCastSize = new Vector2(0.6f , 0.6f);
     public float attackBoxCastLength;
@@ -26,7 +26,8 @@ public class PlayerStateMachine_Attack : PlayerStateMachine
             (manager.oldPlayerState == PlayerState.Idle ||
              manager.oldPlayerState == PlayerState.Jump ||
              manager.oldPlayerState == PlayerState.Fall ||
-             manager.oldPlayerState == PlayerState.Run))
+             manager.oldPlayerState == PlayerState.Run  ||
+             manager.oldPlayerState == PlayerState.Dash))
         {
             isOK = true;
         }

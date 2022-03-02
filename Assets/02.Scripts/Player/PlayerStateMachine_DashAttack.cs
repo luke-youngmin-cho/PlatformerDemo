@@ -28,7 +28,8 @@ public class PlayerStateMachine_DashAttack : PlayerStateMachine
             (manager.oldPlayerState == PlayerState.Idle ||
              manager.oldPlayerState == PlayerState.Jump ||
              manager.oldPlayerState == PlayerState.Fall ||
-             manager.oldPlayerState == PlayerState.Run))
+             manager.oldPlayerState == PlayerState.Run  ||
+             manager.oldPlayerState == PlayerState.Dash ))
         {
             isOK = true;
         }
