@@ -11,17 +11,17 @@ public class PlayerStateMachine : MonoBehaviour
     public State state;
     public PlayerState playerStateType;
     [HideInInspector] public PlayerState nextPlayerState = PlayerState.Idle; // normally state will change to idle when machine finished
-    public string animationName;
+    [HideInInspector] public string animationName;
     [HideInInspector] public float animationTime;
     [HideInInspector] public float elapsedTime;
     [HideInInspector] public PlayerStateMachineManager manager;
     [HideInInspector] public AnimationManager animationManager;
 
     // player data
-    public Player player;
-    public int level = 1;
-    public int hpRequired;
-    public int mpRequired;
+    [HideInInspector] public Player player;
+    [HideInInspector] public int level = 1;
+    [HideInInspector] public int hpRequired;
+    [HideInInspector] public int mpRequired;
      
     public virtual void Awake()
     {

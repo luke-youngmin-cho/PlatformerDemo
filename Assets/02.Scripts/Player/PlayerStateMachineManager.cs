@@ -127,7 +127,7 @@ public class PlayerStateMachineManager : MonoBehaviour
                         move.x = h;
                 }
 
-                // Basic short keys
+                // Basic arrow keys 
                 //-----------------------------------------------------------------------
                 // left arrow
                 if (Input.GetKey(KeyCode.LeftArrow))
@@ -164,16 +164,6 @@ public class PlayerStateMachineManager : MonoBehaviour
                     if (machineDictionaryOfPlayerState[PlayerState.EdgeGrab].IsExecuteOK())
                         ChangePlayerState(PlayerState.EdgeGrab);
                 }
-                // left alt
-                if (Input.GetKey(KeyCode.LeftAlt))
-                {
-                    if (machineDictionaryOfPlayerState[PlayerState.Jump].IsExecuteOK())
-                    {
-                        Debug.Log("Do Jump! execute ok");
-                        ChangePlayerState(PlayerState.Jump);
-                    }
-
-                }
                 if (machineDictionaryOfPlayerState[PlayerState.Fall].IsExecuteOK())
                     ChangePlayerState(PlayerState.Fall);
             }
@@ -187,7 +177,7 @@ public class PlayerStateMachineManager : MonoBehaviour
             //-----------------------------------------------
             PlayerStateMachine playerStateMachine;
             bool isOK = machineDictionaryOfKeyCode.TryGetValue(keyInput, out playerStateMachine);
-            Debug.Log($"{isOK}, { keyInput}");
+            //Debug.Log($"{isOK}, { keyInput}");
             keyInput = KeyCode.None; // reset current key event input. 
             if (isOK &&
                 playerStateMachine.isReady &&

@@ -150,6 +150,22 @@ public class Player : MonoBehaviour
     private void SaveData()
     {
         PlayerDataManager.instance.SavePlayerData(this);
-        Debug.Log($"Save Data {stats.hp}");
+        //Debug.Log($"Save Data {stats.hp}");
+    }
+
+
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision == null) return;
+        GameObject go = collision.gameObject;
+        if (Input.GetKey(KeyCode.Z))
+        {
+            ItemController itemController = null;
+            if(go.TryGetComponent(out itemController))
+            {
+                itemController.PickUp(this);
+            }
+        }
     }
 }

@@ -17,8 +17,8 @@ TagManager:
   - PlayerSensor
   - 
   - 
-  - 
-  - 
+  - Item
+  - ItemCollider
   - 
   - Enemy
   - EnemyCollider
