@@ -19,8 +19,8 @@ public class EnemySettings : MonoBehaviour
                     INT = 0,
                     RES = 0,
 
-                    hp = 100,
-                    mp = 0,
+                    hpMax = 100,
+                    mpMax = 0,
                     attack = 1,
                     criticalRate = 0,
                     criticalDamage = 150,
@@ -42,8 +42,8 @@ public class EnemySettings : MonoBehaviour
                     INT = 0,
                     RES = 0,
 
-                    hp = 2000,
-                    mp = 0,
+                    hpMax = 2000,
+                    mpMax = 0,
                     attack = 10,
                     criticalRate = 10,
                     criticalDamage = 150,
@@ -65,8 +65,8 @@ public class EnemySettings : MonoBehaviour
                     INT = 10,
                     RES = 0,
 
-                    hp = 2500,
-                    mp = 0,
+                    hpMax = 2500,
+                    mpMax = 0,
                     attack = 12,
                     criticalRate = 10,
                     criticalDamage = 150,
@@ -88,8 +88,8 @@ public class EnemySettings : MonoBehaviour
                     INT = 0,
                     RES = 0,
 
-                    hp = 10000,
-                    mp = 0,
+                    hpMax = 10000,
+                    mpMax = 0,
                     attack = 1,
                     criticalRate = 0,
                     criticalDamage = 150,

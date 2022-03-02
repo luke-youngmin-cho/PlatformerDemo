@@ -28,7 +28,7 @@ public class Enemy : MonoBehaviour
                 col.enabled = false;
                 _hp = 0;
             }   
-            hpBar.value = (float)_hp / stats.hp;
+            hpBar.value = (float)_hp / stats.hpMax;
         }
         get { return _hp; }
     }
@@ -49,7 +49,7 @@ public class Enemy : MonoBehaviour
         col = GetComponent<CapsuleCollider2D>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         stats = EnemySettings.GetStats(this.GetType().Name);
-        hp = stats.hp;
+        hp = stats.hpMax;
     }
     
     private int CalcDamage()

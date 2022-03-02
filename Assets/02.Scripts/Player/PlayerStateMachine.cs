@@ -16,10 +16,18 @@ public class PlayerStateMachine : MonoBehaviour
     [HideInInspector] public float elapsedTime;
     [HideInInspector] public PlayerStateMachineManager manager;
     [HideInInspector] public AnimationManager animationManager;
+
+    // player data
+    public Player player;
+    public int level = 1;
+    public int hpRequired;
+    public int mpRequired;
+     
     public virtual void Awake()
     {
         manager = gameObject.GetComponent<PlayerStateMachineManager>();
         animationManager = gameObject.GetComponent<AnimationManager>();
+        player = GetComponent<Player>();
         animationName = playerStateType.ToString();
         animationTime = animationManager.GetAnimationTime(animationName);
     }
@@ -58,6 +66,10 @@ public class PlayerStateMachine : MonoBehaviour
     public virtual void Execute()
     {
         state = State.Prepare;
+        if(player.stats.hpMax > hpRequired)
+            player.stats.hpMax -= hpRequired;
+        if(player.stats.mpMax > mpRequired)
+            player.stats.mpMax -= mpRequired;
     }
     public virtual void ResetMachine()
     {

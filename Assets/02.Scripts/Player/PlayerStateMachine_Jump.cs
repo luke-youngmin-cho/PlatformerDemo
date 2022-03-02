@@ -3,13 +3,11 @@ public class PlayerStateMachine_Jump : PlayerStateMachine
 {
     Rigidbody2D rb;
     GroundDetector groundDetector;
-    Player player;
     public override void Awake()
     {
         base.Awake();
         rb = GetComponent<Rigidbody2D>();
         groundDetector = GetComponent<GroundDetector>();
-        player = GetComponent<Player>();
     }
     public override bool IsExecuteOK()
     {

@@ -5,7 +5,6 @@ public class PlayerStateMachine_DownJump : PlayerStateMachine
     Rigidbody2D rb;
     CapsuleCollider2D col;
     GroundDetector groundDetector;
-    Player player;
     public float downJumpForce = 0.3f;
     public float downJumpIgnoreTime = 0.3f;
     public override void Awake()
@@ -14,7 +13,6 @@ public class PlayerStateMachine_DownJump : PlayerStateMachine
         rb = GetComponent<Rigidbody2D>();
         groundDetector = GetComponent<GroundDetector>();
         col = GetComponent<CapsuleCollider2D>();
-        player = GetComponent<Player>();
     }
     public override bool IsExecuteOK()
     {

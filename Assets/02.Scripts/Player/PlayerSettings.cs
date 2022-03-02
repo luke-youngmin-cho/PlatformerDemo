@@ -20,7 +20,9 @@ public class PlayerSettings : MonoBehaviour
                 INT = 10,
                 RES = 10,
 
-                hp = 100000,
+                hpMax = 10000,
+                mpMax = 100,
+                hp = 10000,
                 mp = 100,
                 attack = 1,
                 criticalRate = 50,
@@ -34,34 +36,21 @@ public class PlayerSettings : MonoBehaviour
             };
         }
     }
+    public static List<st_Skill> basicSkills
+    {
+        get
+        {
+            List<st_Skill> skillDatas = new List<st_Skill>();
+            // Double Attack
+            st_Skill doubleAttack = new st_Skill {
+                state = PlayerState.DoubleAttack,
+                level = 1,
+                hpRequired = 0,
+                mpRequired = 10
+            };
+            skillDatas.Add(doubleAttack);
+            return skillDatas;
+        }
+    }
 }
-public struct st_Stats
-{
-    public int Level;
-    public int EXP;
 
-    public int STR;
-    public int DEX;
-    public int CON;
-    public int WIS;
-    public int INT;
-    public int RES;
-           
-    public int hp;
-    public int mp;
-    public int attack;
-    public int criticalRate; // %
-    public int criticalDamage; // %
-    public int defence;
-    public int magicDefence;
-    public int defencePen;
-    public int magicDefencePen;
-    public float moveSpeed;
-    public float jumpForce;
-}
-struct st_Ability
-{
-
-
-
-}

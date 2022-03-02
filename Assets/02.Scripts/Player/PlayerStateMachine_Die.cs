@@ -1,13 +1,6 @@
 ﻿using UnityEngine;
 public class PlayerStateMachine_Die : PlayerStateMachine
 {
-    Player player;
-    public override void Awake()
-    {
-        base.Awake();
-        player = GetComponent<Player>();
-    }
-
     public override void UpdateWorkflow()
     {
         switch (state)

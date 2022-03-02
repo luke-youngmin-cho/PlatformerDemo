@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerStateMachine_DashAttack : PlayerStateMachine
 {
     TargetCaster targetCaster;
-    Player player;
     CapsuleCollider2D col;
 
     public Vector2 attackBoxCastCenter = new Vector2(0.6f, 0.1f);
@@ -17,7 +16,6 @@ public class PlayerStateMachine_DashAttack : PlayerStateMachine
     {
         base.Awake();
         targetCaster = GetComponent<TargetCaster>();
-        player = GetComponent<Player>();
         col = GetComponent<CapsuleCollider2D>();
     }
 

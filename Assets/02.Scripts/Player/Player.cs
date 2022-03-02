@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public st_Stats stats;
+    public List<st_Skill> skills;
     public bool isDead;
     private int _hp;
     public int hp
@@ -23,7 +24,8 @@ public class Player : MonoBehaviour
             }
                 
             _hp = tmpValue;
-            hpSlider.value = (float)_hp / stats.hp;
+            stats.hp = _hp;
+            hpSlider.value = (float)_hp / stats.hpMax;
             hpText.text = _hp.ToString();
         }
         get { return _hp; }
@@ -40,13 +42,31 @@ public class Player : MonoBehaviour
             if (tmpValue < 0)
                 tmpValue = 0;
             _mp = tmpValue;
-            mpSlider.value = (float)_mp / stats.mp;
+            stats.mp = _mp;
+            mpSlider.value = (float)_mp / stats.mpMax;
             mpText.text = _mp.ToString();
         }
         get { return _mp; }
     }
     public Slider mpSlider;
     public Text mpText;
+    private int _exp;
+    public int exp
+    {
+        set
+        {
+            int tmpValue = value;
+            if (tmpValue < 0)
+                tmpValue = 0;
+            _exp = tmpValue;
+            stats.EXP = _exp;
+            expSlider.value = (float)_exp / expMax;
+        }
+        get { return _exp; }
+    }
+    public Slider expSlider;
+    public Text expText;
+    public int expMax;
 
     [HideInInspector]public bool invincible;
     float invincibleTime = 1f;
@@ -58,12 +78,16 @@ public class Player : MonoBehaviour
     private CapsuleCollider2D col;
     private void Awake()
     {
-        stats = PlayerSettings.basicStats;
+        stats = PlayerDataManager.instance.currentPlayerData.stats;
+        skills = PlayerDataManager.instance.currentPlayerData.skills;
         controller = GetComponent<PlayerStateMachineManager>();
         tr = GetComponent<Transform>();
         col = GetComponent<CapsuleCollider2D>();
         hp = stats.hp;
         mp = stats.mp;
+        exp = stats.EXP;
+        expMax = stats.Level * (int)(100f *Mathf.Exp(3.0f));
+        InvokeRepeating("SaveData", 2, 1);
     }
     
     public void Hurt(int damage, bool isCriticalHit)
@@ -121,5 +145,11 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(time);
         invincible = false;
         invincibleCoroutine = null;
+    }
+
+    private void SaveData()
+    {
+        PlayerDataManager.instance.SavePlayerData(this);
+        Debug.Log($"Save Data {stats.hp}");
     }
 }

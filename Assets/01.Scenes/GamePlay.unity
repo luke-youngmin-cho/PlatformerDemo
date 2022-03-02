@@ -7810,7 +7810,7 @@ GameObject:
   - component: {fileID: 1751818508}
   - component: {fileID: 1751818509}
   m_Layer: 5
-  m_Name: MPBar
+  m_Name: EXPBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8411,6 +8411,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
   attackBoxCastCenter: {x: 0.2, y: 0.1}
   attackBoxCastSize: {x: 0.6, y: 0.8}
   attackBoxCastLength: 0
@@ -8436,6 +8440,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
   colliderOffsetForCrouching: {x: 0, y: -0.15}
   colliderSizeForCrouching: {x: 0.13, y: 0.13}
 --- !u!114 &1820907490
@@ -8460,6 +8468,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
   colliderOffsetForCrouching: {x: 0, y: -0.15}
   colliderSizeForCrouching: {x: 0.13, y: 0.13}
 --- !u!114 &1820907491
@@ -8484,6 +8496,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
   dashSpeedMultiplier: 2
 --- !u!114 &1820907492
 MonoBehaviour:
@@ -8507,6 +8523,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
 --- !u!114 &1820907493
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8529,6 +8549,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
   downJumpForce: 1
   downJumpIgnoreTime: 0.2
 --- !u!114 &1820907494
@@ -8553,6 +8577,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
   attackBoxCastCenter: {x: 0.2, y: 0.1}
   attackBoxCastSize: {x: 0.6, y: 0.8}
   attackBoxCastLength: 0
@@ -8578,6 +8606,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
 --- !u!114 &1820907496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8600,6 +8632,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
 --- !u!114 &1820907497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8622,6 +8658,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
   fallingToCrouchDistance: 1.5
 --- !u!114 &1820907498
 MonoBehaviour:
@@ -8645,6 +8685,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
 --- !u!114 &1820907499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8667,6 +8711,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
 --- !u!114 &1820907500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8689,6 +8737,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
 --- !u!114 &1820907501
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8711,6 +8763,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
 --- !u!114 &1820907502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8733,6 +8789,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
 --- !u!114 &1820907503
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8755,6 +8815,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
 --- !u!114 &1820907504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8777,6 +8841,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
 --- !u!114 &1820907505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8814,6 +8882,9 @@ MonoBehaviour:
   hpText: {fileID: 1823101061}
   mpSlider: {fileID: 173684350}
   mpText: {fileID: 1526783519}
+  expSlider: {fileID: 1751818509}
+  expText: {fileID: 2115273104}
+  expMax: 0
   invincible: 0
 --- !u!114 &1820907507
 MonoBehaviour:
@@ -8837,6 +8908,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
 --- !u!114 &1820907508
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8887,6 +8962,10 @@ MonoBehaviour:
   elapsedTime: 0
   manager: {fileID: 0}
   animationManager: {fileID: 0}
+  player: {fileID: 0}
+  level: 1
+  hpRequired: 0
+  mpRequired: 0
   attackBoxCastCenter: {x: 0.6, y: 0.1}
   attackBoxCastSize: {x: 1, y: 0.8}
   attackBoxCastLength: 0
@@ -10422,7 +10501,7 @@ GameObject:
   - component: {fileID: 2115273105}
   - component: {fileID: 2115273104}
   m_Layer: 5
-  m_Name: MPValue
+  m_Name: EXPValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
