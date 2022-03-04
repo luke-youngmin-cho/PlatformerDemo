@@ -134,12 +134,23 @@ public class InventoryItemController : MonoBehaviour, IPointerClickHandler
                     }
                     Debug.Log(result.gameObject.name);
                 }
+                // Clicked on slot
                 if(slot != null)
                     slot.SetItemHere(this);
+                // Clicked on Shortcut
                 if (shortCut != null)
                 {
+                    if(shortCutKeyCode != KeyCode.None)
+                    {
+                        ShortCut oldShortCut = null;
+                        if(ShortCutManager.instance.TryGetShortCut(shortCutKeyCode, out oldShortCut))
+                        {
+                            oldShortCut.Clear();
+                        }
+                    }
                     shortCut.RegisterIconAndEvent(itemIcon, UseItem);
                     shortCutKeyCode = shortCut.keyCode;
+                    DeselectItem();
                 }   
 
                 if (canvasRenderer == null)

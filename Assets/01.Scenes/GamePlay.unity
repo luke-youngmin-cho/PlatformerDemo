@@ -7324,7 +7324,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 785962573}
-  keyCode: 278
+  keyCode: 279
 --- !u!114 &785962573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7747,10 +7747,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isReady: 0
   itemContent: {fileID: 750877508}
-  inventoryItem: {fileID: 5311309108951015949, guid: ccb19427213e3d24f83d37ffd299ce7f, type: 3}
+  inventoryItemPrefab: {fileID: 5311309108951015949, guid: ccb19427213e3d24f83d37ffd299ce7f, type: 3}
   slots: []
   totalSlots: 36
-  slot: {fileID: 8383238476624097011, guid: 7bd0887046b15754b911e38acfde3a18, type: 3}
+  slotPrefab: {fileID: 8383238476624097011, guid: 7bd0887046b15754b911e38acfde3a18, type: 3}
   selectedItem: {fileID: 0}
   cam: {fileID: 519420031}
   player: {fileID: 0}
@@ -16122,6 +16122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isReady: 0
   inventoryManagerGO: {fileID: 840112489}
+  shortCutManagerGO: {fileID: 2080596833}
 --- !u!4 &1727784600
 Transform:
   m_ObjectHideFlags: 0
@@ -18316,7 +18317,7 @@ GameObject:
   - component: {fileID: 1870543160}
   - component: {fileID: 1870543159}
   m_Layer: 5
-  m_Name: Left-Shift
+  m_Name: Right-Shift
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18354,7 +18355,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 1870543160}
-  keyCode: 304
+  keyCode: 303
 --- !u!114 &1870543160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20429,12 +20430,12 @@ GameObject:
   - component: {fileID: 2080596835}
   - component: {fileID: 2080596837}
   m_Layer: 5
-  m_Name: KeyBoardSettings
+  m_Name: ShortCutManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2080596834
 RectTransform:
   m_ObjectHideFlags: 0

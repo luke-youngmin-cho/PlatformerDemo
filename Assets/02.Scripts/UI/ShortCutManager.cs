@@ -5,6 +5,7 @@ using UnityEngine;
 public class ShortCutManager : MonoBehaviour
 {
     public static ShortCutManager instance;
+    public bool isReady = false;
     KeyCode keyInput;
     Dictionary<KeyCode, ShortCut> shortCuts = new Dictionary<KeyCode, ShortCut>();
 
@@ -17,6 +18,7 @@ public class ShortCutManager : MonoBehaviour
             shortCuts.Add(tmpShortCuts[i].keyCode, tmpShortCuts[i]);
             Debug.Log($"Shortcut registered : {tmpShortCuts[i].keyCode}");
         }
+        isReady = true;
     }
     private void Update()
     {
