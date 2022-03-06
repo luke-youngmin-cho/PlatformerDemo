@@ -91,6 +91,18 @@ public class InventoryItemController : MonoBehaviour, IPointerClickHandler
         InventoryManager.instance.GetSlot(slotNumber).ResetSlot();
         Destroy(this.gameObject);
     }
+    public void SelectItem()
+    {
+        InventoryManager.instance.selectedItem = this.gameObject;
+        transform.SetParent(InventoryManager.instance.transform);
+    }
+    public void DeselectItem()
+    {
+        InventoryManager.instance.selectedItem = null;
+        InventorySlot slot = InventoryManager.instance.GetSlot(slotNumber);
+        transform.SetParent(slot.transform);
+        transform.position = transform.parent.position;
+    }
     public void OnPointerClick(PointerEventData eventData)
     {
         if (InventoryManager.instance.selectedItem == null)
@@ -148,8 +160,8 @@ public class InventoryItemController : MonoBehaviour, IPointerClickHandler
                             oldShortCut.Clear();
                         }
                     }
-                    shortCut.RegisterIconAndEvent(itemIcon, UseItem);
-                    shortCutKeyCode = shortCut.keyCode;
+                    shortCut.RegisterIconAndEvent(ShortCutType.Item, itemIcon, UseItem);
+                    shortCutKeyCode = shortCut._keyCode;
                     DeselectItem();
                 }   
 
@@ -160,16 +172,5 @@ public class InventoryItemController : MonoBehaviour, IPointerClickHandler
             }
         }
     }
-    public void SelectItem()
-    {   
-        InventoryManager.instance.selectedItem = this.gameObject;
-        transform.SetParent(InventoryManager.instance.transform);
-    }
-    public void DeselectItem()
-    {
-        InventoryManager.instance.selectedItem = null;
-        InventorySlot slot = InventoryManager.instance.GetSlot(slotNumber);
-        transform.SetParent(slot.transform);
-        transform.position = transform.parent.position;
-    }
+    
 }

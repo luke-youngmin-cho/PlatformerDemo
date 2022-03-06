@@ -9,14 +9,18 @@ public class ShortCutManager : MonoBehaviour
     KeyCode keyInput;
     Dictionary<KeyCode, ShortCut> shortCuts = new Dictionary<KeyCode, ShortCut>();
 
+    [SerializeField] ShortCutHandler shortCutHandler;
     private void Awake()
     {
         instance = this;
-        ShortCut[] tmpShortCuts = transform.Find("ShortCuts").GetComponentsInChildren<ShortCut>();
+    }
+    private void Start()
+    {
+        ShortCut[] tmpShortCuts = transform.Find("ShortCutSettingsPanel").Find("ShortCuts").GetComponentsInChildren<ShortCut>();
         for (int i = 0; i < tmpShortCuts.Length; i++)
         {
-            shortCuts.Add(tmpShortCuts[i].keyCode, tmpShortCuts[i]);
-            Debug.Log($"Shortcut registered : {tmpShortCuts[i].keyCode}");
+            shortCuts.Add(tmpShortCuts[i]._keyCode, tmpShortCuts[i]);
+            Debug.Log($"Shortcut registered : {tmpShortCuts[i]._keyCode}");
         }
         isReady = true;
     }
@@ -33,11 +37,17 @@ public class ShortCutManager : MonoBehaviour
             keyInput = KeyCode.None;
         }
     }
+    public void ActiveShortCutHandler(ShortCutType type, Sprite icon, KeyCode keyCode, ShortCut.KeyEvent keyEvent)
+    {
+        shortCutHandler.ActivateWithInfo(type, icon, keyCode, keyEvent);
+    }
     public bool TryGetShortCut(KeyCode keyCode,out ShortCut shortCut)
     {
+        Debug.Log($"Try get short cut : {keyCode} , {shortCuts.ContainsKey(keyCode)}");
         return shortCuts.TryGetValue(keyCode, out shortCut);
 
     }
+    
     private void OnGUI()
     {
         Event e = Event.current;

@@ -6,12 +6,9 @@ public class ReadyChecker : MonoBehaviour
 {
     public bool isReady = false;
     public GameObject inventoryManagerGO;
-    public GameObject shortCutManagerGO;
-
     private void Awake()
     {
         inventoryManagerGO.SetActive(true);
-        shortCutManagerGO.SetActive(true);
     }
     private void Start()
     {
@@ -22,8 +19,6 @@ public class ReadyChecker : MonoBehaviour
     {
         yield return new WaitUntil(() => inventoryManagerGO.GetComponent<InventoryManager>().isReady);
         inventoryManagerGO.SetActive(false);
-        yield return new WaitUntil(() => shortCutManagerGO.GetComponent<ShortCutManager>().isReady);
-        shortCutManagerGO.SetActive(false);
         isReady = true;
     }
 }
