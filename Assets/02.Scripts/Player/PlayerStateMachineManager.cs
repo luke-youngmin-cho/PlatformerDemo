@@ -53,7 +53,11 @@ public class PlayerStateMachineManager : MonoBehaviour
 
     //int debugcount; for debugging
     // input
-    KeyCode keyInput;
+    private KeyCode _keyInput;
+    public KeyCode keyInput
+    {
+        set { if(_keyInput == KeyCode.None) _keyInput = value; }
+    }
     public int direction
     {
         set
@@ -82,13 +86,21 @@ public class PlayerStateMachineManager : MonoBehaviour
     }
     private void Start()
     {
-        // state machines
+        RefreshMachineDictionaries();
+    }
+    public void RefreshMachineDictionaries()
+    {
+        RefreshMachineDictionaryOfPlayerState();
+        RefreshMachineDictionaryOfKeyCode();
+    }
+    void RefreshMachineDictionaryOfPlayerState()
+    {
+        machineDictionaryOfPlayerState.Clear();
         PlayerStateMachine[] machines = GetComponents<PlayerStateMachine>();
         for (int i = 0; i < machines.Length; i++)
         {
             machineDictionaryOfPlayerState.Add(machines[i].playerStateType, machines[i]);
         }
-        RefreshMachineDictionaryOfKeyCode();
     }
     // Call this method when user's short-key settings have been changed.
     void RefreshMachineDictionaryOfKeyCode()
@@ -100,7 +112,7 @@ public class PlayerStateMachineManager : MonoBehaviour
             if (machines[i].keyCode != KeyCode.None)
             {
                 machineDictionaryOfKeyCode.Add(machines[i].keyCode, machines[i]);
-                if(machines[i].isActiveSkill)
+                if(machines[i].machineType == MachineType.ActiveSkill)
                     activeSkillList.Add(machines[i].playerStateType);
             }   
         }
@@ -176,9 +188,10 @@ public class PlayerStateMachineManager : MonoBehaviour
             // user - defined key input 
             //-----------------------------------------------
             PlayerStateMachine playerStateMachine;
-            bool isOK = machineDictionaryOfKeyCode.TryGetValue(keyInput, out playerStateMachine);
+            bool isOK = machineDictionaryOfKeyCode.TryGetValue(_keyInput, out playerStateMachine);
             //Debug.Log($"{isOK}, { keyInput}");
-            keyInput = KeyCode.None; // reset current key event input. 
+            _keyInput = KeyCode.None; // reset current key event input. 
+            //Debug.Log($"{isOK}{ playerStateMachine.isReady}{playerStateMachine.IsExecuteOK()}");
             if (isOK &&
                 playerStateMachine.isReady &&
                 playerStateMachine.IsExecuteOK())
@@ -325,14 +338,39 @@ public class PlayerStateMachineManager : MonoBehaviour
         controlEnabled = true;
         controlDisableCoroutine = null;
     }
-    
+
+    public void AddStateMachineComponentByState(PlayerState state)
+    {
+        string stateName = state.ToString();
+        string typeName = "PlayerStateMachine_" + stateName;
+        System.Type type = System.Type.GetType(typeName);
+        PlayerStateMachine stateMachine = null;
+        if (type != null)
+        {
+            stateMachine = (PlayerStateMachine)gameObject.AddComponent(type);
+            stateMachine.playerStateType = state;
+            stateMachine.machineType = SkillAssets.instance.GetMachineTypeByState(state);
+            st_SkillStats skillInfo = player.skillStatsList.Find(x => x.state == state);
+            stateMachine.level      = skillInfo.level;
+            stateMachine.hpRequired = skillInfo.hpRequired;
+            stateMachine.mpRequired = skillInfo.mpRequired;
+        }   
+        else
+            Debug.Log($"Failed to add player state machine : {typeName}");
+        RefreshMachineDictionaryOfPlayerState();
+    }
+    public bool TryGetStateMachineByState(PlayerState state, out PlayerStateMachine stateMachine)
+    {
+        return machineDictionaryOfPlayerState.TryGetValue(state, out stateMachine);
+    }
+
     // User key input for keycode skills. 
-    private void OnGUI()
+    /*private void OnGUI()
     {
         Event e = Event.current;
         if(e.isKey && e.keyCode != KeyCode.None)
-            keyInput = e.keyCode;
-    }
+            _keyInput = e.keyCode;
+    }*/
 }
 public enum PlayerState
 {

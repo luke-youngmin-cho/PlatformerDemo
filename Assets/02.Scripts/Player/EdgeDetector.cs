@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [RequireComponent(typeof(PlayerStateMachineManager))]
-public class PlayerEdgeDetector : MonoBehaviour
+public class EdgeDetector : MonoBehaviour
 {
     bool top, bottom;
     public float topX, topY, bottomX, bottomY;

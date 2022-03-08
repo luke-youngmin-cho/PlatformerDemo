@@ -33,22 +33,33 @@ public class PlayerSettings : MonoBehaviour
                 magicDefencePen = 0,
                 moveSpeed = 1f,
                 jumpForce = 3f,
+
+                statPoint = 5,
+                skillPoint = 5,
             };
         }
     }
-    public static List<st_Skill> basicSkills
+    public static List<st_SkillStats> basicSkills
     {
         get
         {
-            List<st_Skill> skillDatas = new List<st_Skill>();
+            List<st_SkillStats> skillDatas = new List<st_SkillStats>();
             // Double Attack
-            st_Skill doubleAttack = new st_Skill {
+            st_SkillStats doubleAttack = new st_SkillStats {
                 state = PlayerState.DoubleAttack,
                 level = 1,
                 hpRequired = 0,
                 mpRequired = 10
             };
             skillDatas.Add(doubleAttack);
+            st_SkillStats dashAttack = new st_SkillStats
+            {
+                state = PlayerState.DashAttack,
+                level = 1,
+                hpRequired = 0,
+                mpRequired = 20
+            };
+            skillDatas.Add(dashAttack);
             return skillDatas;
         }
     }

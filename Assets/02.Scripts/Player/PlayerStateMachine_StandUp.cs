@@ -8,6 +8,7 @@ public class PlayerStateMachine_StandUp : PlayerStateMachine
     public override void Awake()
     {
         base.Awake();
+        playerStateType = PlayerState.StandUp;
         col = GetComponent<CapsuleCollider2D>();
         colliderOffsetOriginal = col.offset;
         colliderSizeOriginal = col.size;

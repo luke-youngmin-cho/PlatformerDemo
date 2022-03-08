@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public st_Stats stats;
-    public List<st_Skill> skills;
+    public List<st_SkillStats> skillStatsList;
     public bool isDead;
     private int _hp;
     public int hp
@@ -79,7 +79,7 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         stats = PlayerDataManager.instance.currentPlayerData.stats;
-        skills = PlayerDataManager.instance.currentPlayerData.skills;
+        skillStatsList = PlayerDataManager.instance.currentPlayerData.skillstatsList;
         controller = GetComponent<PlayerStateMachineManager>();
         tr = GetComponent<Transform>();
         col = GetComponent<CapsuleCollider2D>();
@@ -87,9 +87,41 @@ public class Player : MonoBehaviour
         mp = stats.mp;
         exp = stats.EXP;
         expMax = stats.Level * (int)(100f *Mathf.Exp(3.0f));
+        AddAllAdditionalSkillMachines();
+    }
+    private void Start()
+    {   
         InvokeRepeating("SaveData", 2, 1);
     }
-    
+    public void AddAllAdditionalSkillMachines()
+    {
+        foreach (var skillStats in skillStatsList)
+        {
+            if(SkillAssets.instance.GetMachineTypeByState(skillStats.state) != MachineType.BasicSkill)
+                controller.AddStateMachineComponentByState(skillStats.state);
+        }
+    }
+    public void SkillLevelUp(PlayerState state)
+    {
+        if(stats.skillPoint > 0)
+        {
+            for (int i = 0; i < skillStatsList.Count; i++)
+            {
+                if (skillStatsList[i].state == state)
+                {
+                    skillStatsList[i] = new st_SkillStats
+                    {
+                        state = skillStatsList[i].state,
+                        hpRequired = skillStatsList[i].hpRequired,
+                        mpRequired = skillStatsList[i].mpRequired,
+                        level = skillStatsList[i].level + 1,
+                    };
+                    stats.skillPoint--;
+                    break;
+                }
+            }
+        }
+    }
     public void Hurt(int damage, bool isCriticalHit)
     {
         if (invincible) return;

@@ -11,8 +11,6 @@ public class ShortCut : MonoBehaviour, IPointerClickHandler
     public KeyEvent KE;
     public ShortCutClone clone;
 
-    private float delay = 0.5f;
-    private Coroutine delayCoroutine;
     private void Awake()
     {
         _image = GetComponent<Image>();
@@ -28,6 +26,7 @@ public class ShortCut : MonoBehaviour, IPointerClickHandler
         _image.sprite = icon;
         _image.color = Color.white;
         KE = keyEvent;
+
         if(clone != null)
             clone.SetClone(_type, _image.sprite, _keyCode, TryKeyEvent);
     }
@@ -42,17 +41,11 @@ public class ShortCut : MonoBehaviour, IPointerClickHandler
     }
     public void TryKeyEvent()
     {
-        if ((delayCoroutine == null) &&
+        if ((_keyCode != KeyCode.None) &&
             (KE != null))
         {
-            delayCoroutine = StartCoroutine(E_Delay());
             KE();
         }
-    }
-    IEnumerator E_Delay()
-    {
-        yield return new WaitForSeconds(delay);
-        delayCoroutine = null;
     }
 
     public void OnPointerClick(PointerEventData eventData)

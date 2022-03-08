@@ -10,11 +10,12 @@ public class PlayerStateMachine_DashAttack : PlayerStateMachine
     public Vector2 attackBoxCastCenter = new Vector2(0.6f, 0.1f);
     public Vector2 attackBoxCastSize = new Vector2(1f , 0.6f);
     public float attackBoxCastLength;
-    public float dashSpeedMultiplier_Casting;
-    public float dashSpeedMultiplier_Brandish;
+    public float dashSpeedMultiplier_Casting = 0.5f;
+    public float dashSpeedMultiplier_Brandish = 2f;
     override public void Awake()
     {
         base.Awake();
+        playerStateType = PlayerState.DashAttack;
         targetCaster = GetComponent<TargetCaster>();
         col = GetComponent<CapsuleCollider2D>();
     }

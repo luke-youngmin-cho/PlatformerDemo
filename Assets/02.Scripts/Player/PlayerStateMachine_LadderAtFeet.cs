@@ -3,14 +3,15 @@ public class PlayerStateMachine_LadderAtFeet : PlayerStateMachine
 {
     Rigidbody2D rb;
     CapsuleCollider2D col;
-    PlayerLadderDetector ladderDetector;
+    LadderDetector ladderDetector;
     GroundDetector groundDetector;
     public override void Awake()
     {
         base.Awake();
+        playerStateType = PlayerState.LadderAtFeet;
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<CapsuleCollider2D>();
-        ladderDetector = GetComponent<PlayerLadderDetector>();
+        ladderDetector = GetComponent<LadderDetector>();
         groundDetector = GetComponent<GroundDetector>();
     }
     public override bool IsExecuteOK()

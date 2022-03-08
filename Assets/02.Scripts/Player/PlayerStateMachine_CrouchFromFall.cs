@@ -10,6 +10,7 @@ public class PlayerStateMachine_CrouchFromFall : PlayerStateMachine
     public override void Awake()
     {
         base.Awake();
+        playerStateType = PlayerState.CrouchFromFall;
         col = GetComponent<CapsuleCollider2D>();
         colliderOffsetOriginal = col.offset;
         colliderSizeOriginal = col.size;

@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
 public class PlayerStateMachine_Dash : PlayerStateMachine
 {
-    public float dashSpeedMultiplier;
+    public float dashSpeedMultiplier = 2f;
+    public override void Awake()
+    {
+        base.Awake();
+        playerStateType = PlayerState.Dash;
+    }
     public override bool IsExecuteOK()
     {
         bool isOK = false;

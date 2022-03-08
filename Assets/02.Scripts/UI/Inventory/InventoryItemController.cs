@@ -125,6 +125,7 @@ public class InventoryItemController : MonoBehaviour, IPointerClickHandler
 
                 InventorySlot slot = null;
                 ShortCut shortCut = null;
+                ShortCutClone shortCutClone = null;
                 CanvasRenderer canvasRenderer = null;
                 foreach (RaycastResult result in results)
                 {
@@ -138,6 +139,12 @@ public class InventoryItemController : MonoBehaviour, IPointerClickHandler
                     if(result.gameObject.TryGetComponent(out tmpShortCut)){
                         shortCut = tmpShortCut;
                     }
+                    // Check ShortCutClone
+                    ShortCutClone tmpShortCutClone = null;
+                    if (result.gameObject.TryGetComponent(out tmpShortCutClone))
+                    {
+                        shortCutClone = tmpShortCutClone;
+                    }
                     //Check All UI. (if not exist, drop item to field)
                     CanvasRenderer tmpCanvasRenderer = null;
                     if (result.gameObject.TryGetComponent<CanvasRenderer>(out tmpCanvasRenderer)){
@@ -149,6 +156,10 @@ public class InventoryItemController : MonoBehaviour, IPointerClickHandler
                 // Clicked on slot
                 if(slot != null)
                     slot.SetItemHere(this);
+
+                // Clicked on ShortCutClone
+                if (shortCutClone != null)
+                    shortCut = shortCutClone.GetOrigin();
                 // Clicked on Shortcut
                 if (shortCut != null)
                 {

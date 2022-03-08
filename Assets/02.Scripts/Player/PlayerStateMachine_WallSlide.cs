@@ -6,6 +6,7 @@ public class PlayerStateMachine_WallSlide: PlayerStateMachine
     public override void Awake()
     {
         base.Awake();
+        playerStateType = PlayerState.WallSlide;
         groundDetector = GetComponent<GroundDetector>();
         wallSlideDetector = GetComponent<WallSlideDetector>();
     }

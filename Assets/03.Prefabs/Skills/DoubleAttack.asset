@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d941a91cbca00154d98e6bfcbc4280ae, type: 3}
+  m_Name: DoubleAttack
+  m_EditorClassIdentifier: 
+  playerState: 18
+  machineType: 1
+  icon: {fileID: 21300000, guid: b34b29e8b927f264f8203529539ff50d, type: 3}

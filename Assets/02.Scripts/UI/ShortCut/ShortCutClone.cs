@@ -21,7 +21,6 @@ public class ShortCutClone : MonoBehaviour , IPointerClickHandler
         else _image.color = Color.white;
         _keyCode = keyCodeOrigin;
         TKE = tryKeyEvent;
-        
     }
     public void ResetClone()
     {
@@ -30,15 +29,14 @@ public class ShortCutClone : MonoBehaviour , IPointerClickHandler
         _image.color = Color.clear;
         TKE = null;
     }
-    public ShortCut FindOrigin()
+    public ShortCut GetOrigin()
     {
         ShortCut shortCut = null;
         ShortCutManager.instance.TryGetShortCut(_keyCode, out shortCut);
         return shortCut;
-            
     }
     public void OnPointerClick(PointerEventData eventData)
     {
-        ShortCutManager.instance.ActiveShortCutHandler(_type,_image.sprite, _keyCode, FindOrigin().KE);
+        ShortCutManager.instance.ActiveShortCutHandler(_type,_image.sprite, _keyCode, GetOrigin().KE);
     }
 }

@@ -8,6 +8,7 @@ public class PlayerStateMachine_Fall : PlayerStateMachine
     public override void Awake()
     {
         base.Awake();
+        playerStateType = PlayerState.Fall;
         rb = GetComponent<Rigidbody2D>();
         groundDetector = GetComponent<GroundDetector>();
     }

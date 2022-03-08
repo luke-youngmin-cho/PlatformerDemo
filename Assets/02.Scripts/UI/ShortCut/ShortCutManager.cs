@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ShortCutManager : MonoBehaviour
@@ -10,6 +11,9 @@ public class ShortCutManager : MonoBehaviour
     Dictionary<KeyCode, ShortCut> shortCuts = new Dictionary<KeyCode, ShortCut>();
 
     [SerializeField] ShortCutHandler shortCutHandler;
+
+    Dictionary<KeyCode, float> keyDelayDictionary = new Dictionary<KeyCode, float>();
+    private float delay = 0.5f;
     private void Awake()
     {
         instance = this;
@@ -26,16 +30,30 @@ public class ShortCutManager : MonoBehaviour
     }
     private void Update()
     {
-        ExecuteKeyEvent();
+        UpdateKeyEventDelayDictionary();
+        ExecuteKeyEvent();        
+    }
+    public void UpdateKeyEventDelayDictionary()
+    {
+        for (int i = keyDelayDictionary.Count - 1; i > -1; i--)
+        {
+            KeyValuePair<KeyCode, float> pair = keyDelayDictionary.ElementAt(i);
+            if (Time.time - pair.Value > delay)
+                keyDelayDictionary.Remove(pair.Key);
+        }
     }
     public void ExecuteKeyEvent()
     {
-        ShortCut shortCut = null;
-        if (shortCuts.TryGetValue(keyInput, out shortCut))
+        if (!keyDelayDictionary.ContainsKey(keyInput))
         {
-            shortCut.TryKeyEvent();
-            keyInput = KeyCode.None;
+            ShortCut shortCut = null;
+            if (shortCuts.TryGetValue(keyInput, out shortCut))
+            {
+                keyDelayDictionary.Add(keyInput, Time.time);
+                shortCut.TryKeyEvent();
+            }
         }
+        keyInput = KeyCode.None;
     }
     public void ActiveShortCutHandler(ShortCutType type, Sprite icon, KeyCode keyCode, ShortCut.KeyEvent keyEvent)
     {
@@ -43,9 +61,8 @@ public class ShortCutManager : MonoBehaviour
     }
     public bool TryGetShortCut(KeyCode keyCode,out ShortCut shortCut)
     {
-        Debug.Log($"Try get short cut : {keyCode} , {shortCuts.ContainsKey(keyCode)}");
+        //Debug.Log($"Try get short cut : {keyCode} , {shortCuts.ContainsKey(keyCode)}");
         return shortCuts.TryGetValue(keyCode, out shortCut);
-
     }
     
     private void OnGUI()

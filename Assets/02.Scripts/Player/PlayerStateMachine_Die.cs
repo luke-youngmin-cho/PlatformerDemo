@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 public class PlayerStateMachine_Die : PlayerStateMachine
 {
+    public override void Awake()
+    {
+        base.Awake();
+        playerStateType = PlayerState.Die;
+    }
     public override void UpdateWorkflow()
     {
         switch (state)

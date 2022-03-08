@@ -3,13 +3,14 @@ public class PlayerStateMachine_EdgeClimb : PlayerStateMachine
 {
     Rigidbody2D rb;
     CapsuleCollider2D col;
-    PlayerEdgeDetector edgeDetector;
+    EdgeDetector edgeDetector;
     public override void Awake()
     {
         base.Awake();
+        playerStateType = PlayerState.EdgeClimb;
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<CapsuleCollider2D>();
-        edgeDetector = GetComponent<PlayerEdgeDetector>();
+        edgeDetector = GetComponent<EdgeDetector>();
     }
     public override bool IsExecuteOK()
     {

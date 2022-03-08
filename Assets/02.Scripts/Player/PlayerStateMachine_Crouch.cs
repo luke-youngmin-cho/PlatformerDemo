@@ -11,6 +11,7 @@ public class PlayerStateMachine_Crouch: PlayerStateMachine
     public override void Awake()
     {
         base.Awake();
+        playerStateType = PlayerState.Crouch;
         col = GetComponent<CapsuleCollider2D>();
         groundDetector = GetComponent<GroundDetector>();
         colliderOffsetOriginal = col.offset;

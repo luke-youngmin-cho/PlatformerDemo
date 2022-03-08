@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 public class PlayerStateMachine_Hurt : PlayerStateMachine
 {
+    public override void Awake()
+    {
+        base.Awake();
+        playerStateType = PlayerState.Hurt;
+    }
     public override bool IsExecuteOK()
     {
         bool isOK = false;

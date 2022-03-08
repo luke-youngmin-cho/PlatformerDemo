@@ -5,6 +5,7 @@ public class PlayerStateMachine_Run : PlayerStateMachine
     public override void Awake()
     {
         base.Awake();
+        playerStateType = PlayerState.Run;
         groundDetector = GetComponent<GroundDetector>();
     }
     public override bool IsExecuteOK()

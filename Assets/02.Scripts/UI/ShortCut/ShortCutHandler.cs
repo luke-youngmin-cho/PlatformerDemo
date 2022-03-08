@@ -102,6 +102,9 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
                         shortCutUI = result.gameObject;
                 }
             }
+            // when Short Cut Clone clicked
+            if (newShortCutClone != null)
+                newShortCut = newShortCutClone.GetOrigin();
             // when Short Cut clicked
             if (newShortCut != null)
             {
@@ -114,25 +117,7 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
 
                 gameObject.SetActive(false);
             }
-            // when Short Cut Clone clicked
-            if (newShortCutClone != null)
-            {
-                ShortCut oldShortCut = null;
-                if (ShortCutManager.instance.TryGetShortCut(_keyCode, out oldShortCut))
-                {
-                    newShortCut = newShortCutClone.FindOrigin();
-                    Debug.Log(newShortCut);
-                    if(newShortCut != null)
-                    {
-                        if (newShortCut._keyCode != oldShortCut._keyCode)
-                        {
-                            oldShortCut.RegisterIconAndEvent(newShortCut._type, newShortCut._image.sprite, newShortCut.KE);
-                        }
-                    }
-                }
-                newShortCut.RegisterIconAndEvent(_type, _image.sprite, oldShortCut.KE);
-                gameObject.SetActive(false);
-            }
+            
             // when basic key slot clicked
             if(newBasicKeySlot != null && _type == ShortCutType.BasicKey)
             {
@@ -159,7 +144,12 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
 
             // clicked wrong place
             if (shortCutUI == null)
+            {
+                if (ShortCutManager.instance.TryGetShortCut(_keyCode, out ShortCut oldShortCut) &&
+                   (oldShortCut._type != ShortCutType.BasicKey))
+                    oldShortCut.Clear();
                 gameObject.SetActive(false);
+            }   
             else
                 Debug.Log(shortCutUI);
 

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerLadderDetector : MonoBehaviour
+public class LadderDetector : MonoBehaviour
 {
     [HideInInspector] public bool isGoUpPossible;
     [HideInInspector] public bool isGoDownPossible;

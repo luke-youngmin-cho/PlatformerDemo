@@ -5,7 +5,12 @@ public class PlayerData
 {
     public string nickName;
     public st_Stats stats;
-    public List<st_Skill> skills;
+    public List<st_SkillStats> skillstatsList;
+
+    public PlayerData()
+    {
+        skillstatsList = new List<st_SkillStats>();
+    }
 }
 public struct st_Stats
 {
@@ -33,8 +38,11 @@ public struct st_Stats
     public int magicDefencePen;
     public float moveSpeed;
     public float jumpForce;
+
+    public float statPoint;
+    public float skillPoint;
 }
-public struct st_Skill
+public struct st_SkillStats
 {
     public PlayerState state;
     public int level;

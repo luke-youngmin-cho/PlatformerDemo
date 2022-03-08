@@ -10,6 +10,7 @@ public class PlayerStateMachine_DownJump : PlayerStateMachine
     public override void Awake()
     {
         base.Awake();
+        playerStateType = PlayerState.DownJump;
         rb = GetComponent<Rigidbody2D>();
         groundDetector = GetComponent<GroundDetector>();
         col = GetComponent<CapsuleCollider2D>();

@@ -26,7 +26,7 @@ public class PlayerDataManager : MonoBehaviour
         PlayerData playerData = new PlayerData();
         playerData.nickName = nickName;
         playerData.stats = PlayerSettings.basicStats;
-        playerData.skills = PlayerSettings.basicSkills;
+        playerData.skillstatsList = PlayerSettings.basicSkills;
         currentPlayerData = playerData;
         SavePlayerData(playerData);
     }
@@ -36,7 +36,7 @@ public class PlayerDataManager : MonoBehaviour
         {
             nickName = currentPlayerData.nickName,
             stats = player.stats,
-            skills = player.skills,
+            skillstatsList = player.skillStatsList,
         };
         string jsonPath = Application.persistentDataPath + "/" + "Player_" + data.nickName + ".json";
         string jsonData = JsonConvert.SerializeObject(data, Formatting.Indented);

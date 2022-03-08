@@ -13,6 +13,7 @@ public class PlayerStateMachine_Attack : PlayerStateMachine
     override public void Awake()
     {
         base.Awake();
+        playerStateType = PlayerState.Attack;
         targetCaster = GetComponent<TargetCaster>();
         col = GetComponent<CapsuleCollider2D>();
     }

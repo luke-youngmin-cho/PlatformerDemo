@@ -2,13 +2,14 @@
 public class PlayerStateMachine_EdgeGrab : PlayerStateMachine
 {
     Rigidbody2D rb;
-    PlayerEdgeDetector edgeDetector;
+    EdgeDetector edgeDetector;
     WallSlideDetector wallSlideDetector;
     public override void Awake()
     {
         base.Awake();
+        playerStateType = PlayerState.EdgeGrab;
         rb = GetComponent<Rigidbody2D>();
-        edgeDetector = GetComponent<PlayerEdgeDetector>();
+        edgeDetector = GetComponent<EdgeDetector>();
         wallSlideDetector = GetComponent<WallSlideDetector>();
     }
     public override bool IsExecuteOK()

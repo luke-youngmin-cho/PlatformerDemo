@@ -6,10 +6,20 @@ public class PlayerStateMachine : MonoBehaviour
 {
     public bool isReady { get { return state == State.Idle; } }
     public bool isStarted {  get { return state >= State.Prepare; } }
-    public bool isActiveSkill = true;
+    public MachineType machineType;
     public KeyCode keyCode;
     public State state;
-    public PlayerState playerStateType;
+    private PlayerState _playerStateType;
+    public PlayerState playerStateType
+    {
+        set
+        {
+            _playerStateType = value;
+            animationName = _playerStateType.ToString();
+            animationTime = animationManager.GetAnimationTime(animationName);
+        }
+        get { return _playerStateType; }
+    }
     [HideInInspector] public PlayerState nextPlayerState = PlayerState.Idle; // normally state will change to idle when machine finished
     [HideInInspector] public string animationName;
     [HideInInspector] public float animationTime;
@@ -28,7 +38,7 @@ public class PlayerStateMachine : MonoBehaviour
         manager = gameObject.GetComponent<PlayerStateMachineManager>();
         animationManager = gameObject.GetComponent<AnimationManager>();
         player = GetComponent<Player>();
-        animationName = playerStateType.ToString();
+        animationName = _playerStateType.ToString();
         animationTime = animationManager.GetAnimationTime(animationName);
     }
     public virtual bool IsExecuteOK()
@@ -84,4 +94,10 @@ public class PlayerStateMachine : MonoBehaviour
         OnAction,
         Finished,
     }
+}
+public enum MachineType
+{
+    BasicSkill,
+    ActiveSkill,
+    PassiveSkill
 }
