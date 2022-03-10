@@ -7,7 +7,7 @@ using UnityEngine.UI;
 // But when it derives ShortCut, InventoryItem or Skill and so on also can put them on this. 
 // if there have good way to prevent other short-cut relative items, 
 // It would be nice way that BasicKey is derived from ShortCut
-public class BasicKeyController : MonoBehaviour, IPointerClickHandler
+public class BasicKeyHandler : MonoBehaviour, IPointerClickHandler
 {
     public int slotNumber;
     public BasicKey basicKey;
@@ -19,25 +19,25 @@ public class BasicKeyController : MonoBehaviour, IPointerClickHandler
 
     private void Start()
     {
-        _Raycaster = InventoryManager.instance.transform.parent.GetComponent<GraphicRaycaster>();
+        _Raycaster = InventoryView.instance.transform.parent.GetComponent<GraphicRaycaster>();
         _EventSystem = FindObjectOfType<EventSystem>();
-        gameObject.GetComponent<Image>().sprite = basicKey.icon.sprite;
+        gameObject.GetComponent<Image>().sprite = basicKey.icon;
     }
     public void Select()
     {
-        BasicKeyManager.instance.selectedBasicKey = this.gameObject;
-        transform.SetParent(BasicKeyManager.instance.transform);
+        BasicKeysView.instance.selectedBasicKey = this.gameObject;
+        transform.SetParent(BasicKeysView.instance.transform);
     }
     public void Deselect()
     {
-        BasicKeyManager.instance.selectedBasicKey = null;
-        BasicKeySlot slot = BasicKeyManager.instance.GetSlot(slotNumber);
+        BasicKeysView.instance.selectedBasicKey = null;
+        BasicKeySlot slot = BasicKeysView.instance.GetSlot(slotNumber);
         transform.SetParent(slot.transform);
         transform.position = transform.parent.position;
     }
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (BasicKeyManager.instance.selectedBasicKey == null)
+        if (BasicKeysView.instance.selectedBasicKey == null)
         {
             if (eventData.button == PointerEventData.InputButton.Left)
                 Select();
@@ -88,10 +88,10 @@ public class BasicKeyController : MonoBehaviour, IPointerClickHandler
                     if(shortCut._type == ShortCutType.BasicKey)
                     {
                         BasicKey oldBasicKey = BasicKeyAssets.instance.GetBasicKeyBySpriteName(shortCut._image.sprite.name);
-                        BasicKeyManager.instance.CreateBasicKeyObjectOnSlot(oldBasicKey,slotNumber);
+                        BasicKeysView.instance.CreateBasicKeyObjectOnSlot(oldBasicKey,slotNumber);
                     }
-                    shortCut.RegisterIconAndEvent(ShortCutType.BasicKey, basicKey.icon.sprite, basicKey.OnUse);
-                    BasicKeyManager.instance.GetSlot(slotNumber).Clear();
+                    shortCut.RegisterIconAndEvent(ShortCutType.BasicKey, basicKey.icon, basicKey.OnUse);
+                    BasicKeysView.instance.GetSlot(slotNumber).Clear();
                     Destroy(this.gameObject);
                 }
 

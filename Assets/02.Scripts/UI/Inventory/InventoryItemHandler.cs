@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-public class InventoryItemController : MonoBehaviour, IPointerClickHandler
+public class InventoryItemHandler : MonoBehaviour, IPointerClickHandler
 {
     public int slotNumber;
     public KeyCode shortCutKeyCode = KeyCode.None;
@@ -30,18 +30,7 @@ public class InventoryItemController : MonoBehaviour, IPointerClickHandler
                 inventoryItemObject.transform.GetChild(2).GetComponent<Text>().text = "";
             else
             {
-                // Clear relatives
-                InventoryManager.instance.GetSlot(slotNumber).ResetSlot();
-                if(shortCutKeyCode != KeyCode.None)
-                {
-                    ShortCut shortCut = null;
-                    if (ShortCutManager.instance.TryGetShortCut(shortCutKeyCode,out shortCut))
-                    {
-                        shortCut.Clear();
-                    }
-                        
-                }
-                Debug.Log("is destoried");
+                InventoryView.instance.GetSlot(slotNumber).ResetSlot();  
                 Destroy(this.gameObject);
             }
         }
@@ -72,7 +61,7 @@ public class InventoryItemController : MonoBehaviour, IPointerClickHandler
     }
     private void Start()
     {
-        _Raycaster = InventoryManager.instance.transform.parent.GetComponent<GraphicRaycaster>();
+        _Raycaster = InventoryView.instance.transform.parent.GetComponent<GraphicRaycaster>();
         _EventSystem = FindObjectOfType<EventSystem>();
         itemPrefab = ItemAssets.instance.GetItemPrefabByName(itemName);
     }
@@ -84,28 +73,28 @@ public class InventoryItemController : MonoBehaviour, IPointerClickHandler
     }
     virtual public void DropItem()
     {
-        GameObject go = Instantiate(itemPrefab, InventoryManager.instance.player.transform.position,Quaternion.identity);
+        GameObject go = Instantiate(itemPrefab, InventoryView.instance.player.transform.position,Quaternion.identity);
         go.GetComponent<ItemController>().num = _itemNum;
 
         go.transform.SetParent(null);
-        InventoryManager.instance.GetSlot(slotNumber).ResetSlot();
+        InventoryView.instance.GetSlot(slotNumber).ResetSlot();
         Destroy(this.gameObject);
     }
     public void SelectItem()
     {
-        InventoryManager.instance.selectedItem = this.gameObject;
-        transform.SetParent(InventoryManager.instance.transform);
+        InventoryView.instance.selectedItem = this.gameObject;
+        transform.SetParent(InventoryView.instance.transform);
     }
     public void DeselectItem()
     {
-        InventoryManager.instance.selectedItem = null;
-        InventorySlot slot = InventoryManager.instance.GetSlot(slotNumber);
+        InventoryView.instance.selectedItem = null;
+        InventorySlot slot = InventoryView.instance.GetSlot(slotNumber);
         transform.SetParent(slot.transform);
         transform.position = transform.parent.position;
     }
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (InventoryManager.instance.selectedItem == null)
+        if (InventoryView.instance.selectedItem == null)
         {
             if (eventData.button == PointerEventData.InputButton.Left)
                 SelectItem();
@@ -163,16 +152,7 @@ public class InventoryItemController : MonoBehaviour, IPointerClickHandler
                 // Clicked on Shortcut
                 if (shortCut != null)
                 {
-                    if(shortCutKeyCode != KeyCode.None)
-                    {
-                        ShortCut oldShortCut = null;
-                        if(ShortCutManager.instance.TryGetShortCut(shortCutKeyCode, out oldShortCut))
-                        {
-                            oldShortCut.Clear();
-                        }
-                    }
                     shortCut.RegisterIconAndEvent(ShortCutType.Item, itemIcon, UseItem);
-                    shortCutKeyCode = shortCut._keyCode;
                     DeselectItem();
                 }   
 

@@ -50,7 +50,7 @@ public class ShortCut : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        ShortCutManager.instance.ActiveShortCutHandler(_type, _image.sprite, _keyCode, KE);
+        ShortCutsView.instance.ActiveShortCutHandler(_type, _image.sprite, _keyCode, KE);
     }
 }
 

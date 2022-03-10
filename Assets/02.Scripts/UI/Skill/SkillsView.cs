@@ -3,15 +3,15 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SkillManager : MonoBehaviour
+public class SkillsView : MonoBehaviour
 {
-    public static SkillManager instance;
+    public static SkillsView instance;
     public bool isReady = false;
     
     public GameObject skillInfoPrefab;
     public Transform content;
 
-    public SkillController skillController;
+    public SkillHandler skillController;
 
     public List<GameObject> skillSlots = new List<GameObject>();
     private Player player;

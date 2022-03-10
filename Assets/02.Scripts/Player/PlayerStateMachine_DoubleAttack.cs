@@ -14,6 +14,7 @@ public class PlayerStateMachine_DoubleAttack : PlayerStateMachine
     {
         base.Awake();
         playerStateType = PlayerState.DoubleAttack;
+        machineType = MachineType.ActiveSkill;
         targetCaster = GetComponent<TargetCaster>();
         col = GetComponent<CapsuleCollider2D>();
     }

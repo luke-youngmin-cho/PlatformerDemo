@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ShortCutManager : MonoBehaviour
+public class ShortCutsView : MonoBehaviour
 {
-    public static ShortCutManager instance;
+    public static ShortCutsView instance;
     public bool isReady = false;
     KeyCode keyInput;
     Dictionary<KeyCode, ShortCut> shortCuts = new Dictionary<KeyCode, ShortCut>();

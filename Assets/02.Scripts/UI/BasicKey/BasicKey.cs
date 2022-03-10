@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class BasicKey : MonoBehaviour
 {
-    public Image icon;
+    public Sprite icon;
     public virtual void OnUse()
     {
 

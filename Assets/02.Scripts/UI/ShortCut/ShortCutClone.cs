@@ -32,11 +32,11 @@ public class ShortCutClone : MonoBehaviour , IPointerClickHandler
     public ShortCut GetOrigin()
     {
         ShortCut shortCut = null;
-        ShortCutManager.instance.TryGetShortCut(_keyCode, out shortCut);
+        ShortCutsView.instance.TryGetShortCut(_keyCode, out shortCut);
         return shortCut;
     }
     public void OnPointerClick(PointerEventData eventData)
     {
-        ShortCutManager.instance.ActiveShortCutHandler(_type,_image.sprite, _keyCode, GetOrigin().KE);
+        ShortCutsView.instance.ActiveShortCutHandler(_type,_image.sprite, _keyCode, GetOrigin().KE);
     }
 }

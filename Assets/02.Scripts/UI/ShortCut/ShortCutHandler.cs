@@ -22,7 +22,7 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
     }
     private void Start()
     {
-        _Raycaster = ShortCutManager.instance.transform.parent.GetComponent<GraphicRaycaster>();
+        _Raycaster = ShortCutsView.instance.transform.parent.GetComponent<GraphicRaycaster>();
         _EventSystem = FindObjectOfType<EventSystem>();
     }
     private void OnEnable()
@@ -109,7 +109,7 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
             if (newShortCut != null)
             {
                 ShortCut oldShortCut = null;
-                if (ShortCutManager.instance.TryGetShortCut(_keyCode, out oldShortCut))
+                if (ShortCutsView.instance.TryGetShortCut(_keyCode, out oldShortCut))
                 {
                     oldShortCut.RegisterIconAndEvent(newShortCut._type, newShortCut._image.sprite, newShortCut.KE);
                 }
@@ -121,12 +121,12 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
             // when basic key slot clicked
             if(newBasicKeySlot != null && _type == ShortCutType.BasicKey)
             {
-                if (ShortCutManager.instance.TryGetShortCut(_keyCode, out ShortCut oldShortCut))
+                if (ShortCutsView.instance.TryGetShortCut(_keyCode, out ShortCut oldShortCut))
                 {
                     if (newBasicKeySlot.isEmpty == false)
                     {
                         oldShortCut.RegisterIconAndEvent(ShortCutType.BasicKey,
-                                                         newBasicKeySlot.controller.basicKey.icon.sprite,
+                                                         newBasicKeySlot.controller.basicKey.icon,
                                                          newBasicKeySlot.controller.basicKey.OnUse);
                         Destroy(newBasicKeySlot.controller.gameObject);
                         newBasicKeySlot.Clear();
@@ -137,7 +137,7 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
                     }
                 }
                     
-                BasicKeyManager.instance.CreateBasicKeyObjectOnSlot(_image.sprite.name, newBasicKeySlot);
+                BasicKeysView.instance.CreateBasicKeyObjectOnSlot(_image.sprite.name, newBasicKeySlot);
 
                 gameObject.SetActive(false);
             }
@@ -145,7 +145,7 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
             // clicked wrong place
             if (shortCutUI == null)
             {
-                if (ShortCutManager.instance.TryGetShortCut(_keyCode, out ShortCut oldShortCut) &&
+                if (ShortCutsView.instance.TryGetShortCut(_keyCode, out ShortCut oldShortCut) &&
                    (oldShortCut._type != ShortCutType.BasicKey))
                     oldShortCut.Clear();
                 gameObject.SetActive(false);

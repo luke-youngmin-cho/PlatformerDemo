@@ -17,7 +17,7 @@ public class ReadyChecker : MonoBehaviour
 
     IEnumerator E_CheckAllReady()
     {
-        yield return new WaitUntil(() => inventoryManagerGO.GetComponent<InventoryManager>().isReady);
+        yield return new WaitUntil(() => inventoryManagerGO.GetComponent<InventoryView>().isReady);
         inventoryManagerGO.SetActive(false);
         isReady = true;
     }

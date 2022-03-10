@@ -69,7 +69,7 @@ public class ItemController : MonoBehaviour
     {
         if (pickUpEnable == false || isPickedUp) return;
         isPickedUp = true;
-        InventoryManager.instance.AddItem(item, num);
+        InventoryView.instance.AddItem(item, num);
         StartCoroutine(E_PickUpEffect(player));
 
     }

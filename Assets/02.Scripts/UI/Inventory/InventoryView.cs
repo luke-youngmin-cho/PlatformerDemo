@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-public class InventoryManager : MonoBehaviour
+public class InventoryView : MonoBehaviour
 {
-    public static InventoryManager instance;
+    public static InventoryView instance;
     public bool isReady = false;
     public Transform itemContent;
     public GameObject inventoryItemPrefab;
@@ -46,7 +46,7 @@ public class InventoryManager : MonoBehaviour
         Debug.Log($"Do Add Item {remains}");
         while (remains > 0)
         {
-            InventoryItemController controller = FindItemControllerEnoughSpace(item);
+            InventoryItemHandler controller = FindItemControllerEnoughSpace(item);
             if (controller != null)
             {
                 Debug.Log("Increase number of exist item controller");
@@ -68,7 +68,7 @@ public class InventoryManager : MonoBehaviour
                 if (slot != null)
                 {
                     GameObject go = Instantiate(inventoryItemPrefab, slot.transform);
-                    controller = go.GetComponent<InventoryItemController>();
+                    controller = go.GetComponent<InventoryItemHandler>();
                     controller.slotNumber = slot.num;
                     controller.inventoryItemObject = go;
                     controller.type = item.type;
@@ -106,10 +106,10 @@ public class InventoryManager : MonoBehaviour
         }
         return slot;
     }
-    private InventoryItemController FindItemControllerEnoughSpace(Item item)
+    private InventoryItemHandler FindItemControllerEnoughSpace(Item item)
     {
-        InventoryItemController controller = null;
-        InventoryItemController[] controllers = GetComponentsInChildren<InventoryItemController>();
+        InventoryItemHandler controller = null;
+        InventoryItemHandler[] controllers = GetComponentsInChildren<InventoryItemHandler>();
         //Debug.Log(controllers.Length);
         for (int i = 0; i < controllers.Length; i++)
         {
@@ -121,6 +121,18 @@ public class InventoryManager : MonoBehaviour
             }
         }
         return controller;
+    }
+    public InventoryItemHandler GetInventoryItemControllerBySlotNum(int slotNum)
+    {
+        InventoryItemHandler[] controllers = GetComponentsInChildren<InventoryItemHandler>();
+        foreach (var controller in controllers)
+        {
+            if (controller.slotNumber == slotNum)
+            {   
+                return controller;
+            }   
+        }
+        return null;
     }
     public InventorySlot GetSlot(int slotNum)
     {

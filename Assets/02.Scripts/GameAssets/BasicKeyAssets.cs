@@ -20,7 +20,7 @@ public class BasicKeyAssets : MonoBehaviour
         BasicKey tmpBasicKey = null;
         foreach (var basicKey in basicKeys)
         {
-            if (basicKey.icon.sprite.name == name)
+            if (basicKey.icon.name == name)
                tmpBasicKey = basicKey;
         }
         return tmpBasicKey;

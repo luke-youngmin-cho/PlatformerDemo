@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
+    public static Player instance;
     public st_Stats stats;
     public List<st_SkillStats> skillStatsList;
     public bool isDead;
@@ -78,6 +79,7 @@ public class Player : MonoBehaviour
     private CapsuleCollider2D col;
     private void Awake()
     {
+        instance = this;
         stats = PlayerDataManager.instance.currentPlayerData.stats;
         skillStatsList = PlayerDataManager.instance.currentPlayerData.skillstatsList;
         controller = GetComponent<PlayerStateMachineManager>();

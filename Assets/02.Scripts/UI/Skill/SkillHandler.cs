@@ -8,7 +8,7 @@ using UnityEngine.UI;
 // But when it derives ShortCut, InventoryItem or Skill and so on also can put them on this. 
 // if there have good way to prevent other short-cut relative items, 
 // It would be nice way that BasicKey is derived from ShortCut
-public class SkillController : MonoBehaviour, IPointerClickHandler
+public class SkillHandler : MonoBehaviour, IPointerClickHandler
 {
     public Skill skill;
     public Image image;
@@ -19,7 +19,7 @@ public class SkillController : MonoBehaviour, IPointerClickHandler
     PlayerStateMachineManager _StateMachineManager;
     private void Start()
     {
-        _Raycaster = SkillManager.instance.transform.parent.GetComponent<GraphicRaycaster>();
+        _Raycaster = SkillsView.instance.transform.parent.GetComponent<GraphicRaycaster>();
         _EventSystem = FindObjectOfType<EventSystem>();
         StartCoroutine(E_Start());
     }
@@ -99,7 +99,7 @@ public class SkillController : MonoBehaviour, IPointerClickHandler
                 }
 
                 shortCut.RegisterIconAndEvent(ShortCutType.Skill, skill.icon, 
-                    delegate {_StateMachineManager.keyInput = shortCut._keyCode; Debug.Log($"{shortCut._keyCode} is In"); });
+                    delegate {_StateMachineManager.keyInput = shortCut._keyCode;});
 
                 gameObject.SetActive(false);
             }

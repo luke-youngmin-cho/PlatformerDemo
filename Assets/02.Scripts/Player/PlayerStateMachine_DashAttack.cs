@@ -16,6 +16,7 @@ public class PlayerStateMachine_DashAttack : PlayerStateMachine
     {
         base.Awake();
         playerStateType = PlayerState.DashAttack;
+        machineType = MachineType.ActiveSkill;
         targetCaster = GetComponent<TargetCaster>();
         col = GetComponent<CapsuleCollider2D>();
     }

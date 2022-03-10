@@ -25,11 +25,11 @@ public class UIManager : MonoBehaviour
     IEnumerator E_Start()
     {
         menuView.SetActive(false);
-        yield return new WaitUntil(() => shortCutView.GetComponentInParent<ShortCutManager>().isReady);
+        yield return new WaitUntil(() => shortCutView.GetComponentInParent<ShortCutsView>().isReady);
         shortCutView.SetActive(false);
-        yield return new WaitUntil(() => itemsView.GetComponent<InventoryManager>().isReady);
+        yield return new WaitUntil(() => itemsView.GetComponent<InventoryView>().isReady);
         itemsView.SetActive(false);
-        yield return new WaitUntil(()=> skillsView.GetComponent<SkillManager>().isReady);
+        yield return new WaitUntil(()=> skillsView.GetComponent<SkillsView>().isReady);
         skillsView.SetActive(false);
         isReady = true;
     }

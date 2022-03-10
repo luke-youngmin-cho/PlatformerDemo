@@ -6,14 +6,12 @@ using UnityEngine;
 /// </summary>
 public class PlayerStateMachineManager : MonoBehaviour
 {
+    public static PlayerStateMachineManager instance;
     public bool controlEnabled = true;
 
     [Header("Parameters")]
     public float moveInputOffset = 0.15f;
     public Vector2 knockBackForce;
-
-    // audio
-    // todo -> add some sounds
 
     [Header("States")]
     public PlayerState newPlayerState = PlayerState.Idle;
@@ -79,6 +77,7 @@ public class PlayerStateMachineManager : MonoBehaviour
     
     void Awake()
     {
+        instance = this; 
         player = GetComponent<Player>();
         rb = GetComponent<Rigidbody2D>();
         groundDetector = GetComponent<GroundDetector>();
@@ -156,7 +155,6 @@ public class PlayerStateMachineManager : MonoBehaviour
                 // down arrow
                 if (Input.GetKey(KeyCode.DownArrow))
                 {
-                    //Debug.Log($"{newPlayerState}. {oldPlayerState}");
                     if (machineDictionaryOfPlayerState[PlayerState.Crouch].IsExecuteOK())
                         ChangePlayerState(PlayerState.Crouch);
 
@@ -169,12 +167,17 @@ public class PlayerStateMachineManager : MonoBehaviour
                 // up arrow
                 if (Input.GetKey(KeyCode.UpArrow))
                 {
-                    Debug.Log(machineDictionaryOfPlayerState[PlayerState.LadderGoUp].IsExecuteOK());
                     if (machineDictionaryOfPlayerState[PlayerState.LadderGoUp].IsExecuteOK())
                         ChangePlayerState(PlayerState.LadderGoUp);
 
                     if (machineDictionaryOfPlayerState[PlayerState.EdgeGrab].IsExecuteOK())
                         ChangePlayerState(PlayerState.EdgeGrab);
+                }
+                // Alt 
+                if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+                {
+                    if (machineDictionaryOfPlayerState[PlayerState.Jump].IsExecuteOK())
+                        ChangePlayerState(PlayerState.Jump);
                 }
                 if (machineDictionaryOfPlayerState[PlayerState.Fall].IsExecuteOK())
                     ChangePlayerState(PlayerState.Fall);

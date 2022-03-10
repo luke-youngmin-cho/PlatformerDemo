@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BasicKeyManager : MonoBehaviour
+public class BasicKeysView : MonoBehaviour
 {
-    public static BasicKeyManager instance;
+    public static BasicKeysView instance;
     public bool isReady = false;
     public GameObject basicKeyControllerPrefab;
     public GameObject basicKeySlotPrefab;
@@ -64,15 +64,27 @@ public class BasicKeyManager : MonoBehaviour
     public void CreateBasicKeyObjectOnSlot(BasicKey basicKey, int slotNum)
     {
         GameObject go = Instantiate(basicKeyControllerPrefab);
-        BasicKeyController controller = go.GetComponent<BasicKeyController>();
+        BasicKeyHandler controller = go.GetComponent<BasicKeyHandler>();
         controller.basicKey = basicKey;
         slots[slotNum].SetHere(controller);
     }
     public void CreateBasicKeyObjectOnSlot(string spriteName, BasicKeySlot slot)
     {
         GameObject go = Instantiate(basicKeyControllerPrefab);
-        BasicKeyController controller = go.GetComponent<BasicKeyController>();
+        BasicKeyHandler controller = go.GetComponent<BasicKeyHandler>();
         controller.basicKey = BasicKeyAssets.instance.GetBasicKeyBySpriteName(spriteName);
         slot.SetHere(controller);
+    }
+    public BasicKeyHandler GetBasicKeyControllerByName(string basicKeyName)
+    {
+        BasicKeyHandler[] controllers = basicKeyParent.GetComponentsInChildren<BasicKeyHandler>();
+        foreach (BasicKeyHandler controller in controllers)
+        {
+            if (controller.basicKey.icon.name == basicKeyName)
+            {
+                return controller;
+            }   
+        }
+        return null;
     }
 }
