@@ -4,17 +4,17 @@ using System.Collections.Generic;
 [System.Serializable]
 public class ShortCutData
 {
-    public List<ShortCutData_Item> itemsData;
+    public List<ShortCutData_SpendItem> itemsData;
     public List<ShortCutData_BasicKey> basicKeysData;
     public List<ShortCutData_Skill> skillsData;
-    ShortCutData()
+    public ShortCutData()
     {
-        itemsData = new List<ShortCutData_Item>();
+        itemsData = new List<ShortCutData_SpendItem>();
         basicKeysData = new List<ShortCutData_BasicKey>();
         skillsData = new List<ShortCutData_Skill>();
     }
 
-    public void AddShortCutItemData(ShortCutData_Item data)
+    public void AddShortCutItemData(ShortCutData_SpendItem data)
     {
         for (int i = itemsData.Count -1; i > -1; i--)
         {
@@ -50,21 +50,30 @@ public class ShortCutData
             }
         }
     }
+    public void Clear()
+    {
+        itemsData.Clear();
+        basicKeysData.Clear();
+        skillsData.Clear();
+    }
 }
 
-public struct ShortCutData_Item
+[System.Serializable]
+public struct ShortCutData_SpendItem
 {
     public KeyCode keyCode;
     public ShortCutType type;
     public ItemType itemType;
     public int slotNum;
 }
+[System.Serializable]
 public struct ShortCutData_BasicKey
 {
     public KeyCode keyCode;
     public ShortCutType type;
     public string basicKeyName;
 }
+[System.Serializable]
 public struct ShortCutData_Skill
 {
     public KeyCode keyCode;

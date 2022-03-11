@@ -11,6 +11,7 @@ public class Item : ScriptableObject
     public Sprite icon;
 }
 
+[System.Serializable]
 public enum ItemType
 {
     Equip,

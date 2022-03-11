@@ -4,30 +4,25 @@ public class InventorySlot : MonoBehaviour
 {
     public bool isEmpty = true;
     public int num;
-    public InventoryItemHandler controller;
-    public void SetItemHere(InventoryItemHandler newController)
+    public InventoryItemHandlerBase handler;
+    public void SetItemHere(InventoryItemHandlerBase newController)
     {   
-        if(controller != null)
+        if(handler != null)
         {
-            InventoryView.instance.GetSlot(newController.slotNumber).controller = controller;
-            controller.slotNumber = newController.slotNumber;
-            controller.DeselectItem();
-        }
-        else
-        {
-            InventoryView.instance.GetSlot(newController.slotNumber).ResetSlot();
-        }
-        
+            InventoryView.instance.GetItemsViewByItemType(handler.item.type).GetSlot(newController.slotNumber).handler = handler;
+            handler.slotNumber = newController.slotNumber;
+            handler.DeselectItem();
+        }        
 
-        controller = newController;
-        controller.slotNumber = num;
-        controller.DeselectItem();
+        handler = newController;
+        handler.slotNumber = num;
+        handler.DeselectItem();
         isEmpty = false;
     }
-    public void ResetSlot()
+    public void Clear()
     {
         isEmpty = true;
-        controller = null;
+        handler = null;
     }
 
 }

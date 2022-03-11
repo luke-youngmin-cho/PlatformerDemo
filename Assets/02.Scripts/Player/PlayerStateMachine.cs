@@ -76,10 +76,16 @@ public class PlayerStateMachine : MonoBehaviour
     public virtual void Execute()
     {
         state = State.Prepare;
+        st_Stats tmpStats = player.stats;
         if(player.stats.hpMax > hpRequired)
-            player.stats.hpMax -= hpRequired;
+        {
+            tmpStats.hp -= hpRequired;
+        }
         if(player.stats.mpMax > mpRequired)
-            player.stats.mpMax -= mpRequired;
+        {
+            tmpStats.mp -= mpRequired;
+        }
+        player.stats = tmpStats;
     }
     public virtual void ResetMachine()
     {

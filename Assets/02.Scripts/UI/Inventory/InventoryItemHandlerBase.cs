@@ -3,22 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-public class InventoryItemHandler : MonoBehaviour, IPointerClickHandler
+public class InventoryItemHandlerBase : MonoBehaviour, IPointerClickHandler
 {
-    public int slotNumber;
-    public KeyCode shortCutKeyCode = KeyCode.None;
+    [HideInInspector] public int slotNumber = -1;
     public GameObject inventoryItemObject;
-    public GameObject itemPrefab;
-    private string _itemName;
-    public string itemName
-    {
-        set
-        {
-            _itemName = value;
-            transform.GetChild(0).GetComponent<Text>().text = _itemName;
-        }
-        get { return _itemName; }
-    }
+    [HideInInspector] public Item item;
+    [HideInInspector] public GameObject itemPrefab;
+    
     private int _itemNum;
     public int itemNum
     {
@@ -30,40 +21,27 @@ public class InventoryItemHandler : MonoBehaviour, IPointerClickHandler
                 inventoryItemObject.transform.GetChild(2).GetComponent<Text>().text = "";
             else
             {
-                InventoryView.instance.GetSlot(slotNumber).ResetSlot();  
+                InventoryView.instance.GetItemsViewByItemType(item.type).GetSlot(slotNumber).Clear();
+                InventoryDataManager.instance.data.RemoveData(item.type, item.name, slotNumber);
                 Destroy(this.gameObject);
             }
+            if(DataManager.isApplied)
+                InventoryDataManager.instance.data.AddData(item.type, item.name, _itemNum, slotNumber);
         }
         get { return _itemNum; }
     }
-    public int itemNumMax;
-    public int addPossibleNum { get { return itemNumMax - itemNum; } }
-    private Sprite _itemIcon;
-    public Sprite itemIcon
-    {
-        set
-        {
-            _itemIcon = value;
-            inventoryItemObject.transform.GetChild(1).GetComponent<Image>().sprite = _itemIcon;
-        }
-        get { return _itemIcon; }
-    }
-    public ItemType type;
-    public int price;
+    public int addPossibleNum { get { return item.numMax - itemNum; } }
 
     // UI Raycast event
-    GraphicRaycaster _Raycaster;
-    PointerEventData _PointerEventData;
-    EventSystem _EventSystem;
-    private void Awake()
-    {
-        
-    }
+    [HideInInspector] public GraphicRaycaster _Raycaster;
+    [HideInInspector] public PointerEventData _PointerEventData;
+    [HideInInspector] public EventSystem _EventSystem;
     private void Start()
     {
-        _Raycaster = InventoryView.instance.transform.parent.GetComponent<GraphicRaycaster>();
+        _Raycaster = UIManager.instance.playerUI.GetComponent<GraphicRaycaster>();
         _EventSystem = FindObjectOfType<EventSystem>();
-        itemPrefab = ItemAssets.instance.GetItemPrefabByName(itemName);
+        inventoryItemObject.transform.GetChild(1).GetComponent<Image>().sprite = item.icon;
+        itemPrefab = ItemAssets.instance.GetItemPrefabByName(item.itemName);
     }
     virtual public void UseItem()
     {
@@ -73,28 +51,29 @@ public class InventoryItemHandler : MonoBehaviour, IPointerClickHandler
     }
     virtual public void DropItem()
     {
-        GameObject go = Instantiate(itemPrefab, InventoryView.instance.player.transform.position,Quaternion.identity);
+        GameObject go = Instantiate(itemPrefab, Player.instance.transform.position,Quaternion.identity);
         go.GetComponent<ItemController>().num = _itemNum;
 
         go.transform.SetParent(null);
-        InventoryView.instance.GetSlot(slotNumber).ResetSlot();
+        InventoryView.instance.GetItemsViewByItemType(item.type).GetSlot(slotNumber).Clear();
+        InventoryDataManager.instance.data.RemoveData(item.type, item.name, slotNumber);
         Destroy(this.gameObject);
     }
     public void SelectItem()
     {
-        InventoryView.instance.selectedItem = this.gameObject;
-        transform.SetParent(InventoryView.instance.transform);
+        InventoryView.instance.GetItemsViewByItemType(item.type).selectedItem = this.gameObject;
+        transform.SetParent(UIManager.instance.playerUI.transform);
     }
     public void DeselectItem()
     {
-        InventoryView.instance.selectedItem = null;
-        InventorySlot slot = InventoryView.instance.GetSlot(slotNumber);
+        InventoryView.instance.GetItemsViewByItemType(item.type).selectedItem = null;
+        InventorySlot slot = InventoryView.instance.GetItemsViewByItemType(item.type).GetSlot(slotNumber);
         transform.SetParent(slot.transform);
         transform.position = transform.parent.position;
     }
-    public void OnPointerClick(PointerEventData eventData)
+    virtual public void OnPointerClick(PointerEventData eventData)
     {
-        if (InventoryView.instance.selectedItem == null)
+        if (InventoryView.instance.GetItemsViewByItemType(item.type).selectedItem == null)
         {
             if (eventData.button == PointerEventData.InputButton.Left)
                 SelectItem();
@@ -119,24 +98,19 @@ public class InventoryItemHandler : MonoBehaviour, IPointerClickHandler
                 foreach (RaycastResult result in results)
                 {
                     //Check InventorySlot
-                    InventorySlot tmpSlot = null;
-                    if(result.gameObject.TryGetComponent(out tmpSlot)){
+                    if(result.gameObject.TryGetComponent(out InventorySlot tmpSlot)){
                         slot = tmpSlot;
                     }
                     // Check ShortKey
-                    ShortCut tmpShortCut = null;
-                    if(result.gameObject.TryGetComponent(out tmpShortCut)){
+                    if(result.gameObject.TryGetComponent(out ShortCut tmpShortCut)){
                         shortCut = tmpShortCut;
                     }
                     // Check ShortCutClone
-                    ShortCutClone tmpShortCutClone = null;
-                    if (result.gameObject.TryGetComponent(out tmpShortCutClone))
-                    {
+                    if (result.gameObject.TryGetComponent(out ShortCutClone tmpShortCutClone)){
                         shortCutClone = tmpShortCutClone;
                     }
                     //Check All UI. (if not exist, drop item to field)
-                    CanvasRenderer tmpCanvasRenderer = null;
-                    if (result.gameObject.TryGetComponent<CanvasRenderer>(out tmpCanvasRenderer)){
+                    if (result.gameObject.TryGetComponent<CanvasRenderer>(out CanvasRenderer tmpCanvasRenderer)){
                         if(tmpCanvasRenderer.gameObject != this.gameObject)
                             canvasRenderer = tmpCanvasRenderer;
                     }
@@ -144,7 +118,10 @@ public class InventoryItemHandler : MonoBehaviour, IPointerClickHandler
                 }
                 // Clicked on slot
                 if(slot != null)
+                {
+                    InventoryView.instance.GetItemsViewByItemType(item.type).GetSlot(slotNumber).Clear();
                     slot.SetItemHere(this);
+                }
 
                 // Clicked on ShortCutClone
                 if (shortCutClone != null)
@@ -152,7 +129,7 @@ public class InventoryItemHandler : MonoBehaviour, IPointerClickHandler
                 // Clicked on Shortcut
                 if (shortCut != null)
                 {
-                    shortCut.RegisterIconAndEvent(ShortCutType.Item, itemIcon, UseItem);
+                    shortCut.RegisterIconAndEvent(ShortCutType.Item, item.icon, UseItem);
                     DeselectItem();
                 }   
 

@@ -19,14 +19,14 @@ public class BasicKeyHandler : MonoBehaviour, IPointerClickHandler
 
     private void Start()
     {
-        _Raycaster = InventoryView.instance.transform.parent.GetComponent<GraphicRaycaster>();
+        _Raycaster = UIManager.instance.playerUI.GetComponent<GraphicRaycaster>();
         _EventSystem = FindObjectOfType<EventSystem>();
         gameObject.GetComponent<Image>().sprite = basicKey.icon;
     }
     public void Select()
     {
         BasicKeysView.instance.selectedBasicKey = this.gameObject;
-        transform.SetParent(BasicKeysView.instance.transform);
+        transform.SetParent(UIManager.instance.playerUI.transform);
     }
     public void Deselect()
     {

@@ -260,9 +260,9 @@ GameObject:
   - component: {fileID: 5311309108951015948}
   - component: {fileID: 5311309108951015950}
   - component: {fileID: 5311309108951015951}
-  - component: {fileID: 8631695400514415007}
+  - component: {fileID: 7000304092431593414}
   m_Layer: 5
-  m_Name: Item
+  m_Name: InventoryETCItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -328,7 +328,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8631695400514415007
+--- !u!114 &7000304092431593414
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -337,12 +337,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 5311309108951015949}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5838b31dfc27f4c418841aee6bd70880, type: 3}
+  m_Script: {fileID: 11500000, guid: 39ab33a8e29ea464d94f51fa04d20000, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   slotNumber: 0
+  shortCutKeyCode: 0
   inventoryItemObject: {fileID: 0}
   itemPrefab: {fileID: 0}
   itemNumMax: 0
-  type: 0
+  type: 2
   price: 0
+  _Raycaster: {fileID: 0}
+  _EventSystem: {fileID: 0}

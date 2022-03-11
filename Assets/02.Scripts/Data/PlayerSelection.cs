@@ -28,7 +28,7 @@ public class PlayerSelection : MonoBehaviour
     }
     IEnumerator E_Start()
     {
-        yield return new WaitUntil(() => PlayerDataManager.instance.isLoaded);
+        yield return new WaitUntil(() => PlayerDataManager.instance.isReady);
         DrawPlayerDatasUI(PlayerDataManager.instance.playerDatas);
     }
     public void DrawPlayerDatasUI(PlayerData[] datas)
@@ -72,19 +72,19 @@ public class PlayerSelection : MonoBehaviour
     }
     public void OnCreatePlayerInputFieldOKButton()
     {
-        PlayerDataManager.instance.CreatePlayerData(createPlayerInputField.text);
+        DataManager.instance.CreateData(createPlayerInputField.text);
         createPlayerInputField.transform.parent.gameObject.SetActive(false);
         createPlayerInputField.text = "";
-        DrawPlayerDataUI(PlayerDataManager.instance.currentPlayerData);
+        DrawPlayerDataUI(PlayerDataManager.instance.data);
     }
     public void OnPlayButton()
     {
-        PlayerDataManager.instance.LoadPlayerData(selectedNickName);
+        DataManager.instance.LoadAndApplyData(selectedNickName);
         SceneManager.LoadScene("GamePlay");
     }
     public void OnDeleteButton()
     {
-        PlayerDataManager.instance.RemovePlayerData(selectedNickName);
+        DataManager.instance.RemoveData(selectedNickName);
         selectedEffect.SetActive(false);
         DrawPlayerDatasUI(PlayerDataManager.instance.playerDatas);
     }

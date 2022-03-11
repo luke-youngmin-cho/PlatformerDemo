@@ -1,0 +1,78 @@
+﻿using System;
+using System.Collections;
+using UnityEngine;
+public class DataManager : MonoBehaviour
+{
+    static public DataManager instance;
+    static public bool isLoaded = false;
+    static public bool isApplied = false;
+    public PlayerDataManager playerDataManager;
+    public InventoryDataManager inventoryDataManager;
+    public ShortCutDataManager shortCutDataManager;
+    private void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(instance);
+        }
+    }
+    public void CreateData(string nickName)
+    {
+        playerDataManager.CreateData(nickName);
+        inventoryDataManager.CreateData(nickName);
+        shortCutDataManager.CreateData(nickName);
+    }
+    public void LoadAndApplyData(string nickName)
+    {
+        StartCoroutine(E_LoadAndApplyData(nickName));
+    }
+    IEnumerator E_LoadAndApplyData(string nickName)
+    {
+        yield return new WaitUntil(() => Player.instance != null &&
+                                         PlayerStateMachineManager.instance != null &&
+                                         UIManager.instance != null &&
+                                         UIManager.instance.isReady);
+        playerDataManager.LoadData(nickName);
+        yield return new WaitUntil(() => playerDataManager.isLoaded);
+        inventoryDataManager.LoadData(nickName);
+        yield return new WaitUntil(() => inventoryDataManager.isLoaded);
+        shortCutDataManager.LoadData(nickName);
+        yield return new WaitUntil(() => shortCutDataManager.isLoaded);
+        isLoaded = true;
+
+        playerDataManager.ApplyData();
+        yield return new WaitUntil(() => playerDataManager.isApplied);
+        inventoryDataManager.ApplyData();
+        yield return new WaitUntil(() => inventoryDataManager.isApplied);
+        yield return new WaitUntil(() => PlayerStateMachineManager.instance != null &&
+                                         PlayerStateMachineManager.instance.isReady);
+        shortCutDataManager.ApplyData();
+        yield return new WaitUntil(()=> shortCutDataManager.isApplied);
+        isApplied = true;
+    }
+    public void RemoveData(string nickName)
+    {
+        playerDataManager.RemoveData(nickName);
+        inventoryDataManager.RemoveData(nickName);
+        shortCutDataManager.RemoveData(nickName);
+    }
+    private void OnApplicationQuit()
+    {
+        if (isApplied)
+        {
+            playerDataManager.SaveData();
+            inventoryDataManager.SaveData();
+            shortCutDataManager.SaveData();
+        }
+    }
+    private void OnApplicationPause(bool pause)
+    {
+        if (isApplied)
+        {
+            playerDataManager.SaveData();
+            inventoryDataManager.SaveData();
+            shortCutDataManager.SaveData();
+        }
+    }
+}

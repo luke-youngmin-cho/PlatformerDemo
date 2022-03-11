@@ -5,8 +5,27 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public static Player instance;
-    public st_Stats stats;
-    public List<st_SkillStats> skillStatsList;
+    public bool isReady = false;
+    private st_Stats _stats;
+    public st_Stats stats
+    {
+        set { 
+            _stats = value;
+            PlayerDataManager.instance.data.OverwriteStats(stats);
+            PlayerDataManager.instance.SaveData();
+        }
+        get { return _stats; }
+    }
+    private List<st_SkillStats> _skillStatsList;
+    public List<st_SkillStats> skillStatsList
+    {
+        set{
+            _skillStatsList = value;
+            PlayerDataManager.instance.data.OverwriteSkillStatsList(_skillStatsList);
+            PlayerDataManager.instance.SaveData();
+        }
+        get{ return _skillStatsList; }
+    }
     public bool isDead;
     private int _hp;
     public int hp
@@ -25,7 +44,9 @@ public class Player : MonoBehaviour
             }
                 
             _hp = tmpValue;
-            stats.hp = _hp;
+            st_Stats tmpStats = stats;
+            tmpStats.hp = _hp;
+            stats = tmpStats;
             hpSlider.value = (float)_hp / stats.hpMax;
             hpText.text = _hp.ToString();
         }
@@ -43,7 +64,9 @@ public class Player : MonoBehaviour
             if (tmpValue < 0)
                 tmpValue = 0;
             _mp = tmpValue;
-            stats.mp = _mp;
+            st_Stats tmpStats = stats;
+            tmpStats.mp = _mp;
+            stats = tmpStats;
             mpSlider.value = (float)_mp / stats.mpMax;
             mpText.text = _mp.ToString();
         }
@@ -60,7 +83,9 @@ public class Player : MonoBehaviour
             if (tmpValue < 0)
                 tmpValue = 0;
             _exp = tmpValue;
-            stats.EXP = _exp;
+            st_Stats tmpStats = stats;
+            tmpStats.EXP = _exp;
+            stats = tmpStats;
             expSlider.value = (float)_exp / expMax;
         }
         get { return _exp; }
@@ -74,33 +99,38 @@ public class Player : MonoBehaviour
     Coroutine invincibleCoroutine = null;
 
     // components
-    private PlayerStateMachineManager controller;
+    private PlayerStateMachineManager machineManager;
     private Transform tr;
     private CapsuleCollider2D col;
     private void Awake()
     {
         instance = this;
-        stats = PlayerDataManager.instance.currentPlayerData.stats;
-        skillStatsList = PlayerDataManager.instance.currentPlayerData.skillstatsList;
-        controller = GetComponent<PlayerStateMachineManager>();
+        machineManager = GetComponent<PlayerStateMachineManager>();
         tr = GetComponent<Transform>();
         col = GetComponent<CapsuleCollider2D>();
-        hp = stats.hp;
-        mp = stats.mp;
-        exp = stats.EXP;
-        expMax = stats.Level * (int)(100f *Mathf.Exp(3.0f));
-        AddAllAdditionalSkillMachines();
+        
     }
     private void Start()
-    {   
-        InvokeRepeating("SaveData", 2, 1);
+    {
+        StartCoroutine(E_Start());
     }
-    public void AddAllAdditionalSkillMachines()
+    IEnumerator E_Start()
+    {
+        yield return new WaitUntil(() => PlayerDataManager.instance.isApplied);
+        
+        hp =  stats.hp;
+        mp =  stats.mp;
+        exp = stats.EXP;
+        expMax = stats.Level * (int)(100f * Mathf.Exp(3.0f));
+        AddAllSkillMachines();
+        isReady = true;
+    }
+    public void AddAllSkillMachines()
     {
         foreach (var skillStats in skillStatsList)
         {
             if(SkillAssets.instance.GetMachineTypeByState(skillStats.state) != MachineType.BasicSkill)
-                controller.AddStateMachineComponentByState(skillStats.state);
+                machineManager.AddStateMachineComponentByState(skillStats.state);
         }
     }
     public void SkillLevelUp(PlayerState state)
@@ -118,7 +148,9 @@ public class Player : MonoBehaviour
                         mpRequired = skillStatsList[i].mpRequired,
                         level = skillStatsList[i].level + 1,
                     };
-                    stats.skillPoint--;
+                    st_Stats tmpStats = stats;
+                    tmpStats.skillPoint--;
+                    stats = tmpStats;
                     break;
                 }
             }
@@ -136,12 +168,12 @@ public class Player : MonoBehaviour
         tmpHP -= damage;
         if (tmpHP > 0)
         {
-            controller.TryHurt();
+            machineManager.TryHurt();
         }   
         else
         {
             invincible = true;
-            controller.TryDie();
+            machineManager.TryDie();
         }
         hp = tmpHP;
 
@@ -181,25 +213,32 @@ public class Player : MonoBehaviour
         invincibleCoroutine = null;
     }
 
-    private void SaveData()
-    {
-        PlayerDataManager.instance.SavePlayerData(this);
-        //Debug.Log($"Save Data {stats.hp}");
-    }
-
-
 
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision == null) return;
         GameObject go = collision.gameObject;
-        if (Input.GetKey(KeyCode.Z))
+
+        Debug.Log($"something detected : {go.name}");
+        if (go.layer == LayerMask.NameToLayer("Item"))
         {
-            ItemController itemController = null;
-            if(go.TryGetComponent(out itemController))
+            Debug.Log($"Item detected : {go.name}");
+            if (DataManager.isApplied)
             {
-                itemController.PickUp(this);
+                // Pick Up
+                if (ShortCutsView.instance.TryGetShortCut("BasicKey_PickUp", out ShortCut pickUpShortCut))
+                {
+                    if (Input.GetKey(pickUpShortCut._keyCode))
+                    {
+                        ItemController itemController = null;
+                        if (go.TryGetComponent(out itemController))
+                        {
+                            itemController.PickUp(this);
+                        }
+                    }
+                }
             }
+            
         }
     }
 }

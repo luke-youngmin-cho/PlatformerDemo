@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerSettings : MonoBehaviour
+public class PlayerSettings
 {
     public static st_Stats basicStats
     {
@@ -39,6 +39,7 @@ public class PlayerSettings : MonoBehaviour
             };
         }
     }
+    
     public static List<st_SkillStats> basicSkills
     {
         get

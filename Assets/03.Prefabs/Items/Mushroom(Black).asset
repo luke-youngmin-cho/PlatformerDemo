@@ -10,11 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f62229405fa97df43944e6439fca4944, type: 3}
-  m_Name: RedMushroom
+  m_Name: Mushroom(Black)
   m_EditorClassIdentifier: 
-  id: 1
   type: 1
-  itemName: RedMushroom
+  itemName: Mushroom(Black)
   price: 0
-  numMax: 99
-  icon: {fileID: 21300000, guid: be12564e20a7a634d980bc39a5326c46, type: 3}
+  numMax: 3
+  icon: {fileID: 21300000, guid: e0d3ba7b920c592439a29fa99f06221c, type: 3}

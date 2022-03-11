@@ -44,5 +44,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   items:
+  - {fileID: 11400000, guid: 9711b17364f83bd4a8c01e9d37e63c5f, type: 2}
+  - {fileID: 11400000, guid: 148bf4e29c7bc134398750e98663a697, type: 2}
+  - {fileID: 11400000, guid: 77a6929fcadd5864f8b21d60e0e888c7, type: 2}
+  - {fileID: 11400000, guid: 04e9039f4b304e147bd339d4d1a11306, type: 2}
+  itemPrefabs:
   - {fileID: 1599187992137752609, guid: d1b7a6b96fcc7614bb7cdd16f58b60bd, type: 3}
   - {fileID: 2794522917396199070, guid: 4cbec7bdbe062664990ecf068703a7d5, type: 3}
+  - {fileID: 2794522917396199070, guid: 1d33e6445fdccef4f9304bdbfbe178c2, type: 3}
+  - {fileID: 1599187992137752609, guid: c77135d33f18e0a4b827bbbf00e31e8f, type: 3}

@@ -5,85 +5,108 @@ using UnityEngine;
 public class PlayerDataManager : MonoBehaviour
 {
     public static PlayerDataManager instance;
-    public bool isLoaded = false;
-
-    public PlayerData currentPlayerData;
+    public bool isReady = false;
+    public bool isLoaded{ get { return data != null; } }
+    public bool isApplied = false;
+    public PlayerData data;
     public PlayerData[] playerDatas;
     private void Awake()
     {
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
     }
     private void Start()
     {
-        LoadAllPlayerDatas();
+        LoadAllDatas();
     }
-    public void CreatePlayerData(string nickName)
+    public void CreateData(string nickName)
     {
-        PlayerData playerData = new PlayerData();
-        playerData.nickName = nickName;
-        playerData.stats = PlayerSettings.basicStats;
-        playerData.skillstatsList = PlayerSettings.basicSkills;
-        currentPlayerData = playerData;
-        SavePlayerData(playerData);
-    }
-    public void SavePlayerData(Player player)
-    {
-        PlayerData data = new PlayerData
-        {
-            nickName = currentPlayerData.nickName,
-            stats = player.stats,
-            skillstatsList = player.skillStatsList,
-        };
-        string jsonPath = Application.persistentDataPath + "/" + "Player_" + data.nickName + ".json";
-        string jsonData = JsonConvert.SerializeObject(data, Formatting.Indented);
-        System.IO.File.WriteAllText(jsonPath,jsonData);
-    }
-    public void SavePlayerData(PlayerData data)
-    {
-        string jsonPath = Application.persistentDataPath + "/" + "Player_" + data.nickName + ".json";
+        data = LoadDefaultData();
+        data.nickName = nickName;
+        string jsonPath = $"{Application.persistentDataPath}/PlayerDatas/Player_{data.nickName}.json";
         string jsonData = JsonConvert.SerializeObject(data, Formatting.Indented);
         System.IO.File.WriteAllText(jsonPath, jsonData);
+        Debug.Log($"Player data of {nickName} Created");
+        
+    }
+    public PlayerData LoadDefaultData()
+    {
+        PlayerData tmpData = null;
+        string jsonPath = $"{Application.persistentDataPath}/DefaultDatas/Player_Default.json";
+        if (System.IO.File.Exists(jsonPath))
+        {
+            string jsonData = System.IO.File.ReadAllText(jsonPath);
+            tmpData = JsonConvert.DeserializeObject<PlayerData>(jsonData);
+        }
+        else
+            Debug.Log($"Failed to load Player Default , Default path -> {jsonPath}");
+        return tmpData;
+    }
+    public void SaveData()
+    {
+        if(data == null) return;
+        string jsonPath = $"{Application.persistentDataPath}/PlayerDatas/Player_{data.nickName}.json";
+        string jsonData = JsonConvert.SerializeObject(data, Formatting.Indented);
+        System.IO.File.WriteAllText(jsonPath,jsonData);
+        // refresh skill UI
+        if (SkillsView.instance != null && SkillsView.instance.isReady && Player.instance.isReady)
+            SkillsView.instance.RefreshSkillList();
+        Debug.Log($"Player data Saved");
     }
     public PlayerData GetPlayerData(string nickName)
     {
-        string jsonPath = Application.persistentDataPath + "/" + "Player_" + nickName + ".json";
-        string jsonData = System.IO.File.ReadAllText(jsonPath);
+        string jsonPath = $"{Application.persistentDataPath}/PlayerDatas/Player_{nickName}.json";
+        string jsonData = System.IO.File.ReadAllText(jsonPath); 
         PlayerData data = JsonConvert.DeserializeObject<PlayerData>(jsonData);
         return data;
     }
-    public void LoadPlayerData(string nickName)
+    public void LoadData(string nickName)
     {
-        Debug.Log($"Load Player Data : {nickName}");
-        string jsonPath = Application.persistentDataPath + "/" + "Player_" + nickName + ".json";
-        string jsonData = System.IO.File.ReadAllText(jsonPath);
-        PlayerData data = JsonConvert.DeserializeObject<PlayerData>(jsonData);
-        currentPlayerData = data;
+        string jsonPath = $"{Application.persistentDataPath}/PlayerDatas/Player_{nickName}.json";
+        if (System.IO.File.Exists(jsonPath))
+        {
+            string jsonData = System.IO.File.ReadAllText(jsonPath);
+            data = JsonConvert.DeserializeObject<PlayerData>(jsonData);
+            Debug.Log($"Player data of {nickName} Loaded");
+        }
+        else
+            Debug.Log($"Failed to load Player data of {nickName} -> {jsonPath}");
     }
-    public void LoadAllPlayerDatas()
+    public void LoadAllDatas()
     {
-        string[] pathNames = System.IO.Directory.GetFiles(Application.persistentDataPath);
+        string[] pathNames = System.IO.Directory.GetFiles($"{Application.persistentDataPath}/PlayerDatas/");
         string[] fileNames = new string[pathNames.Length];
         string[] nickNames = new string[pathNames.Length];
         PlayerData[] datas = new PlayerData[pathNames.Length];
         for (int i = 0; i < pathNames.Length; i++)
-        {
-            fileNames[i] = pathNames[i].Replace(Application.persistentDataPath,"");
+        {            
+            fileNames[i] = pathNames[i].Replace($"{Application.persistentDataPath}/PlayerDatas/","");
             string fileName = fileNames[i].Replace("Player_", "").Replace("\\","");
             fileName = fileName.Remove(fileName.IndexOf(".json"));
             nickNames[i] = fileName;
             datas[i] = GetPlayerData(nickNames[i]);
         }
         playerDatas = datas;
-        isLoaded = true;
+        isReady = true;
     }
-    public void RemovePlayerData(string nickName)
+    public void ApplyData()
     {
-        string jsonPath = Application.persistentDataPath + "/" + "Player_" + nickName + ".json";
-        System.IO.File.Delete(jsonPath);
-        LoadAllPlayerDatas();
+        Player.instance.stats = data.stats;
+        Player.instance.skillStatsList = data.skillstatsList;
+        Debug.Log("Player data applied");
+        isApplied = true;
+    }
+    public void RemoveData(string nickName)
+    {
+        string jsonPath = $"{Application.persistentDataPath}/PlayerDatas/Player_{nickName}.json";
+        if (System.IO.File.Exists(jsonPath))
+        {
+            System.IO.File.Delete(jsonPath);
+            Debug.Log($"Player data of {nickName} Removed");
+            LoadAllDatas();
+        }
     }
 }

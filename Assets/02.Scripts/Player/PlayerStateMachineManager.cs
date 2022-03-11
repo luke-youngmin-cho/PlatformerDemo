@@ -7,6 +7,7 @@ using UnityEngine;
 public class PlayerStateMachineManager : MonoBehaviour
 {
     public static PlayerStateMachineManager instance;
+    public bool isReady = false;
     public bool controlEnabled = true;
 
     [Header("Parameters")]
@@ -85,7 +86,14 @@ public class PlayerStateMachineManager : MonoBehaviour
     }
     private void Start()
     {
+        StartCoroutine(E_Start());
+    }
+    IEnumerator E_Start()
+    {
+        yield return new WaitUntil(() => Player.instance.isReady);
         RefreshMachineDictionaries();
+        isReady = true;
+        Debug.Log("PlayerStateMachineManager is ready");
     }
     public void RefreshMachineDictionaries()
     {
@@ -118,6 +126,7 @@ public class PlayerStateMachineManager : MonoBehaviour
     }
     void Update()
     {
+        if (isReady == false) return;
         if (controlEnabled)
         {
             if (onActiveSkill == false)
@@ -344,6 +353,9 @@ public class PlayerStateMachineManager : MonoBehaviour
 
     public void AddStateMachineComponentByState(PlayerState state)
     {
+        if (TryGetStateMachineByState(state, out PlayerStateMachine existMachine))
+            return;
+
         string stateName = state.ToString();
         string typeName = "PlayerStateMachine_" + stateName;
         System.Type type = System.Type.GetType(typeName);
@@ -366,7 +378,10 @@ public class PlayerStateMachineManager : MonoBehaviour
     {
         return machineDictionaryOfPlayerState.TryGetValue(state, out stateMachine);
     }
-
+    public bool TryGetStateMachineByKeyCode(KeyCode keyCode, out PlayerStateMachine stateMachine)
+    {
+        return machineDictionaryOfKeyCode.TryGetValue(keyCode, out stateMachine);
+    }
     // User key input for keycode skills. 
     /*private void OnGUI()
     {

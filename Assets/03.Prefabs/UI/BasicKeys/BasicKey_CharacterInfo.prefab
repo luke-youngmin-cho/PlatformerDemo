@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 5242588622118558573}
   - component: {fileID: 5242588622118558570}
   - component: {fileID: 5242588622118558571}
-  - component: {fileID: 7595832217354702318}
+  - component: {fileID: 595948546826351859}
   m_Layer: 6
-  m_Name: BasicKey_CharactorInfo
+  m_Name: BasicKey_CharacterInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7595832217354702318
+--- !u!114 &595948546826351859
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,7 +85,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5242588622118558574}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87544dc8dc4314d40a115071e3cc7a2c, type: 3}
+  m_Script: {fileID: 11500000, guid: aeb4b6f93e43bb6488d7af32cb236193, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: 1513c752fb3bfe8428f169b7b2b63e12, type: 3}

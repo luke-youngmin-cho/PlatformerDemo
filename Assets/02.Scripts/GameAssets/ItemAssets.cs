@@ -15,16 +15,30 @@ public class ItemAssets : MonoBehaviour
         }
     }
 
-    public GameObject GetItemPrefabByName(string name)
+    public Item GetItemByName(string name)
     {
-        GameObject prefab = null;
+        Item tmpItem = null;
         foreach (var item in items)
         {
-            if (item.name == name)
-               prefab = item;
+            if(item.name == name)
+            {
+                tmpItem = item;
+                break;
+            }   
         }
-        return prefab;
+        return tmpItem;
+    }
+    public GameObject GetItemPrefabByName(string name)
+    {
+        GameObject tmpPrefab = null;
+        foreach (var item in itemPrefabs)
+        {
+            if (item.name == name)
+               tmpPrefab = item;
+        }
+        return tmpPrefab;
     }
 
-    public List<GameObject> items = new List<GameObject> ();
+    public List<Item> items = new List<Item>();
+    public List<GameObject> itemPrefabs = new List<GameObject> ();
 }

@@ -16,34 +16,22 @@ public class SkillHandler : MonoBehaviour, IPointerClickHandler
     GraphicRaycaster _Raycaster;
     PointerEventData _PointerEventData;
     EventSystem _EventSystem;
-    PlayerStateMachineManager _StateMachineManager;
     private void Start()
     {
         _Raycaster = SkillsView.instance.transform.parent.GetComponent<GraphicRaycaster>();
         _EventSystem = FindObjectOfType<EventSystem>();
-        StartCoroutine(E_Start());
-    }
-    IEnumerator E_Start()
-    {
-        yield return new WaitUntil(() =>
-        {
-            bool stateMachineManagerOK = false;
-            Debug.Log(GameObject.FindWithTag("Player"));
-            _StateMachineManager = GameObject.FindWithTag("Player").GetComponent<PlayerStateMachineManager>();
-            if (_StateMachineManager != null)
-                stateMachineManagerOK = true;
-            return stateMachineManagerOK;
-        });
-        Debug.Log($"{_StateMachineManager} got it~~~~~~~~~~~");
     }
     public void OnEnable()
     {
+        transform.SetParent(UIManager.instance.playerUI.transform);
         gameObject.GetComponent<Image>().sprite = skill.icon;
     }
-    public void OnDisable()
+    public void Clear()
     {
+        transform.SetParent(SkillsView.instance.transform);
         skill = null;
         image = null;
+        gameObject.SetActive(false);
     }
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -90,18 +78,31 @@ public class SkillHandler : MonoBehaviour, IPointerClickHandler
             // Clicked on Shortcut
             if (shortCut != null)
             {
-                PlayerState state = skill.playerState;
-                PlayerStateMachine tmpStateMachine = null;
-                if (_StateMachineManager.TryGetStateMachineByState(state, out tmpStateMachine))
+                // reset replaced machine's keycode
+                if(PlayerStateMachineManager.instance.TryGetStateMachineByKeyCode(shortCut._keyCode, out PlayerStateMachine oldStateMachine))
                 {
-                    tmpStateMachine.keyCode = shortCut._keyCode;
-                    _StateMachineManager.RefreshMachineDictionaries();
+                    if (ShortCutsView.instance.TryGetShortCut(oldStateMachine.keyCode, out ShortCut oldMachineShortCut))
+                        oldMachineShortCut.Clear();
+                    oldStateMachine.keyCode = KeyCode.None;
+                }                    
+
+                PlayerState state = skill.playerState;
+                if (PlayerStateMachineManager.instance.TryGetStateMachineByState(state, out PlayerStateMachine newStateMachine))
+                {
+                    // if already another shortcut for the machine exist, reset it.
+                    Debug.Log(newStateMachine.keyCode);
+                    if(ShortCutsView.instance.TryGetShortCut(newStateMachine.keyCode, out ShortCut oldShortCut))
+                        oldShortCut.Clear();
+
+                    newStateMachine.keyCode = shortCut._keyCode;
+                    Debug.Log(newStateMachine.keyCode);
+                    PlayerStateMachineManager.instance.RefreshMachineDictionaries();
                 }
 
                 shortCut.RegisterIconAndEvent(ShortCutType.Skill, skill.icon, 
-                    delegate {_StateMachineManager.keyInput = shortCut._keyCode;});
+                    delegate { PlayerStateMachineManager.instance.keyInput = shortCut._keyCode;});
 
-                gameObject.SetActive(false);
+                Clear();
             }
 
             if (canvasRenderer == null)

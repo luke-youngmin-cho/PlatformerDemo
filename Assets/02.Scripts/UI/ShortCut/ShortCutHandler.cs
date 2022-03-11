@@ -22,7 +22,7 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
     }
     private void Start()
     {
-        _Raycaster = ShortCutsView.instance.transform.parent.GetComponent<GraphicRaycaster>();
+        _Raycaster = UIManager.instance.playerUI.GetComponent<GraphicRaycaster>();
         _EventSystem = FindObjectOfType<EventSystem>();
     }
     private void OnEnable()

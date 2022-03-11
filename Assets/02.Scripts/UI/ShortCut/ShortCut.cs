@@ -29,6 +29,9 @@ public class ShortCut : MonoBehaviour, IPointerClickHandler
 
         if(clone != null)
             clone.SetClone(_type, _image.sprite, _keyCode, TryKeyEvent);
+
+        if (DataManager.isApplied)
+            ShortCutDataManager.instance.SaveData();
     }
     public void Clear()
     {

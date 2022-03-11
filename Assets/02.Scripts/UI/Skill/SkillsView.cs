@@ -11,48 +11,38 @@ public class SkillsView : MonoBehaviour
     public GameObject skillInfoPrefab;
     public Transform content;
 
-    public SkillHandler skillController;
+    public SkillHandler skillHandler;
 
     public List<GameObject> skillSlots = new List<GameObject>();
-    private Player player;
     private void Awake()
     {
         instance = this;
     }
     private void Start()
     {
-        StartCoroutine(E_Start());
-    }
-    IEnumerator E_Start()
-    {
-        yield return new WaitUntil(() =>
-        {
-            player = GameObject.FindWithTag("Player").GetComponent<Player>();
-            if (player != null)
-                return true;
-            else
-                return false;
-        });
-        Debug.Log(player);
-        RefreshSkillList();
         isReady = true;
+        StartCoroutine(E_RefreshAtFirst());
     }
-    
+    IEnumerator E_RefreshAtFirst()
+    {
+        yield return new WaitUntil(() => DataManager.isApplied);
+        RefreshSkillList();
+    }
     private void Update()
     {
-        if (skillController.gameObject.activeSelf)
+        if (skillHandler.gameObject.activeSelf)
         {
             Vector3 pos = Input.mousePosition;
-            skillController.transform.position = pos;
+            skillHandler.transform.position = pos;
         }
     }
-    private void RefreshSkillList()
+    public void RefreshSkillList()
     {
         foreach (var skill in skillSlots)
             Destroy(skill.gameObject);
 
         skillSlots.Clear();
-        foreach (var skillStats in player.skillStatsList)
+        foreach (var skillStats in Player.instance.skillStatsList)
         {
             Skill tmpSkill = SkillAssets.instance.GetSkillByState(skillStats.state);
             if (tmpSkill.machineType != MachineType.BasicSkill)
@@ -63,15 +53,15 @@ public class SkillsView : MonoBehaviour
                 {
                     if(tmpSkill.machineType == MachineType.ActiveSkill)
                     {
-                        skillController.skill = tmpSkill;
-                        skillController.gameObject.SetActive(true);
+                        skillHandler.skill = tmpSkill;
+                        skillHandler.gameObject.SetActive(true);
                     }
                 });
                 tmpSkillInfo.transform.GetChild(1).GetComponent<Text>().text = tmpSkill.name;
                 tmpSkillInfo.transform.GetChild(2).GetComponent<Text>().text = "Lv." + skillStats.level;
                 tmpSkillInfo.transform.GetChild(3).GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    player.SkillLevelUp(skillStats.state);
+                    Player.instance.SkillLevelUp(skillStats.state);
                 });
                 skillSlots.Add(tmpSkillInfo);
             }

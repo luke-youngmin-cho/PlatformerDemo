@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9056868396112171736}
   - component: {fileID: 9056868396112171743}
   - component: {fileID: 9056868396112171742}
-  - component: {fileID: 4594643783231344512}
+  - component: {fileID: -2172343375596860842}
   m_Layer: 6
   m_Name: BasicKey_Attack
   m_TagString: Untagged
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4594643783231344512
+--- !u!114 &-2172343375596860842
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,7 +85,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 9056868396112171739}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87544dc8dc4314d40a115071e3cc7a2c, type: 3}
+  m_Script: {fileID: 11500000, guid: 71b7d4caf30365f4e9db389dd85a92b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: 073db0b6cd341e5469d0713f0c46d6a4, type: 3}

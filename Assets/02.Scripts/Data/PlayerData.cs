@@ -11,7 +11,16 @@ public class PlayerData
     {
         skillstatsList = new List<st_SkillStats>();
     }
+    public void OverwriteStats(st_Stats newStats)
+    {
+        stats = newStats;
+    }
+    public void OverwriteSkillStatsList(List<st_SkillStats> newSkillStatsList)
+    {
+        skillstatsList = newSkillStatsList;
+    }
 }
+[System.Serializable]
 public struct st_Stats
 {
     public int Level;
@@ -42,6 +51,7 @@ public struct st_Stats
     public float statPoint;
     public float skillPoint;
 }
+[System.Serializable]
 public struct st_SkillStats
 {
     public PlayerState state;

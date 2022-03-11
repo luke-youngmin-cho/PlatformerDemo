@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,12 +14,10 @@ public class BasicKeysView : MonoBehaviour
     public GameObject selectedBasicKey;
 
     private Transform slotParent;
-    private Transform basicKeyParent;
     private void Awake()
     {
         instance = this;
         slotParent = transform.Find("BasicKeySlots");
-        basicKeyParent = transform.Find("BasicKeys");
     }
     private void Start()
     {
@@ -44,7 +42,7 @@ public class BasicKeysView : MonoBehaviour
             selectedBasicKey.transform.position = pos;
         }
     }
-    private BasicKeySlot FindEmptySlot()
+    /*private BasicKeySlot FindEmptySlot()
     {
         BasicKeySlot slot = null;
         for (int i = 0; i < slots.Length; i++)
@@ -56,7 +54,7 @@ public class BasicKeysView : MonoBehaviour
             }
         }
         return slot;
-    }
+    }*/
     public BasicKeySlot GetSlot(int slotNum)
     {
         return slots[slotNum];
@@ -75,16 +73,15 @@ public class BasicKeysView : MonoBehaviour
         controller.basicKey = BasicKeyAssets.instance.GetBasicKeyBySpriteName(spriteName);
         slot.SetHere(controller);
     }
-    public BasicKeyHandler GetBasicKeyControllerByName(string basicKeyName)
+    public BasicKeyHandler GetBasicKeyHandlerByName(string basicKeyName)
     {
-        BasicKeyHandler[] controllers = basicKeyParent.GetComponentsInChildren<BasicKeyHandler>();
-        foreach (BasicKeyHandler controller in controllers)
+        foreach (var slot in slots)
         {
-            if (controller.basicKey.icon.name == basicKeyName)
-            {
-                return controller;
-            }   
+            BasicKeyHandler handler = slot.GetComponentInChildren<BasicKeyHandler>();
+            if (handler != null && handler.basicKey.icon.name == basicKeyName) 
+                return handler;
         }
         return null;
+
     }
 }

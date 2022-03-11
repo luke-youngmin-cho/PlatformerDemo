@@ -8,7 +8,7 @@ public class ShortCutsView : MonoBehaviour
     public static ShortCutsView instance;
     public bool isReady = false;
     KeyCode keyInput;
-    Dictionary<KeyCode, ShortCut> shortCuts = new Dictionary<KeyCode, ShortCut>();
+    public Dictionary<KeyCode, ShortCut> shortCuts = new Dictionary<KeyCode, ShortCut>();
 
     [SerializeField] ShortCutHandler shortCutHandler;
 
@@ -24,7 +24,7 @@ public class ShortCutsView : MonoBehaviour
         for (int i = 0; i < tmpShortCuts.Length; i++)
         {
             shortCuts.Add(tmpShortCuts[i]._keyCode, tmpShortCuts[i]);
-            Debug.Log($"Shortcut registered : {tmpShortCuts[i]._keyCode}");
+            //Debug.Log($"Shortcut registered : {tmpShortCuts[i]._keyCode}");
         }
         isReady = true;
     }
@@ -64,7 +64,79 @@ public class ShortCutsView : MonoBehaviour
         //Debug.Log($"Try get short cut : {keyCode} , {shortCuts.ContainsKey(keyCode)}");
         return shortCuts.TryGetValue(keyCode, out shortCut);
     }
-    
+    public bool TryGetShortCut(string iconName, out ShortCut shortCut)
+    {
+        Debug.Log($"Tried to get short cut for {iconName}");
+        bool isExist = false;
+        shortCut = null;
+        foreach (var sub in shortCuts){
+            if (sub.Value._image.sprite != null &&
+                sub.Value._image.sprite.name == iconName){
+                shortCut = sub.Value;
+                isExist = true;
+                break;
+            }   
+        }
+        return isExist;
+    }
+    public void SaveData()
+    {
+        ShortCutDataManager.instance.data.Clear();
+        foreach (var sub in shortCuts)
+        {
+            KeyCode tmpKeyCode = sub.Key;
+            ShortCut tmpShortCut = sub.Value;
+            Debug.Log($"Saving {tmpKeyCode} , {tmpShortCut._type}");
+            switch (tmpShortCut._type)
+            {   
+                case ShortCutType.None:
+                    break;
+                case ShortCutType.BasicKey:
+                    if(tmpShortCut._image.sprite != null)
+                    {
+                        ShortCutData_BasicKey shortCutData_BasicKey = new ShortCutData_BasicKey()
+                        {
+                            keyCode = tmpKeyCode,
+                            type = ShortCutType.BasicKey,
+                            basicKeyName = tmpShortCut._image.sprite.name
+                        };
+                        ShortCutDataManager.instance.data.basicKeysData.Add(shortCutData_BasicKey);
+                    }
+                    break;
+                case ShortCutType.Item:
+                    Debug.Log($"Try to save item shortcut : {tmpShortCut._image.sprite.name}");
+                    if (InventoryView.instance.GetItemsViewByItemType(ItemType.Spend)
+                        .TryGetInventoryItemHandlerByName(tmpShortCut._image.sprite.name, out InventoryItemHandlerBase inventoryItemHandlerBase))
+                    {
+                        ShortCutData_SpendItem shortCutData_SpendItem = new ShortCutData_SpendItem()
+                        {
+                            keyCode = tmpKeyCode,
+                            type = ShortCutType.Item,
+                            itemType = ItemType.Spend,
+                            slotNum = inventoryItemHandlerBase.slotNumber
+                        };
+                        ShortCutDataManager.instance.data.itemsData.Add(shortCutData_SpendItem);
+                    }
+                    break;
+                case ShortCutType.Skill:
+                    if(PlayerStateMachineManager.instance.
+                        TryGetStateMachineByKeyCode(tmpKeyCode, out PlayerStateMachine playerStateMachine))
+                    {
+                        ShortCutData_Skill shortCutData_Skill = new ShortCutData_Skill()
+                        {
+                            keyCode = tmpKeyCode,
+                            type = ShortCutType.Skill,
+                            playerState = playerStateMachine.playerStateType
+                        };
+                        ShortCutDataManager.instance.data.skillsData.Add(shortCutData_Skill);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        ShortCutDataManager.instance.SaveData();
+    }
     private void OnGUI()
     {
         Event e = Event.current;
