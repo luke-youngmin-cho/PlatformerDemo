@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -4137926166133431411}
   - component: {fileID: 849176156541434897}
   - component: {fileID: 4150878022134882899}
-  m_Layer: 12
+  m_Layer: 25
   m_Name: Mushroom(Black)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,7 +84,7 @@ MonoBehaviour:
   floatingHeight: 0.02
   groundLayer:
     serializedVersion: 2
-    m_Bits: 1048576
+    m_Bits: 1572864
 --- !u!50 &4150878022134882899
 Rigidbody2D:
   serializedVersion: 4
@@ -116,7 +116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5185950535315109611}
   - component: {fileID: 6336719334462441922}
-  m_Layer: 13
+  m_Layer: 26
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -173,7 +173,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5337017394620629278}
   - component: {fileID: 2884424764204525685}
-  m_Layer: 12
+  m_Layer: 25
   m_Name: Renderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}

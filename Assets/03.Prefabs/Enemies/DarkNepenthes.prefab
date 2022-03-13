@@ -497,6 +497,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a064b9d1d50788b4da19731f7874015f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stats:
+    Level: 0
+    EXP: 0
+    STR: 0
+    DEX: 0
+    CON: 0
+    WIS: 0
+    INT: 0
+    RES: 0
+    hpMax: 0
+    mpMax: 0
+    hp: 0
+    mp: 0
+    attack: 0
+    criticalRate: 0
+    criticalDamage: 0
+    defence: 0
+    magicDefence: 0
+    defencePen: 0
+    magicDefencePen: 0
+    moveSpeed: 0
+    jumpForce: 0
+    statPoint: 0
+    skillPoint: 0
   targetLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -518,7 +542,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 808a181d7dafadd41b1cc1c0892b3c6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controlEnable: 1
   attackEnabled: 1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   attackRangeCenter: {x: 1, y: 0}
   attackRangeSize: {x: 2, y: 1}
   moveEnabled: 0
@@ -548,10 +576,15 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1048576
-  isGrounded: 0
+  groundLimitLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  passingGroundColCenterY: 0
+  isDetected: 0
   doDownJumpCheck: 0
   downJumpAvailable: 0
   downJumpCheckHeight: 0
+  isIgnoringGround: 0
 --- !u!114 &2235254588344630093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -564,7 +597,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7e41f830ab0ca042b9c39afff0e9b40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targets: []
   targetLayer:
     serializedVersion: 2
     m_Bits: 256

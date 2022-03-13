@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class CameraHandler : MonoBehaviour
 {
-    public Transform target;
     public Vector3 offset;    
     [Range(1,10)]
     public float smoothness;
@@ -31,6 +30,10 @@ public class CameraHandler : MonoBehaviour
     }
     void Follow()
     {
+        if (Player.instance == null) return;
+
+        Transform target = Player.instance.transform;
+
         Vector3 targetPos = new Vector3(target.position.x, target.position.y, tr.position.z) + offset;
         Vector3 smoothPos = Vector3.Lerp(tr.position, targetPos, smoothness * Time.fixedDeltaTime);
 

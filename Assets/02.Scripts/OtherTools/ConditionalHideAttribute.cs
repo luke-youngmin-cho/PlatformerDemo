@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using System;
 
 //Original version of the ConditionalHideAttribute created by Brecht Lecluyse (www.brechtos.com)
@@ -24,3 +25,4 @@ public class ConditionalHideAttribute : PropertyAttribute
         HideInInspector = hideInInspector;
     }
 }
+#endif

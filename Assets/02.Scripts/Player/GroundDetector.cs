@@ -9,6 +9,7 @@ public class GroundDetector : MonoBehaviour
     Vector2 center;
     [HideInInspector] public Vector2 size;
     [SerializeField] LayerMask groundLayer;
+    [SerializeField] LayerMask groundLimitLayer;
     private Collider2D currentGroundCol;
     private Collider2D lastGroundCol;
     private Collider2D passingGroundCol;
@@ -32,7 +33,7 @@ public class GroundDetector : MonoBehaviour
     {
         center.x = rb.position.x + col.offset.x;
         center.y = rb.position.y + col.offset.y - col.size.y/2 -  (size.y * 2);
-        currentGroundCol = Physics2D.OverlapBox(center, size, 0, groundLayer);
+        currentGroundCol = Physics2D.OverlapBox(center, size, 0, groundLayer | groundLimitLayer);
         if (currentGroundCol == null)
             isDetected = false;
         else
@@ -44,12 +45,20 @@ public class GroundDetector : MonoBehaviour
 
         if (doDownJumpCheck)
         {
-            int groundNum = Physics2D.OverlapBoxAll(new Vector2(center.x, center.y - downJumpCheckHeight / 2),
-                                                    new Vector2(size.x, downJumpCheckHeight),
+             Collider2D[] groundsCols = Physics2D.OverlapBoxAll(new Vector2(center.x, center.y - downJumpCheckHeight / 2),
+                                                    new Vector2(0.001f, downJumpCheckHeight),
                                                     0,
-                                                    groundLayer).Length;
-            downJumpAvailable = groundNum > 1 ? true : false;
-            //Debug.Log(groundNum);
+                                                    groundLayer | groundLimitLayer);
+
+            int groundNum = groundsCols.Length;
+            if (groundNum > 1 &&
+                ((1 << groundsCols[groundNum-1].gameObject.layer) == groundLayer))
+            {
+                downJumpAvailable = true;
+            }
+            else
+                downJumpAvailable = false;
+            
         }
         else
             downJumpAvailable = false;

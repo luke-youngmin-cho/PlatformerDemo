@@ -14,6 +14,7 @@ public class InventoryView : MonoBehaviour
     public InventoryItemsView spendItemsViewInstance;
     public InventoryItemsView etcItemsViewInstance;
     public InventoryItemsView cashItemsViewInstance;
+    public InventoryMoneyView moneyView;
     private void Awake()
     {
         instance = this;
@@ -21,6 +22,10 @@ public class InventoryView : MonoBehaviour
         spendItemsViewInstance.gameObject.SetActive(true);
         etcItemsViewInstance.gameObject.SetActive(true);    
         cashItemsViewInstance.gameObject.SetActive(true);
+    }
+    private void Update()
+    {
+        
     }
     private void Start()
     {

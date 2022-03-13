@@ -65,6 +65,7 @@ public class InventoryItemsView : MonoBehaviour
                     handler.item = item;
                     handler.slotNumber = slot.num;
                     handler.inventoryItemObject = go;
+                    handler.itemPrefab = ItemAssets.instance.GetItemPrefabByName(item.itemName);
                     if (handler.item.numMax - handler.itemNum >= remains)
                     {
                         handler.itemNum += remains;
@@ -94,6 +95,7 @@ public class InventoryItemsView : MonoBehaviour
             handler.item = item;
             handler.slotNumber = slot.num;
             handler.inventoryItemObject = go;
+            handler.itemPrefab = ItemAssets.instance.GetItemPrefabByName(item.itemName);
             handler.itemNum = num;
             slot.SetItemHere(handler);
             AddItemToList(go);

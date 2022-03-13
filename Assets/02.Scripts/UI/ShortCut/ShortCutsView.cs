@@ -100,7 +100,7 @@ public class ShortCutsView : MonoBehaviour
                             type = ShortCutType.BasicKey,
                             basicKeyName = tmpShortCut._image.sprite.name
                         };
-                        ShortCutDataManager.instance.data.basicKeysData.Add(shortCutData_BasicKey);
+                        ShortCutDataManager.instance.data.AddShortCutBasicKeyData(shortCutData_BasicKey);
                     }
                     break;
                 case ShortCutType.Item:
@@ -115,7 +115,7 @@ public class ShortCutsView : MonoBehaviour
                             itemType = ItemType.Spend,
                             slotNum = inventoryItemHandlerBase.slotNumber
                         };
-                        ShortCutDataManager.instance.data.itemsData.Add(shortCutData_SpendItem);
+                        ShortCutDataManager.instance.data.AddShortCutItemData(shortCutData_SpendItem);
                     }
                     break;
                 case ShortCutType.Skill:
@@ -128,7 +128,7 @@ public class ShortCutsView : MonoBehaviour
                             type = ShortCutType.Skill,
                             playerState = playerStateMachine.playerStateType
                         };
-                        ShortCutDataManager.instance.data.skillsData.Add(shortCutData_Skill);
+                        ShortCutDataManager.instance.data.AddShortCutSkillData(shortCutData_Skill);
                     }
                     break;
                 default:

@@ -104,7 +104,11 @@ public class Player : MonoBehaviour
     private CapsuleCollider2D col;
     private void Awake()
     {
-        instance = this;
+        if(instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(instance);
+        }
         machineManager = GetComponent<PlayerStateMachineManager>();
         tr = GetComponent<Transform>();
         col = GetComponent<CapsuleCollider2D>();
@@ -219,10 +223,9 @@ public class Player : MonoBehaviour
         if (collision == null) return;
         GameObject go = collision.gameObject;
 
-        Debug.Log($"something detected : {go.name}");
+        //Debug.Log($"something detected : {go.name}");
         if (go.layer == LayerMask.NameToLayer("Item"))
         {
-            Debug.Log($"Item detected : {go.name}");
             if (DataManager.isApplied)
             {
                 // Pick Up
@@ -238,7 +241,25 @@ public class Player : MonoBehaviour
                     }
                 }
             }
-            
+        }
+
+        if (go.layer == LayerMask.NameToLayer("Money"))
+        {
+            if (DataManager.isApplied)
+            {
+                // Pick Up
+                if (ShortCutsView.instance.TryGetShortCut("BasicKey_PickUp", out ShortCut pickUpShortCut))
+                {
+                    if (Input.GetKey(pickUpShortCut._keyCode))
+                    {
+                        MoneyController moneyController = null;
+                        if (go.TryGetComponent(out moneyController))
+                        {
+                            moneyController.PickUp(this);
+                        }
+                    }
+                }
+            }
         }
     }
 }

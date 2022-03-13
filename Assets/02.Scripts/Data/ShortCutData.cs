@@ -21,10 +21,10 @@ public class ShortCutData
             if(data.keyCode == itemsData[i].keyCode)
             {
                 itemsData.RemoveAt(i);
-                itemsData.Add(data);
                 break;
             }   
         }
+        itemsData.Add(data);
     }
     public void AddShortCutBasicKeyData(ShortCutData_BasicKey data)
     {
@@ -33,10 +33,10 @@ public class ShortCutData
             if (data.keyCode == basicKeysData[i].keyCode)
             {
                 basicKeysData.RemoveAt(i);
-                basicKeysData.Add(data);
                 break;
             }
         }
+        basicKeysData.Add(data);
     }
     public void AddShortCutSkillData(ShortCutData_Skill data)
     {
@@ -45,10 +45,10 @@ public class ShortCutData
             if (data.keyCode == skillsData[i].keyCode)
             {
                 skillsData.RemoveAt(i);
-                skillsData.Add(data);
                 break;
             }
         }
+        skillsData.Add(data);
     }
     public void Clear()
     {

@@ -69,6 +69,7 @@ public class InventoryDataManager : MonoBehaviour
                                                                              data.items[i].slotNum);
             Debug.Log($"Inventory data set {data.items[i].num},{data.items[i].slotNum}");
         }
+        InventoryView.instance.moneyView.money = data.gameMoney;
         Debug.Log($"Inventory data Applied");
         isApplied = true;
     }

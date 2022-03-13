@@ -9,12 +9,19 @@ public class EnemyController : MonoBehaviour
 
     [Header("Parameters")]
     public bool attackEnabled;
+    public LayerMask groundLayer;
+#if UNITY_EDITOR
     [ConditionalHide("attackEnabled", true)]
+#endif
     public Vector2 attackRangeCenter;
+#if UNITY_EDITOR
     [ConditionalHide("attackEnabled", true)]
+#endif
     public Vector2 attackRangeSize;
     public bool moveEnabled;
+#if UNITY_EDITOR
     [ConditionalHide("moveEnabled", true)]
+#endif
     public Vector2 knockBackForce;
     public float hurtTimeOffset;    
 
@@ -35,9 +42,13 @@ public class EnemyController : MonoBehaviour
     float moveAIStateTime;
     float moveAIStateTimeElapsed;
     public bool autoFollowPlayer;
+#if UNITY_EDITOR
     [ConditionalHide("autoFollowPlayer", true)]
+#endif
     public Vector2 autoFollowRangeCenter;
+#if UNITY_EDITOR
     [ConditionalHide("autoFollowPlayer", true)]
+#endif
     public Vector2 autoFollowRangeSize;
 
     [Header("Kinematics")]
@@ -86,7 +97,7 @@ public class EnemyController : MonoBehaviour
     {
         if (controlEnable)
         {
-            MoveAI();
+            AIWorkflow();
 
             if (moveEnabled)
             {
@@ -111,7 +122,7 @@ public class EnemyController : MonoBehaviour
     {
         FixedUpdateMovement();
     }
-    void MoveAI()
+    void AIWorkflow()
     {
         if (oldState == EnemyState.Hurt && ((int)moveAIState < (int)MoveAIState.FollowTarget))
             moveAIState = MoveAIState.FollowTarget;
@@ -127,9 +138,13 @@ public class EnemyController : MonoBehaviour
                 moveAIState = MoveAIState.FollowTarget;
             }
         }
+        // ground front sensing
+        bool moveOK = Physics2D.OverlapBox(rb.position + new Vector2(direction * col.size.x / 2 , -col.size.y / 2), new Vector2(0.1f, 0.2f), 0, groundLayer);
+
         switch (moveAIState)
         {
             case MoveAIState.DecideRandomBehavior:
+                move.x = 0;
                 moveAIStateTime = Random.Range(1f, 5f);
                 moveAIStateTimeElapsed = 0;
                 moveAIState = (MoveAIState)Random.Range(1, 4);
@@ -142,14 +157,16 @@ public class EnemyController : MonoBehaviour
                 moveAIStateTimeElapsed += Time.deltaTime;
                 break;
             case MoveAIState.MoveRight:
-                if (moveAIStateTimeElapsed > moveAIStateTime)
+                if (moveAIStateTimeElapsed > moveAIStateTime ||
+                    moveOK == false)
                     moveAIState = MoveAIState.DecideRandomBehavior;
                 else
                     move.x = 1;
                 moveAIStateTimeElapsed += Time.deltaTime;
                 break;
             case MoveAIState.MoveLeft:
-                if (moveAIStateTimeElapsed > moveAIStateTime)
+                if (moveAIStateTimeElapsed > moveAIStateTime ||
+                    moveOK == false)
                     moveAIState = MoveAIState.DecideRandomBehavior;
                 else
                     move.x = -1;
@@ -483,6 +500,9 @@ public class EnemyController : MonoBehaviour
                                         transform.position.y + autoFollowRangeCenter.y,
                                         0),
                             new Vector3(autoFollowRangeSize.x, autoFollowRangeSize.y, 0));
-        
+
+        // front ground check
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(transform.position + new Vector3(capsuleCol.size.x * direction, -capsuleCol.size.y / 2,0), new Vector2(0.1f, 0.1f));
     }
 }

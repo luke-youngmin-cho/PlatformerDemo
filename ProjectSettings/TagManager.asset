@@ -17,26 +17,26 @@ TagManager:
   - PlayerSensor
   - 
   - 
-  - Item
-  - ItemCollider
+  - 
+  - 
   - 
   - Enemy
   - EnemyCollider
   - EnemyProjectile
   - 
-  - 
+  - GroundLimit
   - Ground
   - Ladder
   - 
   - 
   - 
+  - Item
+  - ItemCollider
+  - Money
+  - MoneyCollider
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Portal
   m_SortingLayers:
   - name: Default
     uniqueID: 0

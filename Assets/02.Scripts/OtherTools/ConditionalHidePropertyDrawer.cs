@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEditor;
 
 //Original version of the ConditionalHideAttribute created by Brecht Lecluyse (www.brechtos.com)
@@ -102,3 +103,4 @@ public class ConditionalHidePropertyDrawer : PropertyDrawer
         }
     }
 }
+#endif

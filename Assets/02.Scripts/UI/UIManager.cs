@@ -15,7 +15,11 @@ public class UIManager : MonoBehaviour
     public GameObject characterInfoView;
     private void Awake()
     {
-        instance = this;
+        if(instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(instance);
+        }
         shortCutView.SetActive(true);
         menuView.SetActive(true);
         inventoryView.SetActive(true);

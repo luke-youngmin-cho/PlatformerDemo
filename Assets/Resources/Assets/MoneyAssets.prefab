@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6445641083280706647
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2337288967828368396}
+  - component: {fileID: 958406532121164451}
+  m_Layer: 0
+  m_Name: MoneyAssets
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2337288967828368396
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6445641083280706647}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &958406532121164451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6445641083280706647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9f4bc4fb3c15ca4c9c757eb38b044c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  money_CopperPenny: {fileID: 11400000, guid: 46af2495e4757f8409c1989973ef06ee, type: 2}
+  money_SilverPenny: {fileID: 11400000, guid: ee95f3421c260e44185120f5cbd6e322, type: 2}
+  money_GoldPenny: {fileID: 11400000, guid: da7338c8589241643aed8578adc5e7ff, type: 2}
+  money_PaperBundle: {fileID: 11400000, guid: 9aafe336e0f7500409925c980ff4b090, type: 2}
+  money_GoldBag: {fileID: 11400000, guid: dfd8b31a30cb39d42af063b65bbd3207, type: 2}
+  money_CopperPennyPrefab: {fileID: 1599187992137752609, guid: f0510fc5ed6a6b24e86346b677a9f79a, type: 3}
+  money_SilverPennyPrefab: {fileID: 1599187992137752609, guid: cd84105ee713e8d44a6822acf07292b0, type: 3}
+  money_GoldPennyPrefab: {fileID: 1599187992137752609, guid: dc5ce52e3cb6fe14fa68373118c62162, type: 3}
+  money_PaperBundlePrefab: {fileID: 1599187992137752609, guid: 5a7e529a4da03da43bc0ce62898a46de, type: 3}
+  money_GoldBagPrefab: {fileID: 1599187992137752609, guid: 0e356029312fc4649aeb99746225ab37, type: 3}

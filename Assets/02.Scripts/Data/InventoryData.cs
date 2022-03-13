@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class InventoryData
 {
+    public int gameMoney;
     public List<InventoryItemData> items;
     public InventoryData()
     {
