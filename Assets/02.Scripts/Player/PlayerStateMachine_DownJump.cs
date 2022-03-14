@@ -7,6 +7,8 @@ public class PlayerStateMachine_DownJump : PlayerStateMachine
     GroundDetector groundDetector;
     public float downJumpForce = 0.3f;
     public float downJumpIgnoreTime = 0.3f;
+    private float downJumpStartPosY;
+    private float downJumpTolerance = 0.5f;
     public override void Awake()
     {
         base.Awake();
@@ -36,13 +38,14 @@ public class PlayerStateMachine_DownJump : PlayerStateMachine
                 state = State.Casting;
                 break;
             case State.Casting:
+                downJumpStartPosY = rb.position.y;
                 rb.velocity = new Vector2(rb.velocity.x, 0f);
                 rb.AddForce(new Vector2(0f, downJumpForce), ForceMode2D.Impulse);
                 state = State.OnAction;
                 break;
             case State.OnAction:
                 if (groundDetector.isIgnoringGround &&
-                    rb.position.y < groundDetector.passingGroundColCenterY - col.size.y/2)
+                    rb.position.y < downJumpStartPosY - downJumpTolerance)
                 {
                     nextPlayerState = PlayerState.Fall;
                     state = State.Finished;

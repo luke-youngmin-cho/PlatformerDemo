@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GroundDetector : MonoBehaviour
@@ -11,10 +12,9 @@ public class GroundDetector : MonoBehaviour
     [SerializeField] LayerMask groundLayer;
     [SerializeField] LayerMask groundLimitLayer;
     private Collider2D currentGroundCol;
-    private Collider2D lastGroundCol;
+    public Collider2D lastGroundCol;
     private Collider2D passingGroundCol;
 
-    public float passingGroundColCenterY;
     public bool isDetected;
     public bool doDownJumpCheck;
     public bool downJumpAvailable;
@@ -45,14 +45,15 @@ public class GroundDetector : MonoBehaviour
 
         if (doDownJumpCheck)
         {
-             Collider2D[] groundsCols = Physics2D.OverlapBoxAll(new Vector2(center.x, center.y - downJumpCheckHeight / 2),
-                                                    new Vector2(0.001f, downJumpCheckHeight),
+             List<Collider2D> groundsCols = Physics2D.OverlapBoxAll(new Vector2(center.x, center.y - downJumpCheckHeight / 2),
+                                                    new Vector2(col.size.x, downJumpCheckHeight),
                                                     0,
-                                                    groundLayer | groundLimitLayer);
+                                                    groundLayer | groundLimitLayer).ToList();
+            groundsCols.OrderBy(x=> x.transform.position.y);
 
-            int groundNum = groundsCols.Length;
+            int groundNum = groundsCols.Count;
             if (groundNum > 1 &&
-                ((1 << groundsCols[groundNum-1].gameObject.layer) == groundLayer))
+                ((1 << groundsCols[0].gameObject.layer) == groundLayer))
             {
                 downJumpAvailable = true;
             }
@@ -78,16 +79,26 @@ public class GroundDetector : MonoBehaviour
     }
     IEnumerator E_IgnorePassingGroundUntilPassedIt(Collider2D groundCol)
     {
-        Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), true);
+        //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), true);
+        Physics2D.IgnoreCollision(col,groundCol,true);
+        float passingGroundColCenterY = groundCol.transform.position.y + col.offset.y;
+        // wait passing start
+        yield return new WaitUntil(() =>
+        {
+            Debug.Log($"start passing {groundCol.name}{rb.position.y + col.offset.y - col.size.y / 2},{passingGroundColCenterY - size.y}");
+            return rb.position.y + col.offset.y - col.size.y / 2 < passingGroundColCenterY - size.y;
+        });
+        // ignoring
         yield return new WaitUntil(() =>
         {
             bool isPassed = false;
+            Debug.Log(groundCol.name);
             
             if (groundCol != null)
             {
                 passingGroundColCenterY = groundCol.transform.position.y + col.offset.y;
                 if ((rb.position.y + col.offset.y + col.size.y / 2 < passingGroundColCenterY - size.y) ||
-                   (rb.position.y + col.offset.y - col.size.y / 2 < passingGroundColCenterY + size.y))
+                    (rb.position.y + col.offset.y - col.size.y / 2 > passingGroundColCenterY + size.y))
                 {
                     isPassed = true;
                 }
@@ -97,7 +108,8 @@ public class GroundDetector : MonoBehaviour
             return isPassed;
         });
         Debug.Log("Ignoring ground finished");
-        Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), false);
+        //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), false);
+        Physics2D.IgnoreCollision(col, groundCol, false);
         isIgnoringGround = false;
         passingGroundCol = null;
     }

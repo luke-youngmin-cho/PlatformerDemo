@@ -16,7 +16,8 @@ public class PlayerStateMachine_Jump : PlayerStateMachine
         if (groundDetector.isDetected &&
            Input.GetKey(KeyCode.DownArrow) == false &&
            (manager.oldPlayerState == PlayerState.Idle ||
-            manager.oldPlayerState == PlayerState.Run))
+            manager.oldPlayerState == PlayerState.Run ||
+            manager.oldPlayerState == PlayerState.Dash))
         {
             isOK = true;
         }

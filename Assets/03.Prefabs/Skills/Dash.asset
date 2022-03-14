@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Dash
   m_EditorClassIdentifier: 
   playerState: 2
-  machineType: 1
+  machineType: 3
   icon: {fileID: 21300000, guid: 4e822aef56927c04da2502b7392cd5b5, type: 3}

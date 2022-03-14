@@ -120,7 +120,10 @@ public class PlayerStateMachineManager : MonoBehaviour
             {
                 machineDictionaryOfKeyCode.Add(machines[i].keyCode, machines[i]);
                 if(machines[i].machineType == MachineType.ActiveSkill)
+                {
                     activeSkillList.Add(machines[i].playerStateType);
+                    Debug.Log($"active skill list added {machines[i].playerStateType},{machines[i].machineType}");
+                }   
             }   
         }
     }
@@ -131,6 +134,9 @@ public class PlayerStateMachineManager : MonoBehaviour
         {
             if (onActiveSkill == false)
             {
+                if (_keyInput != KeyCode.None)
+                    Debug.Log(_keyInput);
+
                 float h = Input.GetAxis("Horizontal");
                 //direction
                 if (IsChangeDirectionPossible())
@@ -200,6 +206,7 @@ public class PlayerStateMachineManager : MonoBehaviour
             // user - defined key input 
             //-----------------------------------------------
             PlayerStateMachine playerStateMachine;
+            
             bool isOK = machineDictionaryOfKeyCode.TryGetValue(_keyInput, out playerStateMachine);
             //Debug.Log($"{isOK}, { keyInput}");
             _keyInput = KeyCode.None; // reset current key event input. 
@@ -208,7 +215,7 @@ public class PlayerStateMachineManager : MonoBehaviour
                 playerStateMachine.isReady &&
                 playerStateMachine.IsExecuteOK())
             {
-                Debug.Log($"{ playerStateMachine.isReady}, { playerStateMachine.IsExecuteOK()}");
+                //Debug.Log($"{ playerStateMachine.isReady}, { playerStateMachine.IsExecuteOK()}");
                 ChangePlayerState(playerStateMachine.playerStateType);
             }
         }
@@ -247,13 +254,13 @@ public class PlayerStateMachineManager : MonoBehaviour
 
     void ResetMove()
     {
-        if(newPlayerState != PlayerState.Jump && 
+        /*if(newPlayerState != PlayerState.Jump && 
            newPlayerState != PlayerState.Fall &&
            oldPlayerState != PlayerState.Jump &&
            oldPlayerState != PlayerState.Fall)
         {
             move = Vector2.zero;
-        }
+        }*/
     }    
     void ComputeVelocity()
     {

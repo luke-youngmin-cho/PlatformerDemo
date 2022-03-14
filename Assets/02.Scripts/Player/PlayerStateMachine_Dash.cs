@@ -5,6 +5,7 @@ public class PlayerStateMachine_Dash : PlayerStateMachine
     public override void Awake()
     {
         base.Awake();
+        machineType = MachineType.ActiveSkillInterruptible;
         playerStateType = PlayerState.Dash;
     }
     public override bool IsExecuteOK()

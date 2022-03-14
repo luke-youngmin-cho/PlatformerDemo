@@ -38,6 +38,7 @@ public class PlayerStateMachine : MonoBehaviour
         manager = gameObject.GetComponent<PlayerStateMachineManager>();
         animationManager = gameObject.GetComponent<AnimationManager>();
         player = GetComponent<Player>();
+        machineType = MachineType.BasicSkill;
         animationName = _playerStateType.ToString();
         animationTime = animationManager.GetAnimationTime(animationName);
     }
@@ -105,5 +106,6 @@ public enum MachineType
 {
     BasicSkill,
     ActiveSkill,
-    PassiveSkill
+    PassiveSkill,
+    ActiveSkillInterruptible,
 }
