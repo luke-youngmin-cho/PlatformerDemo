@@ -4,31 +4,33 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] GameObject enemyPrefab;
+    [SerializeField] PoolElement poolElment;
     Transform tr;
     public Vector2 spawnRangeCenter;
     public Vector2 spawnRangeSize;
-    public float numMax;
-    public float numSpawnSpeedLimit;
+    public int numMax;
+    public int numSpawnSpeedLimit;
     public float spawnPeriod;
     private float spawnTimeElapsed;
 
-    private List<GameObject> spawnedEnemies = new List<GameObject>();
     private void Awake()
     {
         tr = GetComponent<Transform>();
+        if (poolElment.size > numMax)
+            poolElment.size = numMax;
+
+        ObjectPool.instance.AddPoolElement(poolElment);
     }
     private void Update()
     {
-        int num = spawnedEnemies.Count;
+        int num = ObjectPool.GetSpawnedObjectNumber(poolElment.tag);
         if (num < numMax)
         {
             if(num < numSpawnSpeedLimit)
             {
                 if (spawnTimeElapsed > spawnPeriod)
                 {
-                    GameObject enemy = InstantiateOnRandomPosition(enemyPrefab);
-                    spawnedEnemies.Add(enemy);
+                    SpawnOnRandomPosition(poolElment.tag);
                     spawnTimeElapsed = 0;
                 }
             }
@@ -36,31 +38,20 @@ public class EnemySpawner : MonoBehaviour
             {
                 if (spawnTimeElapsed > spawnPeriod*(1.0f + (float)num / numSpawnSpeedLimit))
                 {
-                    GameObject enemy = InstantiateOnRandomPosition(enemyPrefab);
-                    spawnedEnemies.Add(enemy);
+                    SpawnOnRandomPosition(poolElment.tag);
                     spawnTimeElapsed = 0;
                 }
             }
             spawnTimeElapsed += Time.deltaTime;
         }
     }
-    private void LateUpdate()
+    private void SpawnOnRandomPosition(string tag)
     {
-        // garbage collecting
-        foreach (GameObject g in spawnedEnemies.ToArray())
-        {
-            if (g == null)
-                spawnedEnemies.Remove(g);
-        }
-    }
-    private GameObject InstantiateOnRandomPosition(GameObject prefab)
-    {
-        float xRandom = Random.Range(transform.position.x + spawnRangeCenter.x - spawnRangeSize.x/2,
-                                     transform.position.x + spawnRangeCenter.x + spawnRangeSize.x/2);
-        float y = transform.position.y + spawnRangeCenter.y;
-        float z = transform.position.z;
-        GameObject go = Instantiate(prefab, new Vector3(xRandom, y, z), Quaternion.identity);
-        return go;
+        float xRandom = Random.Range(tr.position.x + spawnRangeCenter.x - spawnRangeSize.x/2,
+                                     tr.position.x + spawnRangeCenter.x + spawnRangeSize.x/2);
+        float y = tr.position.y + spawnRangeCenter.y;
+        float z = tr.position.z;
+        ObjectPool.SpawnFromPool(tag, new Vector3(xRandom, y, z));
     }
     private void OnDrawGizmosSelected()
     {

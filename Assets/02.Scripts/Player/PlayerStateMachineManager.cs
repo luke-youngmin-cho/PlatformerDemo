@@ -254,13 +254,9 @@ public class PlayerStateMachineManager : MonoBehaviour
 
     void ResetMove()
     {
-        /*if(newPlayerState != PlayerState.Jump && 
-           newPlayerState != PlayerState.Fall &&
-           oldPlayerState != PlayerState.Jump &&
-           oldPlayerState != PlayerState.Fall)
-        {
-            move = Vector2.zero;
-        }*/
+        if(newPlayerState == PlayerState.Crouch ||
+           newPlayerState == PlayerState.CrouchFromFall)
+            move.x = 0;
     }    
     void ComputeVelocity()
     {

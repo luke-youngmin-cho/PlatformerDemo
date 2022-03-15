@@ -21,7 +21,10 @@ public class Enemy : MonoBehaviour
         {
             _hp = value;
             if (_hp > 0)
+            {
                 isDead = false;
+                col.enabled = true;
+            }   
             else
             {
                 isDead = true;
@@ -42,6 +45,7 @@ public class Enemy : MonoBehaviour
     EnemyController controller;
     CapsuleCollider2D col;
     SpriteRenderer spriteRenderer;
+    Color originColor;
     private void Awake()
     {
         tr = GetComponent<Transform>();
@@ -49,9 +53,19 @@ public class Enemy : MonoBehaviour
         col = GetComponent<CapsuleCollider2D>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         stats = EnemySettings.GetStats(this.GetType().Name);
-        hp = stats.hpMax;
+        
+        originColor = spriteRenderer.color;
     }
-    
+    private void OnEnable()
+    {
+        spriteRenderer.color = originColor;
+        hp = stats.hpMax;
+        controller.moveAIState = EnemyController.MoveAIState.DecideRandomBehavior;
+    }
+    private void OnDisable()
+    {
+        ObjectPool.ReturnToPool(gameObject);
+    }
     private int CalcDamage()
     {
         int damage = (stats.attack * 100 + stats.STR * 20) / 2;
@@ -140,7 +154,7 @@ public class Enemy : MonoBehaviour
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-        Destroy(this.gameObject);
+        gameObject.SetActive(false);
     }
     void ShowHPBarForSeconds()
     {

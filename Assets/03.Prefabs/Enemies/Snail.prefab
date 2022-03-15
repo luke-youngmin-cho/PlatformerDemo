@@ -149,7 +149,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_TargetDisplay: 0
 --- !u!114 &6954144126515144080
 MonoBehaviour:
@@ -235,8 +235,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.02}
-  m_Size: {x: 0.25, y: 0.15}
+  m_Offset: {x: -0.0000000027570446, y: -0.023127768}
+  m_Size: {x: 0.25000003, y: 0.15625562}
   m_Direction: 1
 --- !u!1 &6954144127161028420
 GameObject:
@@ -384,7 +384,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: bd232118c7523486fb113f71be454a7f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -545,7 +545,7 @@ MonoBehaviour:
   groundLimitLayer:
     serializedVersion: 2
     m_Bits: 524288
-  passingGroundColCenterY: 0
+  lastGroundCol: {fileID: 0}
   isDetected: 0
   doDownJumpCheck: 0
   downJumpAvailable: 0

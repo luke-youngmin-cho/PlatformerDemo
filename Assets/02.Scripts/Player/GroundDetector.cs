@@ -85,14 +85,14 @@ public class GroundDetector : MonoBehaviour
         // wait passing start
         yield return new WaitUntil(() =>
         {
-            Debug.Log($"start passing {groundCol.name}{rb.position.y + col.offset.y - col.size.y / 2},{passingGroundColCenterY - size.y}");
+            //Debug.Log($"start passing {groundCol.name}{rb.position.y + col.offset.y - col.size.y / 2},{passingGroundColCenterY - size.y}");
             return rb.position.y + col.offset.y - col.size.y / 2 < passingGroundColCenterY - size.y;
         });
         // ignoring
         yield return new WaitUntil(() =>
         {
             bool isPassed = false;
-            Debug.Log(groundCol.name);
+            //Debug.Log(groundCol.name);
             
             if (groundCol != null)
             {
@@ -107,7 +107,7 @@ public class GroundDetector : MonoBehaviour
                 isPassed = true;
             return isPassed;
         });
-        Debug.Log("Ignoring ground finished");
+        //Debug.Log("Ignoring ground finished");
         //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), false);
         Physics2D.IgnoreCollision(col, groundCol, false);
         isIgnoringGround = false;
