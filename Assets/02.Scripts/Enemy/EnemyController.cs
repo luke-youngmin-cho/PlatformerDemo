@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// Enemy actions & AI
+/// </summary>
 public class EnemyController : MonoBehaviour
 {
     public bool controlEnable = true;
@@ -68,7 +71,10 @@ public class EnemyController : MonoBehaviour
             else if(_direction > 0)
                 transform.eulerAngles = new Vector3(0f, 180f, 0f);
         }
-        get { return _direction; }
+        get 
+        { 
+            return _direction; 
+        }
     }
     public int directionInit = -1;
 
@@ -79,6 +85,61 @@ public class EnemyController : MonoBehaviour
     float attackTime;
     float hurtTime;
     float dieTime;
+
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+    public void TryHurt()
+    {
+        if (oldState == EnemyState.Hurt)
+            animationTimer = 0; // keep hurting animation
+        else if (IsHurtPossible())
+            ChangeEnemyState(EnemyState.Hurt);
+    }
+
+    public void TryDie()
+    {
+        ChangeEnemyState(EnemyState.Die);
+    }
+
+    public void KnockBack(int knockBackDirection)
+    {
+        if (moveEnabled == false) return;
+        move = Vector2.zero;
+        rb.velocity = Vector2.zero;
+        rb.AddForce(new Vector2(knockBackForce.x * (knockBackDirection), knockBackForce.y), ForceMode2D.Impulse);
+    }
+
+    public void KnockBack(int knockBackDirection, float time)
+    {
+        if (moveEnabled == false) return;
+        move = Vector2.zero;
+        rb.velocity = Vector2.zero;
+        StartCoroutine(E_KnockBack(knockBackDirection, time));
+    }
+
+    virtual public void AttackBehavior(List<GameObject> castedTargets)
+    {
+        foreach (GameObject target in castedTargets)
+        {
+            Player player = target.GetComponent<Player>();
+            if (player.isDead == false)
+            {
+                bool isCriticalHit;
+                int damage = enemy.CalcDamage(out isCriticalHit);
+                PlayerStateMachineManager playerController = target.GetComponent<PlayerStateMachineManager>();
+                playerController.KnockBack();
+                player.Hurt(damage, isCriticalHit);
+            }
+        }
+    }
+
+
+    //============================================================================
+    //*************************** Private Methods ********************************
+    //============================================================================
+
     private void Awake()
     {
         enemy = GetComponent<Enemy>();
@@ -93,6 +154,7 @@ public class EnemyController : MonoBehaviour
         hurtTime = GetAnimationTime("Hurt");
         dieTime = GetAnimationTime("Die");
     }
+
     private void Update()
     {
         if (controlEnable)
@@ -118,10 +180,12 @@ public class EnemyController : MonoBehaviour
         }        
         UpdateEnemyState();
     }
+
     private void FixedUpdate()
     {
         FixedUpdateMovement();
     }
+
     void AIWorkflow()
     {
         if (oldState == EnemyState.Hurt && ((int)moveAIState < (int)MoveAIState.FollowTarget))
@@ -220,6 +284,7 @@ public class EnemyController : MonoBehaviour
                 break;
         }
     }
+
     void UpdateEnemyState()
     {
         switch (newState)
@@ -239,6 +304,7 @@ public class EnemyController : MonoBehaviour
                 break;
         }
     }
+
     void UpdateAttackState()
     {
         switch (attackState)
@@ -269,6 +335,7 @@ public class EnemyController : MonoBehaviour
                 break;
         }
     }
+
     void UpdateHurtState()
     {
         switch (hurtState)
@@ -286,6 +353,7 @@ public class EnemyController : MonoBehaviour
                 break;
         }
     }
+
     void UpdateDieState()
     {
         switch (dieState)
@@ -307,6 +375,7 @@ public class EnemyController : MonoBehaviour
                 break;
         }
     }
+
     void ChangeEnemyState(EnemyState stateToChange)
     {
         if (oldState == stateToChange) return;
@@ -335,6 +404,7 @@ public class EnemyController : MonoBehaviour
         }
         oldState = newState;
     }
+
     void ResetAllMotion()
     {
         move = Vector2.zero;
@@ -349,6 +419,7 @@ public class EnemyController : MonoBehaviour
             animator.speed = 1f;
         rb.gravityScale = 1;
     }
+
     void ChangeAnimationState(string newAnimationName)
     {
         if (currentAnimationName == newAnimationName) return;
@@ -356,6 +427,7 @@ public class EnemyController : MonoBehaviour
         animator.Play(newAnimationName);
         currentAnimationName = newAnimationName;
     }
+
     bool IsHorizontalMovePossible()
     {
         bool isOK = false;
@@ -364,6 +436,7 @@ public class EnemyController : MonoBehaviour
             isOK = true;
         return isOK;
     }
+
     bool IsHurtPossible()
     {
         bool isOK = false;
@@ -371,46 +444,7 @@ public class EnemyController : MonoBehaviour
             isOK = true;
         return isOK;
     }
-    virtual public void AttackBehavior(List<GameObject> castedTargets)
-    {
-        foreach (GameObject target in castedTargets)
-        {
-            Player player = target.GetComponent<Player>();
-            if(player.isDead == false)
-            {
-                bool isCriticalHit;
-                int damage = enemy.CalcDamage(out isCriticalHit);
-                PlayerStateMachineManager playerController = target.GetComponent<PlayerStateMachineManager>();
-                playerController.KnockBack();
-                player.Hurt(damage, isCriticalHit);
-            }
-        }
-    }
-    public void TryHurt()
-    {
-        if (oldState == EnemyState.Hurt)
-            animationTimer = 0; // keep hurting animation
-        else if(IsHurtPossible())
-            ChangeEnemyState(EnemyState.Hurt);
-    }
-    public void TryDie()
-    {
-        ChangeEnemyState(EnemyState.Die);
-    }
-    public void KnockBack(int knockBackDirection)
-    {
-        if (moveEnabled == false) return;
-        move = Vector2.zero;
-        rb.velocity = Vector2.zero;
-        rb.AddForce(new Vector2(knockBackForce.x * (knockBackDirection), knockBackForce.y), ForceMode2D.Impulse);
-    }
-    public void KnockBack(int knockBackDirection,float time)
-    {
-        if (moveEnabled == false) return;
-        move = Vector2.zero;
-        rb.velocity = Vector2.zero;
-        StartCoroutine(E_KnockBack(knockBackDirection,time));
-    }
+    
     IEnumerator E_KnockBack(int knockBackDirection,float time)
     {
         float elapsedTime = 0f;
@@ -422,17 +456,20 @@ public class EnemyController : MonoBehaviour
             yield return null;
         }
     }
+
     void ComputeVelocity()
     {
         Vector2 velocity = new Vector2(move.x * enemy.stats.moveSpeed, move.y);
         targetVelocity = velocity;
     }
+
     void FixedUpdateMovement()
     {
         if (moveEnabled == false) return;
         ComputeVelocity();
         rb.position += targetVelocity * Time.fixedDeltaTime;
     }
+
     float GetAnimationTime(string name)
     {
         float time = 0;
@@ -446,6 +483,33 @@ public class EnemyController : MonoBehaviour
         }
         return time;
     }
+
+    private void OnDrawGizmosSelected()
+    {
+        // attack range
+        Gizmos.color = Color.red;
+        CapsuleCollider2D capsuleCol = GetComponent<CapsuleCollider2D>();
+        Gizmos.DrawWireCube(new Vector3(transform.position.x + (capsuleCol.offset.x + attackRangeCenter.x) * directionInit,
+                                        transform.position.y + capsuleCol.offset.y + attackRangeCenter.y,
+                                        0f),
+                            new Vector3(attackRangeSize.x, attackRangeSize.y, 0f));
+        // attack excution range
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireCube(new Vector3(transform.position.x + autoFollowRangeCenter.x * directionInit,
+                                        transform.position.y + autoFollowRangeCenter.y,
+                                        0),
+                            new Vector3(autoFollowRangeSize.x, autoFollowRangeSize.y, 0));
+
+        // front ground check
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(transform.position + new Vector3(capsuleCol.size.x * direction, -capsuleCol.size.y / 2, 0), new Vector2(0.1f, 0.1f));
+    }
+
+
+    //============================================================================
+    //******************************* Enums **************************************
+    //============================================================================
+
     public enum EnemyState
     {
         Idle,
@@ -485,24 +549,5 @@ public class EnemyController : MonoBehaviour
         FollowTarget,
         AttackingTarget,
     }
-    private void OnDrawGizmosSelected()
-    {
-        // attack range
-        Gizmos.color = Color.red;
-        CapsuleCollider2D capsuleCol = GetComponent<CapsuleCollider2D>();
-        Gizmos.DrawWireCube(new Vector3(transform.position.x + (capsuleCol.offset.x + attackRangeCenter.x) * directionInit,
-                                        transform.position.y + capsuleCol.offset.y + attackRangeCenter.y,
-                                        0f),
-                            new Vector3(attackRangeSize.x, attackRangeSize.y, 0f));
-        // attack excution range
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawWireCube(new Vector3(transform.position.x + autoFollowRangeCenter.x * directionInit,
-                                        transform.position.y + autoFollowRangeCenter.y,
-                                        0),
-                            new Vector3(autoFollowRangeSize.x, autoFollowRangeSize.y, 0));
-
-        // front ground check
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(transform.position + new Vector3(capsuleCol.size.x * direction, -capsuleCol.size.y / 2,0), new Vector2(0.1f, 0.1f));
-    }
+    
 }

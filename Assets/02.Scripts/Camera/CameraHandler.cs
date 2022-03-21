@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Camera to follow player 
+/// </summary>
 public class CameraHandler : MonoBehaviour
 {
     public Vector3 offset;    

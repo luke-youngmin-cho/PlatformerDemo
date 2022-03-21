@@ -1,6 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+/// <summary>
+/// managing UIs don't destroy on load.
+/// </summary>
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
@@ -13,6 +17,12 @@ public class UIManager : MonoBehaviour
     public GameObject statsView;
     public GameObject equipmentsView;
     public GameObject characterInfoView;
+
+
+    //============================================================================
+    //************************* Private Methods **********************************
+    //============================================================================
+
     private void Awake()
     {
         if(instance == null)
@@ -28,10 +38,12 @@ public class UIManager : MonoBehaviour
         equipmentsView.SetActive(true);
         characterInfoView.SetActive(true);
     }
+
     private void Start()
     {
         StartCoroutine(E_Start());
     }
+
     IEnumerator E_Start()
     {
         menuView.SetActive(false);

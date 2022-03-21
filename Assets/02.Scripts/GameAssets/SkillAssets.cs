@@ -14,6 +14,7 @@ public class SkillAssets : MonoBehaviour
             return _instance;
         }
     }
+    public List<Skill> skills = new List<Skill>();
 
     public Skill GetSkillByState(PlayerState state)
     {
@@ -41,6 +42,4 @@ public class SkillAssets : MonoBehaviour
         }
         return tmpMachineType;
     }
-
-    public List<Skill> skills = new List<Skill>();
 }

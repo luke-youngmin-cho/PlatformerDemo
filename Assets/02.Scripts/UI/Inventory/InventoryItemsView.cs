@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+
+/// <summary>
+/// Presentor for interaction among inventory item UI <-> ShortKey & Battle Field
+/// </summary>
 public class InventoryItemsView : MonoBehaviour
 {
     public bool isReady = false;
@@ -12,27 +16,13 @@ public class InventoryItemsView : MonoBehaviour
     public GameObject slotPrefab;
     [HideInInspector] public InventorySlot[] slots;
     public int totalSlots = 36;
-     public GameObject selectedItem;
+    public GameObject selectedItem;
     public Camera cam;
 
-    private void Start()
-    {
-        for(int i = 0; i < totalSlots; i++)
-        {
-            InventorySlot tmpSlot = Instantiate(slotPrefab, itemContent).GetComponent<InventorySlot>();
-            tmpSlot.num = i;
-        }
-        slots = GetComponentsInChildren<InventorySlot>();
-        isReady = true;
-    }
-    private void Update()
-    {
-        if (selectedItem != null)
-        {
-            Vector3 pos = Input.mousePosition;
-            selectedItem.transform.position = pos;
-        }
-    }
+
+    //============================================================================
+    //************************* Public Methods ***********************************
+    //============================================================================
     public void AddItem(Item item, int num)
     {
         int remains = num;
@@ -47,7 +37,7 @@ public class InventoryItemsView : MonoBehaviour
                 {
                     handler.itemNum += remains;
                     remains -= remains;
-                }   
+                }
                 else
                 {
                     handler.itemNum += (handler.item.numMax - handler.itemNum);
@@ -85,6 +75,7 @@ public class InventoryItemsView : MonoBehaviour
             }
         }
     }
+
     public void SetItem(Item item, int num, int slotNum)
     {
         InventorySlot slot = GetSlot(slotNum);
@@ -101,6 +92,83 @@ public class InventoryItemsView : MonoBehaviour
             AddItemToList(go);
         }
     }
+    public InventoryItemHandlerBase GetInventoryItemHandlerBySlotNum(int slotNum)
+    {
+        InventoryItemHandlerBase[] handlers = GetComponentsInChildren<InventoryItemHandlerBase>();
+        foreach (var handler in handlers)
+        {
+            if (handler.slotNumber == slotNum)
+            {
+                return handler;
+            }
+        }
+        return null;
+    }
+
+    public bool TryGetInventoryItemHandlerByName(string itemName, out InventoryItemHandlerBase inventoryItemHandlerBase)
+    {
+        inventoryItemHandlerBase = null;
+        foreach (var slot in slots)
+        {
+            if (slot.handler != null &&
+                slot.handler.item != null)
+            {
+                Debug.Log($"{ slot.handler.item.itemName } {itemName}");
+                if (slot.handler.item.itemName == itemName)
+                {
+                    inventoryItemHandlerBase = slot.handler;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public InventorySlot GetSlot(int slotNum)
+    {
+        return slots[slotNum];
+    }
+
+    public void ResetSlot(int slotNum)
+    {
+        slots[slotNum].Clear();
+    }
+
+    public void AddItemToList(GameObject go)
+    {
+        inventoryItems.Add(go);
+    }
+
+    public void RemoveItemFromList(GameObject go)
+    {
+        inventoryItems.Remove(go);
+    }
+
+
+    //============================================================================
+    //************************* Private Methods **********************************
+    //============================================================================
+
+    private void Start()
+    {
+        for(int i = 0; i < totalSlots; i++)
+        {
+            InventorySlot tmpSlot = Instantiate(slotPrefab, itemContent).GetComponent<InventorySlot>();
+            tmpSlot.num = i;
+        }
+        slots = GetComponentsInChildren<InventorySlot>();
+        isReady = true;
+    }
+
+    private void Update()
+    {
+        if (selectedItem != null)
+        {
+            Vector3 pos = Input.mousePosition;
+            selectedItem.transform.position = pos;
+        }
+    }
+    
     private InventorySlot FindEmptySlot()
     {
         InventorySlot slot = null;
@@ -114,6 +182,7 @@ public class InventoryItemsView : MonoBehaviour
         }
         return slot;
     }
+
     private InventoryItemHandlerBase FindItemHandlerEnoughSpace(Item item)
     {
         InventoryItemHandlerBase controller = null;
@@ -129,53 +198,5 @@ public class InventoryItemsView : MonoBehaviour
             }
         }
         return controller;
-    }
-    public InventoryItemHandlerBase GetInventoryItemHandlerBySlotNum(int slotNum)
-    {
-        InventoryItemHandlerBase[] handlers = GetComponentsInChildren<InventoryItemHandlerBase>();
-        foreach (var handler in handlers)
-        {
-            if (handler.slotNumber == slotNum)
-            {   
-                return handler;
-            }   
-        }
-        return null;
-    }
-
-    public bool TryGetInventoryItemHandlerByName(string itemName, out InventoryItemHandlerBase inventoryItemHandlerBase)
-    {
-        inventoryItemHandlerBase = null;
-        foreach (var slot in slots)
-        {
-            if (slot.handler != null &&
-                slot.handler.item != null)
-            {
-                Debug.Log($"{ slot.handler.item.itemName } {itemName}");
-                if(slot.handler.item.itemName == itemName)
-                {
-                    inventoryItemHandlerBase = slot.handler;
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    public InventorySlot GetSlot(int slotNum)
-    {
-        return slots[slotNum];
-    }
-    public void ResetSlot(int slotNum)
-    {
-        slots[slotNum].Clear();
-    }
-
-    public void AddItemToList(GameObject go)
-    {
-        inventoryItems.Add(go);
-    }
-    public void RemoveItemFromList(GameObject go)
-    {
-        inventoryItems.Remove(go);
-    }
+    }    
 }

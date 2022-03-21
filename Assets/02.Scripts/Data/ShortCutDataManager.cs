@@ -1,20 +1,28 @@
 ﻿using System.Collections;
 using Newtonsoft.Json;
 using UnityEngine;
+
+/// <summary>
+/// Create & Save & Load short cut data.
+/// </summary>
 public class ShortCutDataManager : MonoBehaviour
 {
     public static ShortCutDataManager instance;
-    public bool isLoaded { get { return data != null; } }
-    public bool isApplied = false;
+
     public ShortCutData data;
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            //DontDestroyOnLoad(gameObject);
+    public bool isLoaded 
+    { 
+        get 
+        { 
+            return data != null; 
         }
     }
+    public bool isApplied = false;
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+
     public void CreateData(string nickName)
     {
         data = LoadDefaultData();
@@ -24,6 +32,7 @@ public class ShortCutDataManager : MonoBehaviour
      
         Debug.Log($"Short cut data of {nickName} Created");
     }
+
     public ShortCutData LoadDefaultData()
     {
         ShortCutData tmpData = null;
@@ -37,6 +46,7 @@ public class ShortCutDataManager : MonoBehaviour
             Debug.Log($"Failed to Load Short cut Default data, default path -> {jsonPath}");
         return tmpData;
     }
+
     public void SaveData()
     {
         if (data == null) return;
@@ -45,6 +55,7 @@ public class ShortCutDataManager : MonoBehaviour
         System.IO.File.WriteAllText(jsonPath,jsonData);
         Debug.Log("Short cut data Saved");
     }
+
     public void LoadData(string nickName)
     {
         string jsonPath = $"{Application.persistentDataPath}/ShortCutDatas/ShortCut_{nickName}.json";
@@ -57,8 +68,10 @@ public class ShortCutDataManager : MonoBehaviour
         else
             Debug.Log($"Failed to Load Short cut data of {nickName} -> {jsonPath}");
     }
+
     public void ApplyData()
     {
+        // Apply short cut for items data
         foreach (var sub in data.itemsData)
         {
             ShortCut shortCut = null;
@@ -74,6 +87,7 @@ public class ShortCutDataManager : MonoBehaviour
                     Debug.Log($"Tried to apply short cut data {sub.keyCode}, item({sub.slotNum}), but no item handler");
             };
         }
+        // Apply short cut for basic key data
         foreach (var sub in data.basicKeysData)
         {
             ShortCut shortCut = null;
@@ -94,6 +108,7 @@ public class ShortCutDataManager : MonoBehaviour
             }
 
         }
+        // Apply short cut for skills data
         foreach (var sub in data.skillsData)
         {
             ShortCut shortCut = null;
@@ -119,6 +134,7 @@ public class ShortCutDataManager : MonoBehaviour
         Debug.Log("Short cut data Applied");
         isApplied = true;
     }
+
     public void RemoveData(string nickName)
     {
         string jsonPath = $"{Application.persistentDataPath}/ShortCutDatas/ShortCut_{nickName}.json";
@@ -128,6 +144,18 @@ public class ShortCutDataManager : MonoBehaviour
             Debug.Log($"Short cut data of {nickName} Removed");
         }
             
+    }
+
+
+    //============================================================================
+    //*************************** Private Methods *********************************
+    //============================================================================
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
     }
 }
 

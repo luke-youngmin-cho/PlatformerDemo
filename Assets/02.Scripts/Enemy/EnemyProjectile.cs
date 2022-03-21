@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Enemy's projectile behavior 
+/// </summary>
 public class EnemyProjectile : MonoBehaviour
 {
     public LayerMask targetLayer;
@@ -11,11 +14,11 @@ public class EnemyProjectile : MonoBehaviour
     bool _isCritical;
     bool setupFinished;
     Transform tr;
-    
-    private void Awake()
-    {
-        tr = GetComponent<Transform>();
-    }
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+
     public void Setup(int direction, int damage, bool isCritical)
     {
         _direction = direction;
@@ -23,11 +26,23 @@ public class EnemyProjectile : MonoBehaviour
         _isCritical = isCritical;
         setupFinished = true;
     }
+
+
+    //============================================================================
+    //*************************** Private Methods ********************************
+    //============================================================================
+
+    private void Awake()
+    {
+        tr = GetComponent<Transform>();
+    }
+    
     void Update()
     {
         if(setupFinished)
             tr.position += new Vector3(_direction * speed * Time.deltaTime, 0f, 0f);
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (setupFinished)

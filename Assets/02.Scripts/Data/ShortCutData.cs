@@ -1,12 +1,21 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
+
+/// <summary>
+/// Short cut key data of items, basic keys, skills
+/// </summary>
 [System.Serializable]
 public class ShortCutData
 {
     public List<ShortCutData_SpendItem> itemsData;
     public List<ShortCutData_BasicKey> basicKeysData;
     public List<ShortCutData_Skill> skillsData;
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+
     public ShortCutData()
     {
         itemsData = new List<ShortCutData_SpendItem>();
@@ -14,6 +23,9 @@ public class ShortCutData
         skillsData = new List<ShortCutData_Skill>();
     }
 
+    /// <summary>
+    /// Add short cut for item (spend type) data
+    /// </summary>
     public void AddShortCutItemData(ShortCutData_SpendItem data)
     {
         for (int i = itemsData.Count -1; i > -1; i--)
@@ -26,6 +38,10 @@ public class ShortCutData
         }
         itemsData.Add(data);
     }
+
+    /// <summary>
+    /// Add short cut for basic key data
+    /// </summary>
     public void AddShortCutBasicKeyData(ShortCutData_BasicKey data)
     {
         for (int i = basicKeysData.Count - 1; i > -1; i--)
@@ -38,6 +54,10 @@ public class ShortCutData
         }
         basicKeysData.Add(data);
     }
+
+    /// <summary>
+    /// Add short cut for skill data
+    /// </summary>
     public void AddShortCutSkillData(ShortCutData_Skill data)
     {
         for (int i = skillsData.Count - 1; i > -1; i--)
@@ -50,6 +70,7 @@ public class ShortCutData
         }
         skillsData.Add(data);
     }
+
     public void Clear()
     {
         itemsData.Clear();
@@ -58,6 +79,10 @@ public class ShortCutData
     }
 }
 
+
+/// <summary>
+/// structure for types available to register short cut key.
+/// </summary>
 [System.Serializable]
 public struct ShortCutData_SpendItem
 {
@@ -66,6 +91,7 @@ public struct ShortCutData_SpendItem
     public ItemType itemType;
     public int slotNum;
 }
+
 [System.Serializable]
 public struct ShortCutData_BasicKey
 {
@@ -73,6 +99,7 @@ public struct ShortCutData_BasicKey
     public ShortCutType type;
     public string basicKeyName;
 }
+
 [System.Serializable]
 public struct ShortCutData_Skill
 {

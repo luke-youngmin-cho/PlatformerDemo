@@ -1,44 +1,34 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+
+/// <summary>
+/// Presenter for managing Inventory presenters.
+/// </summary>
 public class InventoryView : MonoBehaviour
 {
     public static InventoryView instance;
-    public bool isReady { get {
+    public bool isReady 
+    { 
+        get 
+        {
             return equipItemsViewInstance.isReady &&
                    spendItemsViewInstance.isReady &&
                    etcItemsViewInstance.isReady &&
                    cashItemsViewInstance.isReady;
-        } }
+        } 
+    }
     public InventoryItemsView equipItemsViewInstance;
     public InventoryItemsView spendItemsViewInstance;
     public InventoryItemsView etcItemsViewInstance;
     public InventoryItemsView cashItemsViewInstance;
     public InventoryMoneyView moneyView;
-    private void Awake()
-    {
-        instance = this;
-        equipItemsViewInstance.gameObject.SetActive(true);
-        spendItemsViewInstance.gameObject.SetActive(true);
-        etcItemsViewInstance.gameObject.SetActive(true);    
-        cashItemsViewInstance.gameObject.SetActive(true);
-    }
-    private void Update()
-    {
-        
-    }
-    private void Start()
-    {
-        StartCoroutine(E_Start());
-    }
-    IEnumerator E_Start()
-    {
-        yield return new WaitUntil(() => isReady);
-        equipItemsViewInstance.gameObject.SetActive(false);
-        spendItemsViewInstance.gameObject.SetActive(false);
-        etcItemsViewInstance.gameObject.SetActive(false);
-        cashItemsViewInstance.gameObject.SetActive(false);
-    }
+
+
+    //============================================================================
+    //************************* Public Methods ***********************************
+    //============================================================================
+
     public InventoryItemsView GetItemsViewByItemType(ItemType type)
     {
         InventoryItemsView itemsView = null;
@@ -61,6 +51,33 @@ public class InventoryView : MonoBehaviour
         }
         return itemsView;
     }
+
     
-    
+    //============================================================================
+    //************************* Private Methods **********************************
+    //============================================================================
+
+    private void Awake()
+    {
+        instance = this;
+        equipItemsViewInstance.gameObject.SetActive(true);
+        spendItemsViewInstance.gameObject.SetActive(true);
+        etcItemsViewInstance.gameObject.SetActive(true);    
+        cashItemsViewInstance.gameObject.SetActive(true);
+    }
+
+    private void Start()
+    {
+        StartCoroutine(E_Start());
+    }
+
+    IEnumerator E_Start()
+    {
+        yield return new WaitUntil(() => isReady);
+        equipItemsViewInstance.gameObject.SetActive(false);
+        spendItemsViewInstance.gameObject.SetActive(false);
+        etcItemsViewInstance.gameObject.SetActive(false);
+        cashItemsViewInstance.gameObject.SetActive(false);
+    }
+
 }

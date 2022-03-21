@@ -3,39 +3,23 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Presenter for interaction between skill <-> player skill list
+/// </summary>
 public class SkillsView : MonoBehaviour
 {
     public static SkillsView instance;
-    public bool isReady = false;
-    
+    public bool isReady = false;    
     public GameObject skillInfoPrefab;
     public Transform content;
-
     public SkillHandler skillHandler;
-
     public List<GameObject> skillSlots = new List<GameObject>();
-    private void Awake()
-    {
-        instance = this;
-    }
-    private void Start()
-    {
-        isReady = true;
-        StartCoroutine(E_RefreshAtFirst());
-    }
-    IEnumerator E_RefreshAtFirst()
-    {
-        yield return new WaitUntil(() => DataManager.isApplied);
-        RefreshSkillList();
-    }
-    private void Update()
-    {
-        if (skillHandler.gameObject.activeSelf)
-        {
-            Vector3 pos = Input.mousePosition;
-            skillHandler.transform.position = pos;
-        }
-    }
+
+
+    //============================================================================
+    //************************* Public Methods ***********************************
+    //============================================================================
+
     public void RefreshSkillList()
     {
         foreach (var skill in skillSlots)
@@ -51,7 +35,7 @@ public class SkillsView : MonoBehaviour
                 tmpSkillInfo.transform.GetChild(0).GetComponent<Image>().sprite = tmpSkill.icon;
                 tmpSkillInfo.transform.GetChild(0).GetChild(0).GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    if(tmpSkill.machineType == MachineType.ActiveSkill)
+                    if (tmpSkill.machineType == MachineType.ActiveSkill)
                     {
                         skillHandler.skill = tmpSkill;
                         skillHandler.gameObject.SetActive(true);
@@ -68,4 +52,34 @@ public class SkillsView : MonoBehaviour
         }
     }
 
+
+    //============================================================================
+    //************************* Private Methods **********************************
+    //============================================================================
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    private void Start()
+    {
+        isReady = true;
+        StartCoroutine(E_RefreshAtFirst());
+    }
+
+    IEnumerator E_RefreshAtFirst()
+    {
+        yield return new WaitUntil(() => DataManager.isApplied);
+        RefreshSkillList();
+    }
+
+    private void Update()
+    {
+        if (skillHandler.gameObject.activeSelf)
+        {
+            Vector3 pos = Input.mousePosition;
+            skillHandler.transform.position = pos;
+        }
+    }
 }

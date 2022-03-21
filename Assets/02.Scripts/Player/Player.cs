@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
+/// <summary>
+/// Player stats, skills, damage calculations, collision events
+/// </summary>
 public class Player : MonoBehaviour
 {
     public static Player instance;
@@ -9,22 +13,30 @@ public class Player : MonoBehaviour
     private st_Stats _stats;
     public st_Stats stats
     {
-        set { 
+        set 
+        { 
             _stats = value;
             PlayerDataManager.instance.data.OverwriteStats(stats);
             PlayerDataManager.instance.SaveData();
         }
-        get { return _stats; }
+        get 
+        { 
+            return _stats; 
+        }
     }
     private List<st_SkillStats> _skillStatsList;
     public List<st_SkillStats> skillStatsList
     {
-        set{
+        set
+        {
             _skillStatsList = value;
             PlayerDataManager.instance.data.OverwriteSkillStatsList(_skillStatsList);
             PlayerDataManager.instance.SaveData();
         }
-        get{ return _skillStatsList; }
+        get
+        { 
+            return _skillStatsList; 
+        }
     }
     public bool isDead;
     private int _hp;
@@ -50,11 +62,13 @@ public class Player : MonoBehaviour
             hpSlider.value = (float)_hp / stats.hpMax;
             hpText.text = _hp.ToString();
         }
-        get { return _hp; }
+        get 
+        { 
+            return _hp; 
+        }
     }
     public Slider hpSlider;
     public Text hpText;
-
     private int _mp;
     public int mp
     {
@@ -70,7 +84,10 @@ public class Player : MonoBehaviour
             mpSlider.value = (float)_mp / stats.mpMax;
             mpText.text = _mp.ToString();
         }
-        get { return _mp; }
+        get 
+        {
+            return _mp; 
+        }
     }
     public Slider mpSlider;
     public Text mpText;
@@ -88,7 +105,10 @@ public class Player : MonoBehaviour
             stats = tmpStats;
             expSlider.value = (float)_exp / expMax;
         }
-        get { return _exp; }
+        get 
+        { 
+            return _exp;
+        }
     }
     public Slider expSlider;
     public Text expText;
@@ -102,44 +122,24 @@ public class Player : MonoBehaviour
     private PlayerStateMachineManager machineManager;
     private Transform tr;
     private CapsuleCollider2D col;
-    private void Awake()
-    {
-        if(instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(instance);
-        }
-        machineManager = GetComponent<PlayerStateMachineManager>();
-        tr = GetComponent<Transform>();
-        col = GetComponent<CapsuleCollider2D>();
-        
-    }
-    private void Start()
-    {
-        StartCoroutine(E_Start());
-    }
-    IEnumerator E_Start()
-    {
-        yield return new WaitUntil(() => PlayerDataManager.instance.isApplied);
-        
-        hp =  stats.hp;
-        mp =  stats.mp;
-        exp = stats.EXP;
-        expMax = stats.Level * (int)(100f * Mathf.Exp(3.0f));
-        AddAllSkillMachines();
-        isReady = true;
-    }
+
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+
     public void AddAllSkillMachines()
     {
         foreach (var skillStats in skillStatsList)
         {
-            if(SkillAssets.instance.GetMachineTypeByState(skillStats.state) != MachineType.BasicSkill)
+            if (SkillAssets.instance.GetMachineTypeByState(skillStats.state) != MachineType.BasicSkill)
                 machineManager.AddStateMachineComponentByState(skillStats.state);
         }
     }
+
     public void SkillLevelUp(PlayerState state)
     {
-        if(stats.skillPoint > 0)
+        if (stats.skillPoint > 0)
         {
             for (int i = 0; i < skillStatsList.Count; i++)
             {
@@ -160,6 +160,7 @@ public class Player : MonoBehaviour
             }
         }
     }
+
     public void Hurt(int damage, bool isCriticalHit)
     {
         if (invincible) return;
@@ -173,7 +174,7 @@ public class Player : MonoBehaviour
         if (tmpHP > 0)
         {
             machineManager.TryHurt();
-        }   
+        }
         else
         {
             invincible = true;
@@ -182,9 +183,10 @@ public class Player : MonoBehaviour
         hp = tmpHP;
 
         // damage Pop up 
-        if(isDead == false)
+        if (isDead == false)
             DamagePopUp.Create(tr.position + new Vector3(0f, col.size.y / 2, 0f), damage, gameObject.layer, isCriticalHit);
     }
+
     public int CalcDamage()
     {
         int damage = (stats.attack * 100 + stats.STR * 20) / 2;
@@ -196,6 +198,7 @@ public class Player : MonoBehaviour
         }
         return damage;
     }
+
     public int CalcDamage(out bool isCriticalHit)
     {
         isCriticalHit = false;
@@ -209,6 +212,44 @@ public class Player : MonoBehaviour
         }
         return damage;
     }
+
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+
+    private void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(instance);
+        }
+        machineManager = GetComponent<PlayerStateMachineManager>();
+        tr = GetComponent<Transform>();
+        col = GetComponent<CapsuleCollider2D>();        
+    }
+
+    private void Start()
+    {
+        StartCoroutine(E_Start());
+    }
+
+    /// <summary>
+    /// Wait until data is loaded & applied
+    /// </summary>
+    IEnumerator E_Start()
+    {
+        yield return new WaitUntil(() => PlayerDataManager.instance.isApplied);
+        
+        hp =  stats.hp;
+        mp =  stats.mp;
+        exp = stats.EXP;
+        expMax = stats.Level * (int)(100f * Mathf.Exp(3.0f));
+        AddAllSkillMachines();
+        isReady = true;
+    }
+    
     IEnumerator E_SetInvincible(float time)
     {
         invincible = true;
@@ -217,7 +258,9 @@ public class Player : MonoBehaviour
         invincibleCoroutine = null;
     }
 
-
+    /// <summary>
+    /// Pick up item / money
+    /// </summary>
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision == null) return;

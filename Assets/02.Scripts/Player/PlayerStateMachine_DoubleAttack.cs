@@ -51,21 +51,19 @@ public class PlayerStateMachine_DoubleAttack : PlayerStateMachine
                 {
                     foreach (GameObject target in targetCaster.targetsDictionary[animationName])
                     {   
-                        List<int> damages = new List<int>();
-                        List<bool> isCriticalHits = new List<bool>();
-                        bool isCriticalHit;
-                        
                         // double damages.
-                        damages.Add(player.CalcDamage(out isCriticalHit));
-                        isCriticalHits.Add(isCriticalHit);
-                        damages.Add(player.CalcDamage(out isCriticalHit));
-                        isCriticalHits.Add(isCriticalHit);
+                        Queue<DamagePair> damagePairs = new Queue<DamagePair>();
+                        DamagePair damagePair = new DamagePair();
+                        damagePair.damage = player.CalcDamage(out damagePair.isCritical);
+                        damagePairs.Enqueue(damagePair);
+                        damagePair.damage = player.CalcDamage(out damagePair.isCritical);
+                        damagePairs.Enqueue(damagePair);
 
                         Enemy enemy = target.GetComponent<Enemy>();
                         EnemyController enemyController = target.GetComponent<EnemyController>();
                         if (enemy.isDead == false)
                         {
-                            enemy.Hurt(damages, isCriticalHits, (animationTime * animationManager.speed) / 3);
+                            enemy.Hurt(damagePairs, (animationTime * animationManager.speed) / 3);
                             enemyController.direction = -manager.direction;
                             enemyController.KnockBack(manager.direction);
                         }

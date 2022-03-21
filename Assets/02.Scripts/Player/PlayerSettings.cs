@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// temporary class. 
+/// </summary>
 public class PlayerSettings
 {
     public static st_Stats basicStats

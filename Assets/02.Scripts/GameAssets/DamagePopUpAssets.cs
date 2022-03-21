@@ -14,6 +14,10 @@ public class DamagePopUpAssets : MonoBehaviour
             return _instance;
         }
     }
+    public Transform damagePopUp_Enemy_Basic;
+    public Transform damagePopUp_Enemy_Basic_Critical;
+    public Transform damagePopUp_Player_Basic;
+    public Transform damagePopUp_Player_Basic_Critical;
 
     public Transform GetDamagePopUpTrasnformByLayer(int layer, bool isCriticalHit)
     {
@@ -31,8 +35,5 @@ public class DamagePopUpAssets : MonoBehaviour
 
         return tmpTransform;
     }
-    public Transform damagePopUp_Enemy_Basic;
-    public Transform damagePopUp_Enemy_Basic_Critical;
-    public Transform damagePopUp_Player_Basic;
-    public Transform damagePopUp_Player_Basic_Critical;
+    
 }

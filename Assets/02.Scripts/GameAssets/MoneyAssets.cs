@@ -14,7 +14,16 @@ public class MoneyAssets : MonoBehaviour
             return _instance;
         }
     }
-
+    public Money money_CopperPenny;
+    public Money money_SilverPenny;
+    public Money money_GoldPenny;
+    public Money money_PaperBundle;
+    public Money money_GoldBag;
+    public GameObject money_CopperPennyPrefab;
+    public GameObject money_SilverPennyPrefab;
+    public GameObject money_GoldPennyPrefab;
+    public GameObject money_PaperBundlePrefab;
+    public GameObject money_GoldBagPrefab;
     public Money GetMoneyByPrice(int price)
     {
         Money money = null;
@@ -87,15 +96,4 @@ public class MoneyAssets : MonoBehaviour
         }
         return moneyPrefab;
     }
-
-    public Money money_CopperPenny;
-    public Money money_SilverPenny;
-    public Money money_GoldPenny;
-    public Money money_PaperBundle;
-    public Money money_GoldBag;
-    public GameObject money_CopperPennyPrefab;
-    public GameObject money_SilverPennyPrefab;
-    public GameObject money_GoldPennyPrefab;
-    public GameObject money_PaperBundlePrefab;
-    public GameObject money_GoldBagPrefab;
 }

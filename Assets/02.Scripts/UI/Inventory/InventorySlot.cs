@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+
+/// <summary>
+/// Fit position for inventory item 
+/// </summary>
 public class InventorySlot : MonoBehaviour
 {
     public bool isEmpty = true;
     public int num;
     public InventoryItemHandlerBase handler;
+
     public void SetItemHere(InventoryItemHandlerBase newController)
     {   
         if(handler != null)
@@ -19,6 +24,7 @@ public class InventorySlot : MonoBehaviour
         handler.DeselectItem();
         isEmpty = false;
     }
+
     public void Clear()
     {
         isEmpty = true;

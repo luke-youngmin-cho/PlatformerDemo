@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Temporary class. 
+/// enemy datas should be managed with json or xml
+/// </summary>
 public class EnemySettings : MonoBehaviour
 {
     public static st_Stats GetStats(string name)

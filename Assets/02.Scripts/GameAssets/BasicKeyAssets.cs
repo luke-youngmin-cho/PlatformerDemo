@@ -14,6 +14,7 @@ public class BasicKeyAssets : MonoBehaviour
             return _instance;
         }
     }
+    public List<BasicKey> basicKeys = new List<BasicKey>();
 
     public BasicKey GetBasicKeyBySpriteName(string name)
     {
@@ -25,6 +26,4 @@ public class BasicKeyAssets : MonoBehaviour
         }
         return tmpBasicKey;
     }
-
-    public List<BasicKey> basicKeys = new List<BasicKey> ();
 }

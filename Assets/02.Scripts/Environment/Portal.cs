@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// 1. Compare loaded scene name & place player on here.
+/// 2. load scene event.
+/// </summary>
 public class Portal : MonoBehaviour
 {
     [SerializeField] string sceneNameToMove;

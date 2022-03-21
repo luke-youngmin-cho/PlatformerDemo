@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+
+/// <summary>
+/// Animation State info & changing states
+/// </summary>
 public class AnimationManager : MonoBehaviour
 {
     Animator _animator;
@@ -22,34 +26,25 @@ public class AnimationManager : MonoBehaviour
     [HideInInspector] public float animationElapsedTime;
     public float speed
     {
-        set { _animator.speed = value; }
-        get { return animator.speed; }
-    }
-    Dictionary<string, AnimationElements> animationElementsDictionary = new Dictionary<string, AnimationElements>();
-    string currentAnimationName;
-    private void Awake()
-    {
-        animator.speed = 1;
-    }
-    private void Update()
-    {
-        if (isOnPlay &&
-            animationElementsDictionary[currentAnimationName].isLooping == false)
+        set 
+        { 
+            _animator.speed = value;
+        }
+        get 
         {
-            if (animationElapsedTime > animationElementsDictionary[currentAnimationName].time)
-                isOnPlay = false;
-            animationElapsedTime += Time.deltaTime;
+            return animator.speed;
         }
     }
-    // Register method for state machines
-    public void RegisterAnimationRequired(string animationName)
-    {
-        animationElementsDictionary.Add(animationName, new AnimationElements
-        {
-            time = GetAnimationTime(name),
-            isLooping = GetAnimationIsLooping(name)
-        });
-    }
+    
+    string currentAnimationName;
+
+    // this dictionary is for the future. : for load animations in asset bundle
+    Dictionary<string, AnimationElements> animationElementsDictionary = new Dictionary<string, AnimationElements>();
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+
     public void ChangeAnimationState(string newAnimationName)
     {
         if (currentAnimationName == newAnimationName) return;
@@ -58,6 +53,7 @@ public class AnimationManager : MonoBehaviour
         currentAnimationName = newAnimationName;
         animationElapsedTime = 0f;
     }
+
     public float GetAnimationTime(string name)
     {
         float time = 0;
@@ -71,6 +67,40 @@ public class AnimationManager : MonoBehaviour
         }
         return time;
     }
+
+    /// <summary>
+    /// for the future. : for load animations in asset bundle
+    /// </summary>
+    public void RegisterAnimationRequired(string animationName)
+    {
+        animationElementsDictionary.Add(animationName, new AnimationElements
+        {
+            time = GetAnimationTime(name),
+            isLooping = GetAnimationIsLooping(name)
+        });
+    }
+
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+    
+    private void Awake()
+    {
+        animator.speed = 1;
+    }
+
+    private void Update()
+    {
+        if (isOnPlay &&
+            animationElementsDictionary[currentAnimationName].isLooping == false)
+        {
+            if (animationElapsedTime > animationElementsDictionary[currentAnimationName].time)
+                isOnPlay = false;
+            animationElapsedTime += Time.deltaTime;
+        }
+    }
+    
     bool GetAnimationIsLooping(string name)
     {
         bool isLooping = false;
@@ -85,6 +115,7 @@ public class AnimationManager : MonoBehaviour
         return isLooping;
     }
 }
+
 public struct AnimationElements
 {
     public float time;

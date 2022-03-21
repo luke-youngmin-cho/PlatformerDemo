@@ -8,6 +8,9 @@ using UnityEngine.UI;
 // But when it derives ShortCut, InventoryItem or Skill and so on also can put them on this. 
 // if there have good way to prevent other short-cut relative items, 
 // It would be nice way that BasicKey is derived from ShortCut
+/// <summary>
+/// Handler for skills in sills view.
+/// </summary>
 public class SkillHandler : MonoBehaviour, IPointerClickHandler
 {
     public Skill skill;
@@ -16,16 +19,11 @@ public class SkillHandler : MonoBehaviour, IPointerClickHandler
     GraphicRaycaster _Raycaster;
     PointerEventData _PointerEventData;
     EventSystem _EventSystem;
-    private void Start()
-    {
-        _Raycaster = SkillsView.instance.transform.parent.GetComponent<GraphicRaycaster>();
-        _EventSystem = FindObjectOfType<EventSystem>();
-    }
-    public void OnEnable()
-    {
-        transform.SetParent(UIManager.instance.playerUI.transform);
-        gameObject.GetComponent<Image>().sprite = skill.icon;
-    }
+
+    //============================================================================
+    //************************* Public Methods ***********************************
+    //============================================================================
+
     public void Clear()
     {
         transform.SetParent(SkillsView.instance.transform);
@@ -33,6 +31,7 @@ public class SkillHandler : MonoBehaviour, IPointerClickHandler
         image = null;
         gameObject.SetActive(false);
     }
+
     public void OnPointerClick(PointerEventData eventData)
     {
         if (eventData.button == PointerEventData.InputButton.Right)
@@ -79,19 +78,19 @@ public class SkillHandler : MonoBehaviour, IPointerClickHandler
             if (shortCut != null)
             {
                 // reset replaced machine's keycode
-                if(PlayerStateMachineManager.instance.TryGetStateMachineByKeyCode(shortCut._keyCode, out PlayerStateMachine oldStateMachine))
+                if (PlayerStateMachineManager.instance.TryGetStateMachineByKeyCode(shortCut._keyCode, out PlayerStateMachine oldStateMachine))
                 {
                     if (ShortCutsView.instance.TryGetShortCut(oldStateMachine.keyCode, out ShortCut oldMachineShortCut))
                         oldMachineShortCut.Clear();
                     oldStateMachine.keyCode = KeyCode.None;
-                }                    
+                }
 
                 PlayerState state = skill.playerState;
                 if (PlayerStateMachineManager.instance.TryGetStateMachineByState(state, out PlayerStateMachine newStateMachine))
                 {
                     // if already another shortcut for the machine exist, reset it.
                     Debug.Log(newStateMachine.keyCode);
-                    if(ShortCutsView.instance.TryGetShortCut(newStateMachine.keyCode, out ShortCut oldShortCut))
+                    if (ShortCutsView.instance.TryGetShortCut(newStateMachine.keyCode, out ShortCut oldShortCut))
                         oldShortCut.Clear();
 
                     newStateMachine.keyCode = shortCut._keyCode;
@@ -99,8 +98,8 @@ public class SkillHandler : MonoBehaviour, IPointerClickHandler
                     PlayerStateMachineManager.instance.RefreshMachineDictionaries();
                 }
 
-                shortCut.RegisterIconAndEvent(ShortCutType.Skill, skill.icon, 
-                    delegate { PlayerStateMachineManager.instance.keyInput = shortCut._keyCode;});
+                shortCut.RegisterIconAndEvent(ShortCutType.Skill, skill.icon,
+                    delegate { PlayerStateMachineManager.instance.keyInput = shortCut._keyCode; });
 
                 Clear();
             }
@@ -113,4 +112,19 @@ public class SkillHandler : MonoBehaviour, IPointerClickHandler
     }
 
 
+    //============================================================================
+    //************************* Private Methods **********************************
+    //============================================================================
+
+    private void Start()
+    {
+        _Raycaster = SkillsView.instance.transform.parent.GetComponent<GraphicRaycaster>();
+        _EventSystem = FindObjectOfType<EventSystem>();
+    }
+
+    private void OnEnable()
+    {
+        transform.SetParent(UIManager.instance.playerUI.transform);
+        gameObject.GetComponent<Image>().sprite = skill.icon;
+    }
 }

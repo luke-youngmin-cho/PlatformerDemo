@@ -3,6 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// Handler for click & drop short cut
+/// </summary>
 public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
 {
     Transform tr;
@@ -10,39 +13,16 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
     Image _image;
     KeyCode _keyCode;
     ShortCut.KeyEvent KE;
+
     // UI Raycast event
     GraphicRaycaster _Raycaster;
     PointerEventData _PointerEventData;
     EventSystem _EventSystem;
-    
-    private void Awake()
-    {
-        tr = GetComponent<Transform>();
-        _image = GetComponent<Image>();
-    }
-    private void Start()
-    {
-        _Raycaster = UIManager.instance.playerUI.GetComponent<GraphicRaycaster>();
-        _EventSystem = FindObjectOfType<EventSystem>();
-    }
-    private void OnEnable()
-    {
-        // no settings, no activation
-        if(_image.sprite == null || KE == null) 
-            gameObject.SetActive(false);
-    }
-    private void OnDisable()
-    {
-        ResetInfo();
-    }
-    private void Update()
-    {
-        if (gameObject.activeSelf)
-        {
-            Vector3 pos = Input.mousePosition;
-            tr.position = pos;
-        }
-    }
+
+    //============================================================================
+    //************************* Public Methods ***********************************
+    //============================================================================
+
     public void ActivateWithInfo(ShortCutType type, Sprite icon, KeyCode keyCode, ShortCut.KeyEvent keyEvent)
     {
         _type = type;
@@ -51,13 +31,6 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
         _keyCode = keyCode;
         KE = keyEvent;
         gameObject.SetActive(true);
-    }
-    private void ResetInfo()
-    {
-        _image.sprite = null;
-        _image.color = Color.clear;
-        _keyCode = KeyCode.None;
-        KE = null;
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -91,14 +64,14 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
                     newShortCutClone = tmpShortCutClone;
                 }
                 BasicKeySlot tmpBasicKeySlot = null;
-                if(result.gameObject.TryGetComponent(out tmpBasicKeySlot))
+                if (result.gameObject.TryGetComponent(out tmpBasicKeySlot))
                 {
                     newBasicKeySlot = tmpBasicKeySlot;
                 }
                 //Check All UI. (if no cut UI exist, deactivate. )
                 if (result.gameObject.layer == LayerMask.NameToLayer("UI_ShortCut"))
                 {
-                    if(result.gameObject != gameObject)
+                    if (result.gameObject != gameObject)
                         shortCutUI = result.gameObject;
                 }
             }
@@ -117,9 +90,9 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
 
                 gameObject.SetActive(false);
             }
-            
+
             // when basic key slot clicked
-            if(newBasicKeySlot != null && _type == ShortCutType.BasicKey)
+            if (newBasicKeySlot != null && _type == ShortCutType.BasicKey)
             {
                 if (ShortCutsView.instance.TryGetShortCut(_keyCode, out ShortCut oldShortCut))
                 {
@@ -136,7 +109,7 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
                         oldShortCut.Clear();
                     }
                 }
-                    
+
                 BasicKeysView.instance.CreateBasicKeyObjectOnSlot(_image.sprite.name, newBasicKeySlot);
 
                 gameObject.SetActive(false);
@@ -149,11 +122,57 @@ public class ShortCutHandler : MonoBehaviour, IPointerClickHandler
                    (oldShortCut._type != ShortCutType.BasicKey))
                     oldShortCut.Clear();
                 gameObject.SetActive(false);
-            }   
+            }
             else
                 Debug.Log(shortCutUI);
 
         }
+    }
+    
+
+    //============================================================================
+    //************************* Private Methods **********************************
+    //============================================================================
+
+    private void Awake()
+    {
+        tr = GetComponent<Transform>();
+        _image = GetComponent<Image>();
+    }
+
+    private void Start()
+    {
+        _Raycaster = UIManager.instance.playerUI.GetComponent<GraphicRaycaster>();
+        _EventSystem = FindObjectOfType<EventSystem>();
+    }
+
+    private void OnEnable()
+    {
+        // no settings, no activation
+        if(_image.sprite == null || KE == null) 
+            gameObject.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        ResetInfo();
+    }
+
+    private void Update()
+    {
+        if (gameObject.activeSelf)
+        {
+            Vector3 pos = Input.mousePosition;
+            tr.position = pos;
+        }
+    }
+    
+    private void ResetInfo()
+    {
+        _image.sprite = null;
+        _image.color = Color.clear;
+        _keyCode = KeyCode.None;
+        KE = null;
     }
 }
 

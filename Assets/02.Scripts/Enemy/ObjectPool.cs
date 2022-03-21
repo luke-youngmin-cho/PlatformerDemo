@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Generic object pool
+/// </summary>
 public class ObjectPool : MonoBehaviour
 {
     private static ObjectPool _instance;
@@ -15,17 +18,63 @@ public class ObjectPool : MonoBehaviour
             return _instance;
         }
     }
-
-
-
     [SerializeField] List<PoolElement> poolElements;
     List<GameObject> spawnedObjects = new List<GameObject>();
     Dictionary<string, Queue<GameObject>> spawnedQueueDictionary = new Dictionary<string, Queue<GameObject>>();
+
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+
+    public void AddPoolElement(PoolElement poolElement) =>
+        poolElements.Add(poolElement);
+
+    public static GameObject SpawnFromPool(string tag, Vector3 position) =>
+        instance.Spawn(tag, position);
+
+    public static T SpawnFromPool<T>(string tag, Vector3 position) where T : Component
+    {
+        GameObject obj = instance.Spawn(tag, position);
+        if(obj.TryGetComponent(out T component))
+            return component;
+        else
+        {
+            obj.SetActive(false);
+            throw new Exception($"Component not found");
+        }
+    }
+
+    public static void ReturnToPool(GameObject obj)
+    {
+        if (!instance.spawnedQueueDictionary.ContainsKey(obj.name))
+            throw new Exception($"Pool doesn't include {obj.name}");
+        instance.spawnedQueueDictionary[obj.name].Enqueue(obj);
+    }
+
+    public static int GetSpawnedObjectNumber(string tag)
+    {
+        int count = 0;
+        foreach (var item in instance.spawnedObjects)
+        {
+            if(item.name == tag &&
+                item.activeSelf)
+                count++;
+        }
+        return count;
+        
+    }
+
+
+    //============================================================================
+    //*************************** Private Methods ********************************
+    //============================================================================
 
     private void Start()
     {
         StartCoroutine(E_WaitForRegisterPoolElementsFinish());
     }
+
     IEnumerator E_WaitForRegisterPoolElementsFinish()
     {
         yield return new WaitForEndOfFrame();
@@ -44,43 +93,6 @@ public class ObjectPool : MonoBehaviour
                 Debug.Log($"Check {poolElement.tag} calls ReturnToPull exactly once");
 
         }
-    }
-
-
-    public void AddPoolElement(PoolElement poolElement)
-    {
-        poolElements.Add(poolElement);
-    }
-    public static GameObject SpawnFromPool(string tag, Vector3 position) =>
-        instance.Spawn(tag, position);
-    public static T SpawnFromPool<T>(string tag, Vector3 position) where T : Component
-    {
-        GameObject obj = instance.Spawn(tag, position);
-        if(obj.TryGetComponent(out T component))
-            return component;
-        else
-        {
-            obj.SetActive(false);
-            throw new Exception($"Component not found");
-        }
-    }
-    public static void ReturnToPool(GameObject obj)
-    {
-        if (!instance.spawnedQueueDictionary.ContainsKey(obj.name))
-            throw new Exception($"Pool doesn't include {obj.name}");
-        instance.spawnedQueueDictionary[obj.name].Enqueue(obj);
-    }
-    public static int GetSpawnedObjectNumber(string tag)
-    {
-        int count = 0;
-        foreach (var item in instance.spawnedObjects)
-        {
-            if(item.name == tag &&
-                item.activeSelf)
-                count++;
-        }
-        return count;
-        
     }
     GameObject Spawn(string tag, Vector2 position)
     {

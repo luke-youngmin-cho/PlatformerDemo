@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Controller for money on battle field.
+/// 
+/// </summary>
 public class MoneyController : MonoBehaviour
 {
     public Money money;
@@ -39,10 +43,6 @@ public class MoneyController : MonoBehaviour
     {
         if (doFloatingEffect)
             FloatingEffect();
-    }
-    public virtual void OnUseEvent()
-    {
-
     }
     IEnumerator E_ShowEffect()
     {

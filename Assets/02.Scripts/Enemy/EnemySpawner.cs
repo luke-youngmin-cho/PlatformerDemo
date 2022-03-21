@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Register enemies on ObjectPool and use it.
+/// Spawn enemies in box range.
+/// </summary>
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] PoolElement poolElment;

@@ -2,32 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
+/// <summary>
+/// Gizmos & casted target dictionary
+/// </summary>
 public class TargetCaster : MonoBehaviour
 {
     Rigidbody2D rb;
     public Dictionary<string, List<GameObject>> targetsDictionary = new Dictionary<string, List<GameObject>>();
-    //public List<GameObject> targets = new List<GameObject>();
     public LayerMask targetLayer;
     
-    // for gizmos
+    // Gizmos
     private Vector3 rangeCenterForGizmos;
     private Vector3 rangeSizeForGizmos;
     private string currentCategory;
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
     
-    /*private void LateUpdate()
-    {
-        // garabage collecting
-        *//*foreach (string category in targetsDictionary.Keys)
-        {
-            if (targetsDictionary[category].Count == 0)
-                targetsDictionary.Remove(category);
-        }*//*
-    }*/
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+
     public void BoxCast(string category, Vector2 center, Vector2 size, Vector2 direction, float distance)
     {
         if(targetsDictionary.ContainsKey(category) == false)
@@ -49,6 +42,7 @@ public class TargetCaster : MonoBehaviour
         rangeSizeForGizmos = new Vector3(size.x + distance, size.y, 0);
         currentCategory = category;
     }
+
     public void BoxCastAll(string category, Vector2 center, Vector2 size, Vector2 direction, float distance)
     {
         if (targetsDictionary.ContainsKey(category) == false)
@@ -71,15 +65,16 @@ public class TargetCaster : MonoBehaviour
         currentCategory = category;
 
     }
-    public void CircleCastAll(Vector2 center, float radius, Vector2 direction, float distance)
+
+
+    //============================================================================
+    //*************************** Private Methods ********************************
+    //============================================================================
+    private void Awake()
     {
-        /*targets.Clear();
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(center, radius, direction,distance, targetLayer);
-        foreach (RaycastHit2D hit in hits)
-        {
-            targets.Add(hit.collider.gameObject);
-        }*/
+        rb = GetComponent<Rigidbody2D>();
     }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.blue;
@@ -105,6 +100,7 @@ public class TargetCaster : MonoBehaviour
             }
         }
     }
+
     [System.Serializable]
     public struct st_BoxCastElements
     {

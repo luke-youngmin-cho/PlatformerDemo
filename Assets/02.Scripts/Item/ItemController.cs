@@ -2,19 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Item controller on battle field.
+/// Use event function & player pickable
+/// </summary>
 public class ItemController : MonoBehaviour
 {
     public Item item;
     public int num = 1;
-
     public bool pickUpEnable = false;
     public bool isPickedUp = false;
-
-    
-    Rigidbody2D rb;
-    BoxCollider2D trigger;
-    BoxCollider2D col;
-    Transform rendererTransform;
     public bool doFloatingEffect;
     public float rotateSpeed = 10f;
     public float popForce = 2f;
@@ -22,9 +19,38 @@ public class ItemController : MonoBehaviour
     public float floatingHeight = 0.02f;
     public LayerMask groundLayer;
 
+    // Components
+    Rigidbody2D rb;
+    BoxCollider2D trigger;
+    BoxCollider2D col;
+    Transform rendererTransform;
+
     // effect
     private float pickUpTimer = 1f;
     private float elapsedTime;
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+
+    public virtual void OnUseEvent()
+    {
+        // Override this method for every single of item.
+    }
+
+    public void PickUp(Player player)
+    {
+        if (pickUpEnable == false || isPickedUp) return;
+        isPickedUp = true;
+        InventoryView.instance.GetItemsViewByItemType(item.type).AddItem(item, num);
+        StartCoroutine(E_PickUpEffect(player));
+    }
+
+
+    //============================================================================
+    //*************************** Private Methods ********************************
+    //============================================================================
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -32,19 +58,18 @@ public class ItemController : MonoBehaviour
         col = transform.Find("Collider").GetComponent<BoxCollider2D>();
         rendererTransform = transform.Find("Renderer");
     }
+
     private void OnEnable()
     {
         StartCoroutine(E_ShowEffect());
     }
+
     private void Update()
     {
         if (doFloatingEffect)
             FloatingEffect();
     }
-    public virtual void OnUseEvent()
-    {
-
-    }
+    
     IEnumerator E_ShowEffect()
     {
         rb.velocity = Vector2.zero;
@@ -65,14 +90,7 @@ public class ItemController : MonoBehaviour
         rendererTransform.localPosition = new Vector3(0f, floatingHeight* Mathf.Sin(floatingSpeed * elapsedTime), 0f);
         elapsedTime += Time.deltaTime;
     }
-    public void PickUp(Player player)
-    {
-        if (pickUpEnable == false || isPickedUp) return;
-        isPickedUp = true;
-        InventoryView.instance.GetItemsViewByItemType(item.type).AddItem(item, num);
-        StartCoroutine(E_PickUpEffect(player));
-
-    }
+    
     IEnumerator E_PickUpEffect(Player player)
     {
         col.enabled = false;
@@ -111,6 +129,7 @@ public class ItemController : MonoBehaviour
 
         Destroy(gameObject);
     }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

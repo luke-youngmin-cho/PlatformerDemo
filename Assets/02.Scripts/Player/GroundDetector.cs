@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Detect singel ground & multiple grounds
+/// remember latest detected ground.
+/// able to ignore latest detected ground
+/// </summary>
 public class GroundDetector : MonoBehaviour
 {
-    Rigidbody2D rb;
-    CapsuleCollider2D col;
     Vector2 center;
     [HideInInspector] public Vector2 size;
     [SerializeField] LayerMask groundLayer;
@@ -14,21 +17,49 @@ public class GroundDetector : MonoBehaviour
     private Collider2D currentGroundCol;
     public Collider2D lastGroundCol;
     private Collider2D passingGroundCol;
-
     public bool isDetected;
     public bool doDownJumpCheck;
     public bool downJumpAvailable;
     public float downJumpCheckHeight;
-
     public bool isIgnoringGround;
     public Coroutine passingGroundCoroutine;
-    private void Awake()
+
+    // Components
+    Rigidbody2D rb;
+    CapsuleCollider2D col;
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+
+    public void IgnoreCurrentGroundUntilPassedIt()
+    {
+        passingGroundCol = lastGroundCol;
+        if (passingGroundCol != null)
+        {
+            isIgnoringGround = true;
+            StartCoroutine(E_IgnorePassingGroundUntilPassedIt(passingGroundCol));
+        }
+    }
+
+    public void StopIgnoreGrounds()
+    {
+        StopAllCoroutines();
+    }
+
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<CapsuleCollider2D>();
         size.x = col.size.x /2;
         size.y = 0.005f;
     }
+
     void Update()
     {
         center.x = rb.position.x + col.offset.x;
@@ -64,36 +95,23 @@ public class GroundDetector : MonoBehaviour
         else
             downJumpAvailable = false;
     }
-    public void IgnoreCurrentGroundUntilPassedIt()
-    {
-        passingGroundCol = lastGroundCol;
-        if (passingGroundCol != null)
-        {
-            isIgnoringGround = true;
-            StartCoroutine(E_IgnorePassingGroundUntilPassedIt(passingGroundCol));
-        }
-    }
-    public void StopIgnoreGrounds()
-    {
-        StopAllCoroutines();
-    }
+
     IEnumerator E_IgnorePassingGroundUntilPassedIt(Collider2D groundCol)
     {
-        //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), true);
         Physics2D.IgnoreCollision(col,groundCol,true);
         float passingGroundColCenterY = groundCol.transform.position.y + col.offset.y;
+
         // wait passing start
         yield return new WaitUntil(() =>
         {
-            //Debug.Log($"start passing {groundCol.name}{rb.position.y + col.offset.y - col.size.y / 2},{passingGroundColCenterY - size.y}");
             return rb.position.y + col.offset.y - col.size.y / 2 < passingGroundColCenterY - size.y;
         });
+
         // ignoring
         yield return new WaitUntil(() =>
         {
             bool isPassed = false;
-            //Debug.Log(groundCol.name);
-            
+
             if (groundCol != null)
             {
                 passingGroundColCenterY = groundCol.transform.position.y + col.offset.y;
@@ -107,12 +125,12 @@ public class GroundDetector : MonoBehaviour
                 isPassed = true;
             return isPassed;
         });
-        //Debug.Log("Ignoring ground finished");
-        //Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Ground"), false);
+
         Physics2D.IgnoreCollision(col, groundCol, false);
         isIgnoringGround = false;
         passingGroundCol = null;
     }
+
     private void OnDrawGizmosSelected()
     {   
         if (doDownJumpCheck)

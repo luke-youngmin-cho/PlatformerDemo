@@ -7,6 +7,7 @@ public class EnemyController_DarkNepenthes : EnemyController
     [Header("Projectile")]
     [SerializeField] private GameObject projectile;
     [SerializeField] private Transform firePoint;
+
     public override void AttackBehavior(List<GameObject> castedTargets)
     {
         GameObject projectileGO = Instantiate(projectile, firePoint.position,Quaternion.identity);

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 [CreateAssetMenu(fileName = "New Money", menuName = "Money/Create New Money")]
 public class Money : ScriptableObject
 {

@@ -33,50 +33,31 @@ public class Enemy : MonoBehaviour
             }   
             hpBar.value = (float)_hp / stats.hpMax;
         }
-        get { return _hp; }
+        get 
+        { 
+            return _hp; 
+        }
     }
     [SerializeField] Slider hpBar;
 
     [Header("Animation")]
     public float hpBarShowTime;
     Coroutine hpBarShowCoroutine;
+
     // components
     Transform tr;
     EnemyController controller;
     CapsuleCollider2D col;
     SpriteRenderer spriteRenderer;
     Color originColor;
-    private void Awake()
-    {
-        tr = GetComponent<Transform>();
-        controller = GetComponent<EnemyController>();
-        col = GetComponent<CapsuleCollider2D>();
-        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        stats = EnemySettings.GetStats(this.GetType().Name);
-        
-        originColor = spriteRenderer.color;
-    }
-    private void OnEnable()
-    {
-        spriteRenderer.color = originColor;
-        hp = stats.hpMax;
-        controller.moveAIState = EnemyController.MoveAIState.DecideRandomBehavior;
-    }
-    private void OnDisable()
-    {
-        ObjectPool.ReturnToPool(gameObject);
-    }
-    private int CalcDamage()
-    {
-        int damage = (stats.attack * 100 + stats.STR * 20) / 2;
-        int randomValue = Random.Range(0, 100);
-        if (randomValue < stats.criticalRate)
-        {
-            damage *= stats.criticalDamage;
-            damage /= 100;
-        }
-        return damage;
-    }
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+
+    /// <summary>
+    /// Calculate damage base on stats. out critical judgement.
+    /// </summary>
     public int CalcDamage(out bool isCritical)
     {
         isCritical = false;
@@ -90,6 +71,11 @@ public class Enemy : MonoBehaviour
         }
         return damage;
     }
+
+    /// <summary>
+    /// Get single damage.
+    /// Show HP bar for few seconds & Damage pop up
+    /// </summary>
     public void Hurt(int damage, bool isCriticalHit)
     {
         ShowHPBarForSeconds();
@@ -104,18 +90,61 @@ public class Enemy : MonoBehaviour
             StartCoroutine(E_FadeOutWhenDead());
         }
     }
-    public void Hurt(List<int> damages, List<bool> isCriticalHit, float timeGap)
+
+    /// <summary>
+    /// Set target.
+    /// Get multiple damages by time gap. 
+    /// Show HP bar for few seconds & Damage pop up
+    /// </summary>
+    public void Hurt(Queue<DamagePair> damagePairs, float timeGap)
     {
         FindWhoHurtThis();
-        StartCoroutine(E_Hurt(damages,isCriticalHit,timeGap));
+        StartCoroutine(E_Hurt(damagePairs, timeGap));
     }
-    IEnumerator E_Hurt(List<int> damages, List<bool> isCriticalHits, float timeGap)
+
+
+    //============================================================================
+    //*************************** Private Methods ********************************
+    //============================================================================
+
+    private void Awake()
+    {
+        tr = GetComponent<Transform>();
+        controller = GetComponent<EnemyController>();
+        col = GetComponent<CapsuleCollider2D>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        stats = EnemySettings.GetStats(this.GetType().Name);        
+        originColor = spriteRenderer.color;
+    }
+
+    private void OnEnable()
+    {
+        spriteRenderer.color = originColor;
+        hp = stats.hpMax;
+        controller.moveAIState = EnemyController.MoveAIState.DecideRandomBehavior;
+    }
+
+    private void OnDisable()
+    {
+        ObjectPool.ReturnToPool(gameObject);
+    }
+    
+    /// <summary>
+    /// Get multiple damages by time gap. Show HP bar for few seconds & Damage pop up
+    /// </summary>
+    /// <param name="damages"> to set damage pop up text value </param>
+    /// <param name="isCriticalHits"> to dicide damage pop up text type </param>
+    /// <param name="timeGap"> time gap among applying multiple damages  </param>
+    /// <returns></returns>
+    IEnumerator E_Hurt(Queue<DamagePair> damagePairs, float timeGap)
     {
         ShowHPBarForSeconds();
-        for (int i = 0; i < damages.Count; i++)
+
+        while (damagePairs.Count > 0)
         {
-            DamagePopUp.Create(tr.position + new Vector3(0f, col.size.y / 2, 0f), damages[i], gameObject.layer, isCriticalHits[i]);
-            hp -= damages[i];
+            DamagePair pair = damagePairs.Dequeue();
+            DamagePopUp.Create(tr.position + new Vector3(0f, col.size.y / 2, 0f), pair.damage, gameObject.layer, pair.isCritical);
+            hp -= pair.damage;
             controller.TryHurt();
             yield return new WaitForSeconds(timeGap);
         }
@@ -126,6 +155,9 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Detect player in range and set target
+    /// </summary>
     private void FindWhoHurtThis()
     {
         Collider2D targetCol = Physics2D.OverlapCircle(new Vector2(tr.position.x, tr.position.y), sightRange,targetLayer);
@@ -137,6 +169,10 @@ public class Enemy : MonoBehaviour
             releaseTargetCoroutine = StartCoroutine(E_ReleaseTarget());
         }
     }
+
+    /// <summary>
+    /// Stop targeting / following player.
+    /// </summary>
     IEnumerator E_ReleaseTarget()
     {
         yield return new WaitForSeconds(releaseTargetTime);
@@ -144,6 +180,10 @@ public class Enemy : MonoBehaviour
         releaseTargetCoroutine = null;
         FindWhoHurtThis();
     }
+
+    /// <summary>
+    /// Fade out for few seconds
+    /// </summary>
     IEnumerator E_FadeOutWhenDead()
     {
         float elapsedTime = 0;
@@ -156,12 +196,14 @@ public class Enemy : MonoBehaviour
         }
         gameObject.SetActive(false);
     }
+
     void ShowHPBarForSeconds()
     {
         if (hpBarShowCoroutine != null)
             StopCoroutine(E_ShowHPBarForSeconds());
         hpBarShowCoroutine = StartCoroutine(E_ShowHPBarForSeconds());
     }
+
     IEnumerator E_ShowHPBarForSeconds()
     {
         float elapsedTime = 0;
@@ -174,6 +216,10 @@ public class Enemy : MonoBehaviour
         hpBar.gameObject.SetActive(false);
         hpBarShowCoroutine = null;
     }
+
+    /// <summary>
+    /// Hurt player when touch
+    /// </summary>
     private void OnTriggerStay2D(Collider2D collision)
     {
         GameObject go = collision.gameObject;
@@ -192,6 +238,4 @@ public class Enemy : MonoBehaviour
             }
         }
     }
-
-    
 }

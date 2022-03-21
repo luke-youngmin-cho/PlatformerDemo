@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Presenter for interaction among inventoryUI <-> Battle field & shop(for the future)
+/// </summary>
 public class InventoryMoneyView : MonoBehaviour
 {
     private int _money;

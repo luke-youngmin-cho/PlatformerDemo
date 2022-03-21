@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 /// <summary>
 /// this class is for 2D player basic movement & animation
 /// </summary>
@@ -17,7 +18,8 @@ public class PlayerStateMachineManager : MonoBehaviour
     [Header("States")]
     public PlayerState newPlayerState = PlayerState.Idle;
     public PlayerState oldPlayerState = PlayerState.Idle;
-    public bool onActiveSkill { 
+    public bool onActiveSkill 
+    { 
         get 
         {
             bool isOn = false;
@@ -39,24 +41,18 @@ public class PlayerStateMachineManager : MonoBehaviour
     private Player player;
     Rigidbody2D rb;
     GroundDetector groundDetector;
+
     //state machines
     Dictionary<PlayerState, PlayerStateMachine> machineDictionaryOfPlayerState = new Dictionary<PlayerState, PlayerStateMachine>();
     Dictionary<KeyCode, PlayerStateMachine> machineDictionaryOfKeyCode = new Dictionary<KeyCode, PlayerStateMachine>();
     List<PlayerState> activeSkillList = new List<PlayerState>();
+
     // kinematics
     public Vector2 move;
     Vector2 targetVelocity;
     
     // direction
     int _direction; // +1 : right -1 : left
-
-    //int debugcount; for debugging
-    // input
-    private KeyCode _keyInput;
-    public KeyCode keyInput
-    {
-        set { if(_keyInput == KeyCode.None) _keyInput = value; }
-    }
     public int direction
     {
         set
@@ -66,7 +62,7 @@ public class PlayerStateMachineManager : MonoBehaviour
                 _direction = -1;
                 transform.eulerAngles = new Vector3(0f, 180f, 0f);
             }
-            else if(value > 0)
+            else if (value > 0)
             {
                 _direction = 1;
                 transform.eulerAngles = Vector3.zero;
@@ -75,7 +71,101 @@ public class PlayerStateMachineManager : MonoBehaviour
         get { return _direction; }
     }
     public int directionInit;
-    
+
+    // input
+    private KeyCode _keyInput;
+    public KeyCode keyInput
+    {
+        set 
+        { 
+            if (_keyInput == KeyCode.None) _keyInput = value; 
+        }
+    }
+
+    //============================================================================
+    //************************* Public Methods ***********************************
+    //============================================================================
+
+    public void RefreshMachineDictionaries()
+    {
+        RefreshMachineDictionaryOfPlayerState();
+        RefreshMachineDictionaryOfKeyCode();
+    }
+
+    public void AddStateMachineComponentByState(PlayerState state)
+    {
+        if (TryGetStateMachineByState(state, out PlayerStateMachine existMachine))
+            return;
+
+        string stateName = state.ToString();
+        string typeName = "PlayerStateMachine_" + stateName;
+        System.Type type = System.Type.GetType(typeName);
+        PlayerStateMachine stateMachine = null;
+        if (type != null)
+        {
+            stateMachine = (PlayerStateMachine)gameObject.AddComponent(type);
+            stateMachine.playerStateType = state;
+            stateMachine.machineType = SkillAssets.instance.GetMachineTypeByState(state);
+            st_SkillStats skillInfo = player.skillStatsList.Find(x => x.state == state);
+            stateMachine.level = skillInfo.level;
+            stateMachine.hpRequired = skillInfo.hpRequired;
+            stateMachine.mpRequired = skillInfo.mpRequired;
+        }
+        else
+            Debug.Log($"Failed to add player state machine : {typeName}");
+        RefreshMachineDictionaryOfPlayerState();
+    }
+
+    public bool TryGetStateMachineByState(PlayerState state, out PlayerStateMachine stateMachine) =>
+        machineDictionaryOfPlayerState.TryGetValue(state, out stateMachine);
+
+    public bool TryGetStateMachineByKeyCode(KeyCode keyCode, out PlayerStateMachine stateMachine) =>
+        machineDictionaryOfKeyCode.TryGetValue(keyCode, out stateMachine);
+
+    public void TryDie()
+    {
+        ChangePlayerState(PlayerState.Die);
+        controlEnabled = false;
+    }
+
+    public void TryHurt()
+    {
+        if (machineDictionaryOfPlayerState[PlayerState.Hurt].IsExecuteOK())
+        {
+            controlDisableCoroutine = StartCoroutine(E_DisableController(disableTimeWhenHurt));
+            ChangePlayerState(PlayerState.Hurt);
+        }
+    }
+
+    public void KnockBack()
+    {
+        if (player.invincible) return;
+        move = Vector2.zero;
+        rb.velocity = Vector2.zero;
+        rb.AddForce(new Vector2(knockBackForce.x * (-direction), knockBackForce.y), ForceMode2D.Impulse);
+    }
+
+    public void KnockBack(int knockBackDirection)
+    {
+        if (player.invincible) return;
+        move = Vector2.zero;
+        rb.velocity = Vector2.zero;
+        rb.AddForce(new Vector2(knockBackForce.x * knockBackDirection, knockBackForce.y), ForceMode2D.Impulse);
+    }
+
+    public void KnockBack(int knockBackDirection, float time)
+    {
+        if (player.invincible) return;
+        move = Vector2.zero;
+        rb.velocity = Vector2.zero;
+        StartCoroutine(E_KnockBack(knockBackDirection, time));
+    }
+
+
+    //============================================================================
+    //************************* Private Methods **********************************
+    //============================================================================
+
     void Awake()
     {
         instance = this; 
@@ -84,10 +174,12 @@ public class PlayerStateMachineManager : MonoBehaviour
         groundDetector = GetComponent<GroundDetector>();
         direction = directionInit;        
     }
-    private void Start()
+
+    void Start()
     {
         StartCoroutine(E_Start());
     }
+
     IEnumerator E_Start()
     {
         yield return new WaitUntil(() => Player.instance.isReady);
@@ -95,11 +187,7 @@ public class PlayerStateMachineManager : MonoBehaviour
         isReady = true;
         Debug.Log("PlayerStateMachineManager is ready");
     }
-    public void RefreshMachineDictionaries()
-    {
-        RefreshMachineDictionaryOfPlayerState();
-        RefreshMachineDictionaryOfKeyCode();
-    }
+    
     void RefreshMachineDictionaryOfPlayerState()
     {
         machineDictionaryOfPlayerState.Clear();
@@ -109,7 +197,7 @@ public class PlayerStateMachineManager : MonoBehaviour
             machineDictionaryOfPlayerState.Add(machines[i].playerStateType, machines[i]);
         }
     }
-    // Call this method when user's short-key settings have been changed.
+
     void RefreshMachineDictionaryOfKeyCode()
     {
         machineDictionaryOfKeyCode.Clear();
@@ -127,6 +215,7 @@ public class PlayerStateMachineManager : MonoBehaviour
             }   
         }
     }
+
     void Update()
     {
         if (isReady == false) return;
@@ -134,10 +223,8 @@ public class PlayerStateMachineManager : MonoBehaviour
         {
             if (onActiveSkill == false)
             {
-                if (_keyInput != KeyCode.None)
-                    Debug.Log(_keyInput);
-
                 float h = Input.GetAxis("Horizontal");
+
                 //direction
                 if (IsChangeDirectionPossible())
                 {
@@ -155,6 +242,7 @@ public class PlayerStateMachineManager : MonoBehaviour
 
                 // Basic arrow keys 
                 //-----------------------------------------------------------------------
+
                 // left arrow
                 if (Input.GetKey(KeyCode.LeftArrow))
                 {
@@ -225,11 +313,7 @@ public class PlayerStateMachineManager : MonoBehaviour
         }
         UpdatePlayerState();
     }
-    private void FixedUpdate()
-    {
-        FixedUpdateMovement();
-    }
-
+    
     #region player states
     void ChangePlayerState(PlayerState stateToChange)
     {
@@ -239,6 +323,7 @@ public class PlayerStateMachineManager : MonoBehaviour
         machineDictionaryOfPlayerState[oldPlayerState].ResetMachine();
         machineDictionaryOfPlayerState[newPlayerState].Execute();
     }
+
     void UpdatePlayerState()
     {
         PlayerStateMachine currentMachine = machineDictionaryOfPlayerState[newPlayerState]; // current machine
@@ -257,12 +342,19 @@ public class PlayerStateMachineManager : MonoBehaviour
         if(newPlayerState == PlayerState.Crouch ||
            newPlayerState == PlayerState.CrouchFromFall)
             move.x = 0;
-    }    
+    }
+
+    void FixedUpdate()
+    {
+        FixedUpdateMovement();
+    }
+
     void ComputeVelocity()
     {
         Vector2 velocity = new Vector2(move.x * player.stats.moveSpeed, move.y);
         targetVelocity = velocity;
     }
+
     void FixedUpdateMovement()
     {
         ComputeVelocity();
@@ -284,57 +376,18 @@ public class PlayerStateMachineManager : MonoBehaviour
         }
         return isOK;
     }
+
     bool IsHorizontalMovePossible()
     {
         bool isOK = false;
-        if(oldPlayerState == PlayerState.Idle ||
-           oldPlayerState == PlayerState.Run  )
+        if (oldPlayerState == PlayerState.Idle ||
+           oldPlayerState == PlayerState.Run)
         {
             isOK = true;
         }
         return isOK;
     }
-    
 
-    //==========================================================================
-    // methods for external elements
-    //==========================================================================
-    public void TryDie()
-    {
-        // check die is possible or not if necessary
-        ChangePlayerState(PlayerState.Die);
-        controlEnabled = false;
-        
-    }
-    public void TryHurt()
-    {
-        if (machineDictionaryOfPlayerState[PlayerState.Hurt].IsExecuteOK())
-        {
-            controlDisableCoroutine = StartCoroutine(E_DisableController(disableTimeWhenHurt));
-            ChangePlayerState(PlayerState.Hurt);
-        }   
-    }
-    public void KnockBack()
-    {
-        if (player.invincible) return;
-        move = Vector2.zero;
-        rb.velocity = Vector2.zero;
-        rb.AddForce(new Vector2(knockBackForce.x * (-direction), knockBackForce.y), ForceMode2D.Impulse);
-    }
-    public void KnockBack(int knockBackDirection)
-    {
-        if (player.invincible) return;
-        move = Vector2.zero;
-        rb.velocity = Vector2.zero;
-        rb.AddForce(new Vector2(knockBackForce.x * knockBackDirection, knockBackForce.y), ForceMode2D.Impulse);
-    }
-    public void KnockBack(int knockBackDirection, float time)
-    {
-        if (player.invincible) return;
-        move = Vector2.zero;
-        rb.velocity = Vector2.zero;
-        StartCoroutine(E_KnockBack(knockBackDirection,time));
-    }
     IEnumerator E_KnockBack(int knockBackDirection, float time)
     {
         float elapsedTime = 0f;
@@ -346,6 +399,7 @@ public class PlayerStateMachineManager : MonoBehaviour
             yield return null;
         }
     }
+
     IEnumerator E_DisableController(float time)
     {
         controlEnabled = false;
@@ -353,46 +407,9 @@ public class PlayerStateMachineManager : MonoBehaviour
         controlEnabled = true;
         controlDisableCoroutine = null;
     }
-
-    public void AddStateMachineComponentByState(PlayerState state)
-    {
-        if (TryGetStateMachineByState(state, out PlayerStateMachine existMachine))
-            return;
-
-        string stateName = state.ToString();
-        string typeName = "PlayerStateMachine_" + stateName;
-        System.Type type = System.Type.GetType(typeName);
-        PlayerStateMachine stateMachine = null;
-        if (type != null)
-        {
-            stateMachine = (PlayerStateMachine)gameObject.AddComponent(type);
-            stateMachine.playerStateType = state;
-            stateMachine.machineType = SkillAssets.instance.GetMachineTypeByState(state);
-            st_SkillStats skillInfo = player.skillStatsList.Find(x => x.state == state);
-            stateMachine.level      = skillInfo.level;
-            stateMachine.hpRequired = skillInfo.hpRequired;
-            stateMachine.mpRequired = skillInfo.mpRequired;
-        }   
-        else
-            Debug.Log($"Failed to add player state machine : {typeName}");
-        RefreshMachineDictionaryOfPlayerState();
-    }
-    public bool TryGetStateMachineByState(PlayerState state, out PlayerStateMachine stateMachine)
-    {
-        return machineDictionaryOfPlayerState.TryGetValue(state, out stateMachine);
-    }
-    public bool TryGetStateMachineByKeyCode(KeyCode keyCode, out PlayerStateMachine stateMachine)
-    {
-        return machineDictionaryOfKeyCode.TryGetValue(keyCode, out stateMachine);
-    }
-    // User key input for keycode skills. 
-    /*private void OnGUI()
-    {
-        Event e = Event.current;
-        if(e.isKey && e.keyCode != KeyCode.None)
-            _keyInput = e.keyCode;
-    }*/
+    
 }
+
 public enum PlayerState
 {
     Idle,

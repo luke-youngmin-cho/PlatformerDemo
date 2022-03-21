@@ -1,12 +1,22 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
+
+/// <summary>
+/// To select Equip/ Spend/ ETC/ Cash item inventory view.
+/// </summary>
 public class InventoryViewSelector : MonoBehaviour
 {
     public Image equipButtonImage;
     public Image spendButtonImage;
     public Image etcButtonImage;
     public Image cashButtonImage;
+
+
+    //============================================================================
+    //************************* Public  Methods **********************************
+    //============================================================================
+
     public void SelectItemsView(int type)
     {
         switch (type)
@@ -55,12 +65,19 @@ public class InventoryViewSelector : MonoBehaviour
                 break;
         }
     }
+
+
+    //============================================================================
+    //************************* Private Methods **********************************
+    //============================================================================
+
     private void NegativeColor(Image image)
     {
         Color.RGBToHSV(image.color, out float H, out float S, out float V);
         H = (H + 0.5f) % 1f;
         image.color = Color.HSVToRGB(H, S, V);
     }
+
     private void RollBackColor(Image image)
     {
         image.color = Color.white;

@@ -2,9 +2,6 @@
 using UnityEngine;
 using System;
 
-//Original version of the ConditionalHideAttribute created by Brecht Lecluyse (www.brechtos.com)
-//Modified by: -
-
 [AttributeUsage(AttributeTargets.Field)]
 public class ConditionalHideAttribute : PropertyAttribute
 {

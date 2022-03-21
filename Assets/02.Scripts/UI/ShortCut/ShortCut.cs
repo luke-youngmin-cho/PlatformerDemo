@@ -2,6 +2,12 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+
+/// <summary>
+/// Short cut
+/// Set delegate depends on objects registered by user. 
+/// Basic keys, Skills, Spend items are available to use with this short cut key.
+/// </summary>
 public class ShortCut : MonoBehaviour, IPointerClickHandler
 {   
     public KeyCode _keyCode;
@@ -11,15 +17,9 @@ public class ShortCut : MonoBehaviour, IPointerClickHandler
     public KeyEvent KE;
     public ShortCutClone clone;
 
-    private void Awake()
-    {
-        _image = GetComponent<Image>();
-    }
-    private void Start()
-    {
-        if (clone != null)
-            clone.SetClone(_type,_image.sprite, _keyCode, null);
-    }
+    //============================================================================
+    //************************* Public Methods ***********************************
+    //============================================================================
     public void RegisterIconAndEvent(ShortCutType type, Sprite icon, KeyEvent keyEvent)
     {
         _type = type;
@@ -27,23 +27,23 @@ public class ShortCut : MonoBehaviour, IPointerClickHandler
         _image.color = Color.white;
         KE = keyEvent;
 
-        if(clone != null)
+        if (clone != null)
             clone.SetClone(_type, _image.sprite, _keyCode, TryKeyEvent);
-
 
         if (DataManager.isApplied)
             ShortCutsView.instance.SaveData();
-            
     }
+
     public void Clear()
     {
         _type = ShortCutType.None;
         _image.sprite = null;
         _image.color = Color.clear;
         KE = null;
-        if(clone!=null)
+        if (clone != null)
             clone.ResetClone();
     }
+
     public void TryKeyEvent()
     {
         if ((_keyCode != KeyCode.None) &&
@@ -57,6 +57,22 @@ public class ShortCut : MonoBehaviour, IPointerClickHandler
     {
         ShortCutsView.instance.ActiveShortCutHandler(_type, _image.sprite, _keyCode, KE);
     }
+
+
+    //============================================================================
+    //************************* Private Methods **********************************
+    //============================================================================
+
+    private void Awake()
+    {
+        _image = GetComponent<Image>();
+    }
+
+    private void Start()
+    {
+        if (clone != null)
+            clone.SetClone(_type,_image.sprite, _keyCode, null);
+    }    
 }
 
 public enum ShortCutType

@@ -1,6 +1,10 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
+
+/// <summary>
+/// Drop money in inventory to battle field
+/// </summary>
 public class InventoryMoneyHandler : MonoBehaviour
 {
     public InputField dropMoneyPrice;

@@ -14,6 +14,8 @@ public class ItemAssets : MonoBehaviour
             return _instance;
         }
     }
+    public List<Item> items = new List<Item>();
+    public List<GameObject> itemPrefabs = new List<GameObject>();
 
     public Item GetItemByName(string name)
     {
@@ -39,6 +41,5 @@ public class ItemAssets : MonoBehaviour
         return tmpPrefab;
     }
 
-    public List<Item> items = new List<Item>();
-    public List<GameObject> itemPrefabs = new List<GameObject> ();
+    
 }

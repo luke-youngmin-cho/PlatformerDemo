@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Check up / down ladder is possible
+/// </summary>
 public class LadderDetector : MonoBehaviour
 {
     [HideInInspector] public bool isGoUpPossible;
@@ -9,24 +12,51 @@ public class LadderDetector : MonoBehaviour
     [HideInInspector] public bool isAtFeet;
     [HideInInspector] public Vector2 ladderTopPos;
     float ladderPosX;
-
-    Rigidbody2D rb;
     float playerSizeY;
     float colliderOffsetY;
     public LayerMask layer;
-
     float playerLadderMoveYOffset = 0.25f;
     float playerLadderAtFeetStartYOffset = 0.33f;
     float playerLadderStartYOffset = 0.03f;
-    
-    float groundDetectorSizeY;
+
+    // Components
+    Rigidbody2D rb;
+
+
+    //============================================================================
+    //*************************** Public Methods *********************************
+    //============================================================================
+
+    public Vector2 GetLadderStartPosWhenIsAtFeet()
+    {
+        Vector2 startPos = ladderTopPos - new Vector2(0f, playerSizeY * playerLadderAtFeetStartYOffset);
+        return startPos;
+    }
+
+    public Vector2 GetLadderStartPosWhenIsAboveHead()
+    {
+        Vector2 startPos = new Vector2(ladderPosX, rb.position.y);
+        return startPos;
+    }
+
+    public Vector2 GetLadderstartPosOnGround()
+    {
+        Vector2 startPos = new Vector2(ladderPosX, rb.position.y + playerLadderStartYOffset);
+        return startPos;
+    }
+
+
+    //============================================================================
+    //*************************** Private Methods ********************************
+    //============================================================================
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         playerSizeY = GetComponent<CapsuleCollider2D>().size.y;
         colliderOffsetY = GetComponent<CapsuleCollider2D>().offset.y;
-        groundDetectorSizeY = GetComponent<GroundDetector>().size.y;
     }
+
     void Update()
     {
         // at ground or above
@@ -64,21 +94,7 @@ public class LadderDetector : MonoBehaviour
         else
             isAtFeet = false;
     }
-    public Vector2 GetLadderStartPosWhenIsAtFeet()
-    {
-        Vector2 startPos = ladderTopPos - new Vector2(0f, playerSizeY * playerLadderAtFeetStartYOffset);
-        return startPos;
-    }
-    public Vector2 GetLadderStartPosWhenIsAboveHead()
-    {
-        Vector2 startPos = new Vector2(ladderPosX, rb.position.y);
-        return startPos;
-    }
-    public Vector2 GetLadderstartPosOnGround()
-    {
-        Vector2 startPos = new Vector2(ladderPosX, rb.position.y + playerLadderStartYOffset);
-        return startPos;
-    }
+
     private void OnDrawGizmosSelected()
     {
         if (rb == null) return;

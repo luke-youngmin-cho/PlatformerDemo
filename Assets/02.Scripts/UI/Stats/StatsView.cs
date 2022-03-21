@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
+/// <summary>
+/// Show player stats.
+/// </summary>
 public class StatsView : MonoBehaviour
 {
     [SerializeField] Text nickName;
@@ -23,6 +27,7 @@ public class StatsView : MonoBehaviour
     [SerializeField] Text WIS;
     [SerializeField] Text INT;
     [SerializeField] Text RES;
+
 
     private void Update()
     {

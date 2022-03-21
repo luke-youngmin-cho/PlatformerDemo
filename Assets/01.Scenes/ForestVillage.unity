@@ -27822,9 +27822,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1066707286}
   - component: {fileID: 1066707289}
-  - component: {fileID: 1066707288}
   - component: {fileID: 1066707287}
-  m_Layer: 0
+  - component: {fileID: 1066707288}
+  m_Layer: 20
   m_Name: bridge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27864,8 +27864,8 @@ PlatformEffector2D:
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
---- !u!68 &1066707288
-EdgeCollider2D:
+--- !u!60 &1066707288
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -27873,27 +27873,31 @@ EdgeCollider2D:
   m_GameObject: {fileID: 1066707285}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: b7dd47e5266e41749b6aed0987e06323, type: 2}
   m_IsTrigger: 0
-  m_UsedByEffector: 1
+  m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_EdgeRadius: 0
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1.6, y: 0.32}
+    newSize: {x: 1.6, y: 0.32}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   m_Points:
-  - {x: -0.510156, y: -0.14782023}
-  - {x: -0.4266901, y: -0.056185007}
-  - {x: -0.26211548, y: 0.021255493}
-  - {x: -0.13011074, y: 0.07093549}
-  - {x: 0.029016495, y: 0.09854674}
-  - {x: 0.18257713, y: 0.09924626}
-  - {x: 0.28692722, y: 0.06987572}
-  - {x: 0.4631052, y: 0.00662899}
-  - {x: 0.5865574, y: -0.05758977}
-  - {x: 0.6811636, y: -0.15361714}
-  m_AdjacentStartPoint: {x: 0, y: 0}
-  m_AdjacentEndPoint: {x: 0, y: 0}
-  m_UseAdjacentStartPoint: 0
-  m_UseAdjacentEndPoint: 0
+    m_Paths:
+    - - {x: 0.51310843, y: -0.042148426}
+      - {x: 0.22471946, y: 0.056125514}
+      - {x: 0.0413166, y: 0.056125276}
+      - {x: -0.33116448, y: -0.021931022}
+      - {x: -0.59530365, y: -0.1692423}
+      - {x: -0.089999996, y: -0.16}
+      - {x: 0.17999999, y: -0.12}
+      - {x: 0.37, y: -0.16}
+      - {x: 0.69262904, y: -0.16}
 --- !u!212 &1066707289
 SpriteRenderer:
   m_ObjectHideFlags: 0

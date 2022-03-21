@@ -2,11 +2,16 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+
 // need to consider 
 // BasicKey's function almost same with ShortCut , 
 // But when it derives ShortCut, InventoryItem or Skill and so on also can put them on this. 
 // if there have good way to prevent other short-cut relative items, 
 // It would be nice way that BasicKey is derived from ShortCut
+
+/// <summary>
+/// Handler for interaction between short cut UI & basic key UI
+/// </summary>
 public class BasicKeyHandler : MonoBehaviour, IPointerClickHandler
 {
     public int slotNumber;
@@ -17,12 +22,10 @@ public class BasicKeyHandler : MonoBehaviour, IPointerClickHandler
     PointerEventData _PointerEventData;
     EventSystem _EventSystem;
 
-    private void Start()
-    {
-        _Raycaster = UIManager.instance.playerUI.GetComponent<GraphicRaycaster>();
-        _EventSystem = FindObjectOfType<EventSystem>();
-        gameObject.GetComponent<Image>().sprite = basicKey.icon;
-    }
+    //============================================================================
+    //************************* Public Methods ***********************************
+    //============================================================================
+
     public void Select()
     {
         BasicKeysView.instance.selectedBasicKey = this.gameObject;
@@ -101,6 +104,18 @@ public class BasicKeyHandler : MonoBehaviour, IPointerClickHandler
                     Debug.Log(canvasRenderer.name);
             }
         }
+    }
+
+
+    //============================================================================
+    //************************* Private Methods **********************************
+    //============================================================================
+
+    private void Start()
+    {
+        _Raycaster = UIManager.instance.playerUI.GetComponent<GraphicRaycaster>();
+        _EventSystem = FindObjectOfType<EventSystem>();
+        gameObject.GetComponent<Image>().sprite = basicKey.icon;
     }
 
 

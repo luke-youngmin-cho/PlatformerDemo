@@ -1,13 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-// Player's every single behavior state machine should be derived from this class
+
+/// <summary>
+/// Player's every single of behavior class should be derived from this class
+/// Workflow : Idle -> Prepare -> Casting -> OnAction -> Finished
+/// </summary>
 public class PlayerStateMachine : MonoBehaviour
 {
-    public bool isReady { get { return state == State.Idle; } }
-    public bool isStarted {  get { return state >= State.Prepare; } }
+    public bool isReady 
+    { 
+        get
+        { 
+            return state == State.Idle; 
+        } 
+    }
+    public bool isStarted
+    {
+        get 
+        {
+            return state >= State.Prepare; 
+        } 
+    }
     public MachineType machineType;
-    public KeyCode keyCode;
+    public KeyCode keyCode; // registered short cut.
     public State state;
     private PlayerState _playerStateType;
     public PlayerState playerStateType
@@ -18,7 +34,10 @@ public class PlayerStateMachine : MonoBehaviour
             animationName = _playerStateType.ToString();
             animationTime = animationManager.GetAnimationTime(animationName);
         }
-        get { return _playerStateType; }
+        get 
+        { 
+            return _playerStateType; 
+        }
     }
     [HideInInspector] public PlayerState nextPlayerState = PlayerState.Idle; // normally state will change to idle when machine finished
     [HideInInspector] public string animationName;
@@ -42,11 +61,13 @@ public class PlayerStateMachine : MonoBehaviour
         animationName = _playerStateType.ToString();
         animationTime = animationManager.GetAnimationTime(animationName);
     }
+
     public virtual bool IsExecuteOK()
     {
         bool isOK = true;
         return isOK;
     }
+
     public virtual void UpdateWorkflow()
     {
         switch (state)
@@ -74,6 +95,7 @@ public class PlayerStateMachine : MonoBehaviour
                 break;
         }
     }
+
     public virtual void Execute()
     {
         state = State.Prepare;
@@ -88,11 +110,13 @@ public class PlayerStateMachine : MonoBehaviour
         }
         player.stats = tmpStats;
     }
+
     public virtual void ResetMachine()
     {
         state = State.Idle;
         elapsedTime = 0;
     }
+
     public enum State
     {
         Idle,
@@ -102,6 +126,7 @@ public class PlayerStateMachine : MonoBehaviour
         Finished,
     }
 }
+
 public enum MachineType
 {
     BasicSkill,

@@ -5,7 +5,7 @@ public class InventoryETCItemHandler : InventoryItemHandlerBase
 {
     public override void UseItem()
     {
-        // equip
+        // Do nothing
     }
     override public void OnPointerClick(PointerEventData eventData)
     {
